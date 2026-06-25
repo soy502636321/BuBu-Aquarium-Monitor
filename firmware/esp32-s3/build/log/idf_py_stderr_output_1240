@@ -1,0 +1,332 @@
+[0;33m--- Warning: GDB cannot open serial ports accessed as COMx[0m
+[0;33m--- Using \\.\COM4 instead...[0m
+[0;33m--- esp-idf-monitor 1.5.0 on \\.\COM4 115200[0m
+[0;33m--- Quit: Ctrl+] | Menu: Ctrl+T | Help: Ctrl+T followed by Ctrl+H[0m
+[0;33m--- 0x400490d5: usb_uart_device_rx_one_char in ROM
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0;33m--- 0x40375b4a: panic_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/panic.c:463
+0x4037b429: esp_system_abort at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/esp_system_chip.c:92
+0x40382b55: __assert_func at D:/Espressif/frameworks/esp-idf-v5.3.1/components/newlib/assert.c:80
+0x4037b74f: xQueueGenericCreate at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/queue.c:573 (discriminator 1)
+0x420356bf: spi_bus_add_device at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_driver_spi/src/gpspi/spi_master.c:490
+0x4200b23b: esp_lcd_new_panel_io_spi at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_lcd/spi/esp_lcd_panel_io_spi.c:86
+0x42009692: lcd_init_st77922 at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/lcd_st77922.c:31
+0x420095a7: app_main at D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/main/main.c:20
+0x4204598f: main_task at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/app_startup.c:208
+0x4037befd: vPortTaskWrapper at D:/Espressif/frameworks/esp-idf-v5.3.1/components/freertos/FreeRTOS-Kernel/portable/xtensa/port.c:134
+[0m
+[0;33m--- 0x40375a84: esp_restart_noos at D:/Espressif/frameworks/esp-idf-v5.3.1/components/esp_system/port/soc/esp32s3/system_internal.c:158
+[0m
+[0m
