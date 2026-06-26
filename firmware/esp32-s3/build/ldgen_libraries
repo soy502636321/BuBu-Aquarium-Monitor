@@ -66,6 +66,7 @@ D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_http_client/libesp_
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_http_server/libesp_http_server.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_https_ota/libesp_https_ota.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_https_server/libesp_https_server.a
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_psram/libesp_psram.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lcd/libesp_lcd.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/protobuf-c/libprotobuf-c.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/protocomm/libprotocomm.a
@@ -84,3 +85,6 @@ D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/wifi_provisioning/libwi
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/espressif__esp_lcd_st77922/libespressif__esp_lcd_st77922.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/lvgl__lvgl/liblvgl__lvgl.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/main/libmain.a
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_bsp/libesp_bsp.a
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/libesp_lv_port.a
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/libui.a

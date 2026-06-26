@@ -2,6 +2,6 @@
 # for more information about component CMakeLists.txt files.
 
 idf_component_register(
-    SRCS "main.c" "lcd_st77922.c" "lvgl_ui.c"
+    SRCS "main.cpp" 
     INCLUDE_DIRS "."
 )

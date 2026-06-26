@@ -559,11 +559,21 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/espressif__esp_lvgl_port/cmake_install.cmake")
+  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/main/cmake_install.cmake")
 endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/main/cmake_install.cmake")
+  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_bsp/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/cmake_install.cmake")
 endif()
 
