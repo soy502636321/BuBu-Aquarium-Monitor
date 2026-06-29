@@ -87,4 +87,4 @@ D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/lvgl__lvgl/liblvgl__lvg
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/main/libmain.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_bsp/libesp_bsp.a
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/libesp_lv_port.a
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/libui.a
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/libscreen_ui.a

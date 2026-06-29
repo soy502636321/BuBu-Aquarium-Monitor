@@ -863,10 +863,10 @@ D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/CMakeFiles/
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/CMakeFiles/install.dir
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/CMakeFiles/install/local.dir
 D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/esp_lv_port/CMakeFiles/install/strip.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/__idf_ui.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/edit_cache.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/rebuild_cache.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/list_install_components.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/install.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/install/local.dir
-D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/CMakeFiles/install/strip.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/__idf_screen_ui.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/edit_cache.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/rebuild_cache.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/list_install_components.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/install.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/install/local.dir
+D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/CMakeFiles/install/strip.dir

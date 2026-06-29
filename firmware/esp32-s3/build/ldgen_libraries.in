@@ -87,4 +87,4 @@ $<TARGET_FILE:__idf_lvgl__lvgl>
 $<TARGET_FILE:__idf_main>
 $<TARGET_FILE:__idf_esp_bsp>
 $<TARGET_FILE:__idf_esp_lv_port>
-$<TARGET_FILE:__idf_ui>
+$<TARGET_FILE:__idf_screen_ui>

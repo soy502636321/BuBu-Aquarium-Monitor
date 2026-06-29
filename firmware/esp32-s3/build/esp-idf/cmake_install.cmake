@@ -574,6 +574,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/ui/cmake_install.cmake")
+  include("D:/BuBu-Aquarium-Monitor/firmware/esp32-s3/build/esp-idf/screen_ui/cmake_install.cmake")
 endif()
 
