@@ -1,2 +1,3 @@
-build/
-managed_components/
+**/build/
+**/.idea/
+**/managed_components/
