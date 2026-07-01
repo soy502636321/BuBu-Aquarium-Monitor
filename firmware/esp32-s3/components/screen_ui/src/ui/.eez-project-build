@@ -13,8 +13,13 @@
     "styles.h",
     "ui.c",
     "ui.h",
+    "ui_font_main_cn_fonts_10.c",
     "ui_font_main_cn_fonts_14.c",
     "ui_image_app_home.c",
+    "ui_image_icon_device_water_level.c",
+    "ui_image_icon_device_water_ph.c",
+    "ui_image_icon_device_water_temp.c",
+    "ui_image_icon_temp_16.c",
     "vars.h"
   ]
 }

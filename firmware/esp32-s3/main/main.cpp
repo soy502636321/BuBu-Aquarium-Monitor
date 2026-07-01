@@ -4,13 +4,15 @@
 #include "bsp_display.h"
 #include "bsp_touch.h"
 
+#include "core/lv_obj.h"
 #include "esp_lcd_panel_ops.h"
 #include "lv_port.h"
 
 #include "lvgl.h"
 #include "demos/lv_demos.h"
+#include "screens.h"
 #include "ui.h"
-
+#include "actions.h"
 
 #define EXAMPLE_DISPLAY_ROTATION LV_DISP_ROT_90
 #define EXAMPLE_LCD_H_RES 320
@@ -27,7 +29,6 @@ static lv_indev_t *lvgl_touch_indev = NULL;
 
 void lv_port_init(void);
 
-
 extern "C" void app_main(void)
 {
 
@@ -40,13 +41,12 @@ extern "C" void app_main(void)
     bsp_touch_init(i2c_bus_handle, EXAMPLE_LCD_V_RES,EXAMPLE_LCD_H_RES , 1);
     lv_port_init();
 
-
     
     if (lvgl_port_lock(0))
     {
         // lv_demo_benchmark();
         // lv_demo_music();
-        //lv_demo_widgets();
+        // lv_demo_widgets();
         ui_init();
         //lv_obj_t *scr = lv_scr_act();
 		//lv_obj_set_style_bg_color(scr,lv_color_hex(0xFF0000),LV_PART_MAIN);
@@ -55,6 +55,12 @@ extern "C" void app_main(void)
 		//                        LV_PART_MAIN);
         lvgl_port_unlock();
     }
+    
+    while (1) {
+        lv_timer_handler();  // LVGL刷新
+        ui_tick();           // ⭐ Flow核心驱动
+        vTaskDelay(pdMS_TO_TICKS(5));        
+	}
 }
 
 static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
@@ -125,4 +131,9 @@ void lv_port_init(void)
     indev_drv.read_cb = touchpad_read;
 
     lvgl_touch_indev = lv_indev_drv_register(&indev_drv);
+}
+
+void action_home_click(lv_event_t *e)
+{
+	printf("I Am Clicked!");
 }

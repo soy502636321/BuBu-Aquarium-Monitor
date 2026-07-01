@@ -1,11 +1,12 @@
 {
   "navigation": {
     "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/0",
-    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/0",
+    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/10",
+    "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/0",
     "selectedFontObject": "[LVGL-DEMO.eez-project]:/fonts/0",
-    "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/0",
+    "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/3",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Enums"
+      "variables-tab/sub-navigation/selected-item": "Global"
     }
   },
   "layoutModel": {
@@ -74,8 +75,8 @@
           },
           {
             "type": "border",
-            "selected": 3,
-            "size": 121.5,
+            "selected": 0,
+            "size": 33.5,
             "location": "bottom",
             "children": [
               {
@@ -159,7 +160,7 @@
                 {
                   "type": "tabset",
                   "id": "#24b9b613-47e0-4737-8be3-ca7fd123eeea",
-                  "weight": 1.2675438596491229,
+                  "weight": 0.9452554744525548,
                   "enableClose": false,
                   "children": [
                     {
@@ -175,7 +176,7 @@
                 {
                   "type": "tabset",
                   "id": "#f1537029-6b77-46c7-a7ce-8bb46ead01a2",
-                  "weight": 0.7324561403508771,
+                  "weight": 1.0547445255474452,
                   "enableClose": false,
                   "children": [
                     {
@@ -193,14 +194,36 @@
             {
               "type": "tabset",
               "id": "EDITORS",
-              "weight": 41.97591656811096,
-              "selected": 5,
+              "weight": 48.874741168835186,
+              "selected": 7,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
-                  "id": "#be52f053-b8e6-4c10-bf3b-b51f79501aef",
+                  "id": "#337ed67b-ec07-41e7-bfa4-7050ae5a6817",
+                  "name": "DeviceItem",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/9",
+                    "permanent": true
+                  },
+                  "icon": "svg:user_widget"
+                },
+                {
+                  "type": "tab",
+                  "id": "#3eef2853-8e64-4bf1-8a07-f21eceb0c336",
+                  "name": "HomeContent",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/5",
+                    "permanent": true
+                  },
+                  "icon": "svg:user_widget"
+                },
+                {
+                  "type": "tab",
+                  "id": "#f4523089-1042-4b3a-b2f0-67aa93a55c16",
                   "name": "MenuFcuntionBtn",
                   "component": "editor",
                   "config": {
@@ -211,51 +234,51 @@
                 },
                 {
                   "type": "tab",
-                  "id": "#0ab0b37f-27a5-459e-9e6f-dd08c63ca561",
-                  "name": "HeaderBtn",
+                  "id": "#873764b4-49a9-4d22-86b9-c6bb472d1508",
+                  "name": "SettingContent",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/4",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/8",
                     "permanent": true
                   },
                   "icon": "svg:user_widget"
                 },
                 {
                   "type": "tab",
-                  "id": "#48b6b857-9e75-4e91-8bda-8a206d809e00",
-                  "name": "HeaderBtnGroup",
+                  "id": "#9c4877bf-6552-4496-8211-d20111c33993",
+                  "name": "MessageContent",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/1",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/6",
                     "permanent": true
                   },
                   "icon": "svg:user_widget"
                 },
                 {
                   "type": "tab",
-                  "id": "#b6a3d5b0-46b6-4afa-ab59-36df8a09c6f2",
-                  "name": "HeaderClock",
+                  "id": "#b0c59e5e-d2d3-4c6d-9fa6-8caad69d0a82",
+                  "name": "MessageItem",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/2",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/10",
                     "permanent": true
                   },
                   "icon": "svg:user_widget"
                 },
                 {
                   "type": "tab",
-                  "id": "#c4c22032-454b-41f1-aabc-c3aa2ec1eb1b",
-                  "name": "HeaderLogo",
+                  "id": "#d3445358-3347-4d91-9184-a12510f2d3ff",
+                  "name": "DeviceContent",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/3",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/7",
                     "permanent": true
                   },
                   "icon": "svg:user_widget"
                 },
                 {
                   "type": "tab",
-                  "id": "#01d59b39-dacf-4ac1-8efd-7357278d6de2",
+                  "id": "#dc71b592-ce55-4195-9ce2-8cf1d83ba9c4",
                   "name": "MainScreen",
                   "component": "editor",
                   "config": {
@@ -270,12 +293,12 @@
             {
               "type": "row",
               "id": "#bcbdb64c-0e59-4569-a7ac-b25e4c0f4cfe",
-              "weight": 33.47446511127836,
+              "weight": 26.575640510554134,
               "children": [
                 {
                   "type": "tabset",
                   "id": "#4ec54923-3466-48a9-83b0-f0cde8f0c8b3",
-                  "weight": 2.1295871559633026,
+                  "weight": 1.501813784764208,
                   "children": [
                     {
                       "type": "tab",
@@ -290,7 +313,7 @@
                 {
                   "type": "tabset",
                   "id": "#0e283413-96a0-4cbd-944a-1fa928b8e344",
-                  "weight": 0.8704128440366973,
+                  "weight": 1.498186215235792,
                   "children": [
                     {
                       "type": "tab",
@@ -513,9 +536,21 @@
               "type": "tabset",
               "id": "RUNTIME-EDITORS",
               "weight": 1,
+              "selected": 1,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
+                {
+                  "type": "tab",
+                  "id": "#c333a397-fd8f-47f9-a4e8-0385eb074e23",
+                  "name": "HeaderBtnGroup",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/1",
+                    "permanent": false
+                  },
+                  "icon": "svg:user_widget"
+                },
                 {
                   "type": "tab",
                   "id": "#7a21ce7c-3289-4750-ae51-27ae337a08f3",
@@ -1142,15 +1177,21 @@
           "0": {},
           "1": {
             "0": {
-              "0": {}
+              "1": {}
+            },
+            "1": {
+              "1": {},
+              "3": {
+                "$selected": true
+              }
             }
           }
         }
       },
       "transform": {
         "translate": {
-          "x": -240,
-          "y": -160
+          "x": -150.77842217484,
+          "y": -53.491791044776164
         },
         "scale": 1
       },
@@ -1199,13 +1240,13 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "0": {}
+          "$selected": true
         }
       },
       "transform": {
         "translate": {
-          "x": -240,
-          "y": 40
+          "x": -30,
+          "y": -30
         },
         "scale": 1
       },
@@ -1299,6 +1340,139 @@
         "secondToPx": 200,
         "scrollLeft": 0
       }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/5[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "1": {},
+          "$selected": true
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -200,
+          "y": -140
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/6[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "0": {
+            "0": {
+              "$selected": true
+            },
+            "1": {},
+            "2": {}
+          }
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -160
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/7[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "0": {
+            "$selected": true
+          }
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -160
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/8[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "$selected": true
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -160
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/9[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {}
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -160
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/10[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "1": {}
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -60
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
     }
   },
   "activeOutputSection": 0,
@@ -1314,17 +1488,23 @@
   "logsPanelFilter": "all",
   "selectedStylePropertyName": "",
   "lvglPart": "MAIN",
-  "lvglState": "DEFAULT",
+  "lvglState": "CHECKED",
   "lvglExpandedPropertiesGroup": [
     "IMAGE",
-    "PADDING",
-    "LAYOUT",
     "MISCELLANEOUS",
-    "TEXT"
+    "TEXT",
+    "PADDING",
+    "OUTLINE",
+    "BACKGROUND",
+    "SHADOW",
+    "LINE",
+    "LAYOUT",
+    "POSITION AND SIZE",
+    "BORDER"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
   "flowZoom": 1,
-  "implementationLanguage": "C",
-  "openDialogDefaultPath": "D:\\eez-projects\\LVGL-DEMO\\src\\assets\\images\\icon_home.png"
+  "implementationLanguage": "C++",
+  "openDialogDefaultPath": "C:\\Users\\Hu\\Downloads\\ph_10623976 (1).png"
 }
