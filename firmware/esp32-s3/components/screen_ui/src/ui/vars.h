@@ -10,6 +10,15 @@ extern "C" {
 
 // enum declarations
 
+typedef enum {
+    message_level_MSG_LEVEL_DEBUG = 0,
+    message_level_MSG_LEVEL_FATAL = 1,
+    message_level_MSG_LEVEL_ALARM = 2,
+    message_level_MSG_LEVEL_ERROR = 3,
+    message_level_MSG_LEVEL_WARN = 4,
+    message_level_MSG_LEVEL_INFO = 5
+} message_level;
+
 // Flow global variables
 
 enum FlowGlobalVariables {
