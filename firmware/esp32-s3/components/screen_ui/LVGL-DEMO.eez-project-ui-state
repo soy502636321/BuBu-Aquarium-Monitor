@@ -1,12 +1,12 @@
 {
   "navigation": {
     "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/0",
-    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/10",
+    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/13",
     "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/0",
     "selectedFontObject": "[LVGL-DEMO.eez-project]:/fonts/0",
     "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/3",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Global"
+      "variables-tab/sub-navigation/selected-item": "Widgets"
     }
   },
   "layoutModel": {
@@ -129,6 +129,7 @@
                   "type": "tabset",
                   "id": "#c0a5d074-d7be-4119-971e-99b360b73129",
                   "weight": 1,
+                  "selected": 1,
                   "enableClose": false,
                   "children": [
                     {
@@ -171,7 +172,8 @@
                       "enableClose": false,
                       "icon": "svg:hierarchy"
                     }
-                  ]
+                  ],
+                  "active": true
                 },
                 {
                   "type": "tabset",
@@ -195,10 +197,20 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 48.874741168835186,
-              "selected": 7,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
+                {
+                  "type": "tab",
+                  "id": "#d90004ad-93ba-4c61-8f62-c67c8390cefa",
+                  "name": "DeviceSetting",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/13",
+                    "permanent": false
+                  },
+                  "icon": "svg:user_widget"
+                },
                 {
                   "type": "tab",
                   "id": "#337ed67b-ec07-41e7-bfa4-7050ae5a6817",
@@ -287,8 +299,7 @@
                   },
                   "icon": "svg:page"
                 }
-              ],
-              "active": true
+              ]
             },
             {
               "type": "row",
@@ -1181,9 +1192,7 @@
             },
             "1": {
               "1": {},
-              "3": {
-                "$selected": true
-              }
+              "3": {}
             }
           }
         }
@@ -1345,7 +1354,6 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "1": {},
           "$selected": true
         }
       },
@@ -1371,8 +1379,7 @@
             "0": {
               "$selected": true
             },
-            "1": {},
-            "2": {}
+            "1": {}
           }
         }
       },
@@ -1464,6 +1471,46 @@
         "translate": {
           "x": -240,
           "y": -60
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/13[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "0": {
+            "$selected": true
+          }
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -200,
+          "y": -140
+        },
+        "scale": 1
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/12[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {},
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -160
         },
         "scale": 1
       },

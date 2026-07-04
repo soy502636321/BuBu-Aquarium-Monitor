@@ -20,6 +20,10 @@
     "ui_image_icon_device_water_ph.c",
     "ui_image_icon_device_water_temp.c",
     "ui_image_icon_temp_16.c",
+    "ui_image_icon_unknown_32.c",
+    "ui_image_icon_water_level_32.c",
+    "ui_image_icon_water_ph_32.c",
+    "ui_image_icon_water_temp_32.c",
     "vars.h"
   ]
 }

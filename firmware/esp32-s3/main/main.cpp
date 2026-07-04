@@ -5,11 +5,11 @@
 #include "bsp_touch.h"
 
 #include "core/lv_obj.h"
+#include "eez-flow.h"
 #include "esp_lcd_panel_ops.h"
 #include "lv_port.h"
 
 #include "lvgl.h"
-#include "demos/lv_demos.h"
 #include "screens.h"
 #include "ui.h"
 #include "actions.h"
@@ -44,16 +44,7 @@ extern "C" void app_main(void)
     
     if (lvgl_port_lock(0))
     {
-        // lv_demo_benchmark();
-        // lv_demo_music();
-        // lv_demo_widgets();
         ui_init();
-        //lv_obj_t *scr = lv_scr_act();
-		//lv_obj_set_style_bg_color(scr,lv_color_hex(0xFF0000),LV_PART_MAIN);
-		//lv_obj_set_style_bg_opa(scr,
-		//                        LV_OPA_COVER,
-		//                        LV_PART_MAIN);
-        lvgl_port_unlock();
     }
     
     while (1) {
@@ -135,5 +126,5 @@ void lv_port_init(void)
 
 void action_home_click(lv_event_t *e)
 {
-	printf("I Am Clicked!");
+	printf("Hello World!");
 }
