@@ -117,6 +117,7 @@ typedef struct _objects_t {
     lv_obj_t *obj7__obj24__obj0__test_list;
     lv_obj_t *obj7__obj24__obj1;
     lv_obj_t *obj7__obj24__obj1__obj0;
+    lv_obj_t *obj7__obj24__obj1__obj1;
     lv_obj_t *obj7__obj24__obj2;
     lv_obj_t *obj7__obj24__obj3;
     lv_obj_t *obj7__obj24__obj4;
