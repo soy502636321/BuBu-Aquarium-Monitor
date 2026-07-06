@@ -5,4 +5,7 @@ idf_component_register(
     INCLUDE_DIRS
         "."
         "src/ui"
+        "src/ui/fonts"
+        "src/ui/images"
+	REQUIRES esp_wifi
 )

@@ -16,6 +16,9 @@ extern const lv_img_dsc_t img_icon_water_temp_32;
 extern const lv_img_dsc_t img_icon_unknown_32;
 extern const lv_img_dsc_t img_icon_water_level_32;
 extern const lv_img_dsc_t img_icon_water_ph_32;
+extern const lv_img_dsc_t img_app_device_32;
+extern const lv_img_dsc_t img_app_message_32;
+extern const lv_img_dsc_t img_app_setting_32;
 
 #ifndef EXT_IMG_DESC_T
 #define EXT_IMG_DESC_T
@@ -25,7 +28,7 @@ typedef struct _ext_img_desc_t {
 } ext_img_desc_t;
 #endif
 
-extern const ext_img_desc_t images[9];
+extern const ext_img_desc_t images[12];
 
 #ifdef __cplusplus
 }

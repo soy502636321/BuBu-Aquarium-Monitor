@@ -20,12 +20,12 @@ enum FlowArrayOfStructures {
     FLOW_ARRAY_OF_STRUCTURE_DEVICE_T = 81921
 };
 
-enum message_tFlowStructureFields {
+enum Message_tFlowStructureFields {
     FLOW_STRUCTURE_MESSAGE_T_FIELD_TEXT = 0,
     FLOW_STRUCTURE_MESSAGE_T_NUM_FIELDS
 };
 
-enum device_tFlowStructureFields {
+enum Device_tFlowStructureFields {
     FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_ID = 0,
     FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_NAME = 1,
     FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_TYPE = 2,
@@ -34,14 +34,14 @@ enum device_tFlowStructureFields {
     FLOW_STRUCTURE_DEVICE_T_NUM_FIELDS
 };
 
-struct message_tValue {
+struct Message_tValue {
     Value value;
     
-    message_tValue() {
+    Message_tValue() {
         value = Value::makeArrayRef(FLOW_STRUCTURE_MESSAGE_T_NUM_FIELDS, FLOW_STRUCTURE_MESSAGE_T, 0);
     }
     
-    message_tValue(Value value) : value(value) {}
+    Message_tValue(Value value) : value(value) {}
     
     operator Value() const { return value; }
     
@@ -55,15 +55,15 @@ struct message_tValue {
     }
 };
 
-typedef ArrayOf<message_tValue, FLOW_ARRAY_OF_STRUCTURE_MESSAGE_T> ArrayOfmessage_tValue;
-struct device_tValue {
+typedef ArrayOf<Message_tValue, FLOW_ARRAY_OF_STRUCTURE_MESSAGE_T> ArrayOfMessage_tValue;
+struct Device_tValue {
     Value value;
     
-    device_tValue() {
+    Device_tValue() {
         value = Value::makeArrayRef(FLOW_STRUCTURE_DEVICE_T_NUM_FIELDS, FLOW_STRUCTURE_DEVICE_T, 0);
     }
     
-    device_tValue(Value value) : value(value) {}
+    Device_tValue(Value value) : value(value) {}
     
     operator Value() const { return value; }
     
@@ -83,10 +83,10 @@ struct device_tValue {
         value.getArray()->values[FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_NAME] = StringValue(device_name);
     }
     
-    device_type_t device_type() {
-        return (device_type_t)value.getArray()->values[FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_TYPE].getInt();
+    Device_Type_t device_type() {
+        return (Device_Type_t)value.getArray()->values[FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_TYPE].getInt();
     }
-    void device_type(device_type_t device_type) {
+    void device_type(Device_Type_t device_type) {
         value.getArray()->values[FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_TYPE] = IntegerValue((int)device_type);
     }
     
@@ -105,6 +105,6 @@ struct device_tValue {
     }
 };
 
-typedef ArrayOf<device_tValue, FLOW_ARRAY_OF_STRUCTURE_DEVICE_T> ArrayOfdevice_tValue;
+typedef ArrayOf<Device_tValue, FLOW_ARRAY_OF_STRUCTURE_DEVICE_T> ArrayOfDevice_tValue;
 
 #endif /*EEZ_LVGL_UI_STRUCTS_H*/

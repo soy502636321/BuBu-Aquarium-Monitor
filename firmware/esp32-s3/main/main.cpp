@@ -1,5 +1,9 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
+
+#include "esp_wifi.h"
+#include "esp_log.h"
 
 #include "bsp_i2c.h"
 #include "bsp_display.h"
@@ -26,10 +30,20 @@ esp_lcd_panel_handle_t panel_handle = NULL;
 
 lv_disp_drv_t disp_drv;
 
+static const char *TAG = "BuBu";
+
 static lv_disp_t *lvgl_disp;
 static lv_indev_t *lvgl_touch_indev = NULL;
 
 void lv_port_init(void);
+
+uint16_t number = 10;
+uint16_t ap_count = 0;
+wifi_ap_record_t ap_info[10];
+
+void wifi_task() {
+    
+}
 
 extern "C" void app_main(void)
 {
@@ -49,12 +63,16 @@ extern "C" void app_main(void)
         ui_init();
     }
     
+    wifi_task();
+    
     while (1) {
         lv_timer_handler();  // LVGL刷新
         ui_tick();           // ⭐ Flow核心驱动
         vTaskDelay(pdMS_TO_TICKS(5));        
 	}
 }
+
+
 
 static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {

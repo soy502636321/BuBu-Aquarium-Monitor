@@ -24,15 +24,19 @@ typedef struct _objects_t {
     lv_obj_t *obj1__obj2__obj0;
     lv_obj_t *obj2;
     lv_obj_t *obj2__obj0;
+    lv_obj_t *obj2__icon_image;
     lv_obj_t *obj2__obj1;
     lv_obj_t *obj3;
     lv_obj_t *obj3__obj0;
+    lv_obj_t *obj3__icon_image;
     lv_obj_t *obj3__obj1;
     lv_obj_t *obj4;
     lv_obj_t *obj4__obj0;
+    lv_obj_t *obj4__icon_image;
     lv_obj_t *obj4__obj1;
     lv_obj_t *obj5;
     lv_obj_t *obj5__obj0;
+    lv_obj_t *obj5__icon_image;
     lv_obj_t *obj5__obj1;
     lv_obj_t *home_content;
     lv_obj_t *home_content__home_content;
@@ -96,12 +100,43 @@ typedef struct _objects_t {
     lv_obj_t *obj6__device_shortcut_content;
     lv_obj_t *obj7;
     lv_obj_t *obj7__obj23;
+    lv_obj_t *obj7__obj23__basic_setting_container_1;
+    lv_obj_t *obj7__obj23__obj0;
+    lv_obj_t *obj7__obj23__obj1;
+    lv_obj_t *obj7__obj23__obj2;
+    lv_obj_t *obj7__obj23__obj3;
+    lv_obj_t *obj7__obj23__obj4;
+    lv_obj_t *obj7__obj23__obj5;
+    lv_obj_t *obj7__obj23__obj6;
+    lv_obj_t *obj7__obj23__obj7;
+    lv_obj_t *obj7__obj23__obj8;
+    lv_obj_t *obj7__obj24;
+    lv_obj_t *obj7__obj24__obj0;
+    lv_obj_t *obj7__obj24__obj0__obj0;
+    lv_obj_t *obj7__obj24__obj0__obj1;
+    lv_obj_t *obj7__obj24__obj0__test_list;
+    lv_obj_t *obj7__obj24__obj1;
+    lv_obj_t *obj7__obj24__obj1__obj0;
+    lv_obj_t *obj7__obj24__obj2;
+    lv_obj_t *obj7__obj24__obj3;
+    lv_obj_t *obj7__obj24__obj4;
+    lv_obj_t *obj7__obj24__obj5;
+    lv_obj_t *obj7__obj25;
+    lv_obj_t *obj7__obj26;
+    lv_obj_t *obj7__setting_sidebar_container;
+    lv_obj_t *obj7__obj27;
+    lv_obj_t *obj7__obj28;
+    lv_obj_t *obj7__obj29;
+    lv_obj_t *obj7__obj30;
+    lv_obj_t *obj7__obj31;
+    lv_obj_t *obj7__setting_body_container;
+    lv_obj_t *obj7__obj32;
     lv_obj_t *obj8;
-    lv_obj_t *obj8__my_custom_trigger;
-    lv_obj_t *obj8__obj26;
-    lv_obj_t *obj8__obj27;
-    lv_obj_t *obj8__obj28;
-    lv_obj_t *obj8__obj29;
+    lv_obj_t *obj8__back_container_trigger;
+    lv_obj_t *obj8__obj35;
+    lv_obj_t *obj8__obj36;
+    lv_obj_t *obj8__obj37;
+    lv_obj_t *obj8__obj38;
     lv_obj_t *header_container;
     lv_obj_t *header_logo_container;
     lv_obj_t *header_clock_container;
@@ -157,6 +192,24 @@ void tick_user_widget_device_detail(void *flowState, int startWidgetIndex);
 
 void create_user_widget_device_setting_content(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_device_setting_content(void *flowState, int startWidgetIndex);
+
+void create_user_widget_setting_content_basic_setting_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_setting_content_basic_setting_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_setting_content_data_setting_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_setting_content_data_setting_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_setting_content_display_setting_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_setting_content_display_setting_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_setting_content_network_setting_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_setting_content_network_setting_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_setting_content_network_setting_wi_fi_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_setting_content_network_setting_wi_fi_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_setting_content_network_setting_bluetooth_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_setting_content_network_setting_bluetooth_widget(void *flowState, int startWidgetIndex);
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

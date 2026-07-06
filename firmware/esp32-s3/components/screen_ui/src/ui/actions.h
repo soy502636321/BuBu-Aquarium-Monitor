@@ -15,6 +15,9 @@ enum {
 extern void action_router_push(lv_event_t * e);
 
 extern void action_router_back(lv_event_t * e);
+extern void action_device_firmware_ota(lv_event_t * e);
+extern void action_wifi_scan_start(lv_event_t * e);
+extern void action_printf_hw(lv_event_t * e);
 
 #ifdef __cplusplus
 }

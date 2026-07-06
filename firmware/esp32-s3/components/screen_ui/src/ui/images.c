@@ -1,6 +1,6 @@
 #include "images.h"
 
-const ext_img_desc_t images[9] = {
+const ext_img_desc_t images[12] = {
     { "app_home", &img_app_home },
     { "icon_device_water_level", &img_icon_device_water_level },
     { "icon_device_water_temp", &img_icon_device_water_temp },
@@ -10,4 +10,7 @@ const ext_img_desc_t images[9] = {
     { "icon_unknown_32", &img_icon_unknown_32 },
     { "icon_water_level_32", &img_icon_water_level_32 },
     { "icon_water_ph_32", &img_icon_water_ph_32 },
+    { "app_device_32", &img_app_device_32 },
+    { "app_message_32", &img_app_message_32 },
+    { "app_setting_32", &img_app_setting_32 },
 };
