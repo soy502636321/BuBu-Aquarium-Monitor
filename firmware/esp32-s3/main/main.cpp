@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 
 #include "bsp_i2c.h"
@@ -13,6 +14,7 @@
 #include "screens.h"
 #include "ui.h"
 #include "actions.h"
+#include "vars.h"
 
 #define EXAMPLE_DISPLAY_ROTATION LV_DISP_ROT_90
 #define EXAMPLE_LCD_H_RES 320
@@ -124,7 +126,3 @@ void lv_port_init(void)
     lvgl_touch_indev = lv_indev_drv_register(&indev_drv);
 }
 
-void action_home_click(lv_event_t *e)
-{
-	printf("Hello World!");
-}

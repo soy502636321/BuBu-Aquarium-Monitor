@@ -9,6 +9,13 @@ extern "C" {
 
 extern void action_home_click(lv_event_t * e);
 
+enum {
+    ACTION_ROUTER_PUSH_PROPERTY_PAGE,
+};
+extern void action_router_push(lv_event_t * e);
+
+extern void action_router_back(lv_event_t * e);
+
 #ifdef __cplusplus
 }
 #endif
