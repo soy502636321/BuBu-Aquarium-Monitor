@@ -5,6 +5,12 @@
 #include <cstdio>
 #include <stdint.h>
 #include "esp_wifi.h"
+#include "esp_log.h"
+#include "lvgl.h"
+
+#include "wifi_manager.h"
+
+static const char *TAG = "BuBu-Aquarium-Monitor_actions.h";
 
 void action_home_click(lv_event_t *e)
 {
@@ -43,4 +49,13 @@ void action_wifi_scan_start(lv_event_t * e) {
 
 void action_printf_hw(lv_event_t * e) {
 	printf("Hello World!");	
+}
+
+extern "C" void action_switch_wifi_enabled(lv_event_t * e) {
+	lv_obj_t *switch_obj = lv_event_get_target(e);
+	bool checked = lv_obj_has_state(switch_obj, LV_STATE_CHECKED);
+	if (checked) {
+		ESP_LOGI(TAG, "启用WiFi，开始扫描...");
+		wifi_manager_scan(); 
+	}
 }

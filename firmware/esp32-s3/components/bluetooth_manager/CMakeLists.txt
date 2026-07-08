@@ -1,0 +1,10 @@
+idf_component_register(
+    SRCS
+        "bluetooth_manager.cpp"
+    INCLUDE_DIRS
+        "."
+    REQUIRES
+        bt
+        nvs_flash
+        esp_timer
+)

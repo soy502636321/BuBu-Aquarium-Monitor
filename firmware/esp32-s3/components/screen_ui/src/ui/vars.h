@@ -37,6 +37,16 @@ typedef enum {
     Setting_Network_Page_t_Bluetooth = 2
 } Setting_Network_Page_t;
 
+typedef enum {
+    WiFi_Status_IDLE = 0,
+    WiFi_Status_INIT = 1,
+    WiFi_Status_SCANNING = 2,
+    WiFi_Status_CONNECTING = 3,
+    WiFi_Status_CONNECTED = 4,
+    WiFi_Status_DISCONNECTED = 5,
+    WiFi_Status_FAILED = 6
+} WiFi_Status;
+
 // Flow global variables
 
 enum FlowGlobalVariables {
@@ -66,13 +76,21 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_TXT_CLOSE = 23,
     FLOW_GLOBAL_VARIABLE_TXT_DISCONNECT = 24,
     FLOW_GLOBAL_VARIABLE_TXT_BLUETOOTH = 25,
-    FLOW_GLOBAL_VARIABLE_TXT_BACK = 26
+    FLOW_GLOBAL_VARIABLE_TXT_BACK = 26,
+    FLOW_GLOBAL_VARIABLE_TXT_RETENTION_PERIOD = 27,
+    FLOW_GLOBAL_VARIABLE_TXT_SCREEN_BRIGHTNESS = 28,
+    FLOW_GLOBAL_VARIABLE_TXT_AUTO_BRIGHTNESS = 29,
+    FLOW_GLOBAL_VARIABLE_WIFI_RECORD_LIST = 30
 };
 
 // Native global variables
 
 extern int32_t get_var_content_page();
 extern void set_var_content_page(int32_t value);
+extern WiFi_Status get_var_wifi_status();
+extern void set_var_wifi_status(WiFi_Status value);
+extern bool get_var_wifi_enabled();
+extern void set_var_wifi_enabled(bool value);
 
 #ifdef __cplusplus
 }

@@ -12,12 +12,14 @@ using namespace eez;
 
 enum FlowStructures {
     FLOW_STRUCTURE_MESSAGE_T = 16384,
-    FLOW_STRUCTURE_DEVICE_T = 16385
+    FLOW_STRUCTURE_DEVICE_T = 16385,
+    FLOW_STRUCTURE_WI_FI_RECORD_T = 16386
 };
 
 enum FlowArrayOfStructures {
     FLOW_ARRAY_OF_STRUCTURE_MESSAGE_T = 81920,
-    FLOW_ARRAY_OF_STRUCTURE_DEVICE_T = 81921
+    FLOW_ARRAY_OF_STRUCTURE_DEVICE_T = 81921,
+    FLOW_ARRAY_OF_STRUCTURE_WI_FI_RECORD_T = 81922
 };
 
 enum Message_tFlowStructureFields {
@@ -32,6 +34,14 @@ enum Device_tFlowStructureFields {
     FLOW_STRUCTURE_DEVICE_T_FIELD_DEVICE_ICON = 3,
     FLOW_STRUCTURE_DEVICE_T_FIELD_ACTIVE = 4,
     FLOW_STRUCTURE_DEVICE_T_NUM_FIELDS
+};
+
+enum WiFi_Record_tFlowStructureFields {
+    FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_SSID = 0,
+    FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_RSSI = 1,
+    FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_AUTHMODE = 2,
+    FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_ACTIVE = 3,
+    FLOW_STRUCTURE_WI_FI_RECORD_T_NUM_FIELDS
 };
 
 struct Message_tValue {
@@ -106,5 +116,48 @@ struct Device_tValue {
 };
 
 typedef ArrayOf<Device_tValue, FLOW_ARRAY_OF_STRUCTURE_DEVICE_T> ArrayOfDevice_tValue;
+struct WiFi_Record_tValue {
+    Value value;
+    
+    WiFi_Record_tValue() {
+        value = Value::makeArrayRef(FLOW_STRUCTURE_WI_FI_RECORD_T_NUM_FIELDS, FLOW_STRUCTURE_WI_FI_RECORD_T, 0);
+    }
+    
+    WiFi_Record_tValue(Value value) : value(value) {}
+    
+    operator Value() const { return value; }
+    
+    operator bool() const { return value.isArray(); }
+    
+    const char *ssid() {
+        return value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_SSID].getString();
+    }
+    void ssid(const char *ssid) {
+        value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_SSID] = StringValue(ssid);
+    }
+    
+    int rssi() {
+        return value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_RSSI].getInt();
+    }
+    void rssi(int rssi) {
+        value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_RSSI] = IntegerValue(rssi);
+    }
+    
+    int authmode() {
+        return value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_AUTHMODE].getInt();
+    }
+    void authmode(int authmode) {
+        value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_AUTHMODE] = IntegerValue(authmode);
+    }
+    
+    bool active() {
+        return value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_ACTIVE].getBoolean();
+    }
+    void active(bool active) {
+        value.getArray()->values[FLOW_STRUCTURE_WI_FI_RECORD_T_FIELD_ACTIVE] = BooleanValue(active);
+    }
+};
+
+typedef ArrayOf<WiFi_Record_tValue, FLOW_ARRAY_OF_STRUCTURE_WI_FI_RECORD_T> ArrayOfWiFi_Record_tValue;
 
 #endif /*EEZ_LVGL_UI_STRUCTS_H*/
