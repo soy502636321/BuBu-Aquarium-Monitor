@@ -112,6 +112,7 @@ typedef struct _objects_t {
     lv_obj_t *obj7__obj23__obj8;
     lv_obj_t *obj7__obj24;
     lv_obj_t *obj7__obj24__obj0;
+    lv_obj_t *obj7__obj24__obj0__setting_content_network_setting_wi_fi_obj;
     lv_obj_t *obj7__obj24__obj0__obj0;
     lv_obj_t *obj7__obj24__obj0__obj1;
     lv_obj_t *obj7__obj24__obj0__obj2;

@@ -12,6 +12,7 @@
 #include "freertos/event_groups.h"
 
 #include "eez-flow.h"
+#include "structs.h"
 #include "vars.h"    
 
 #define WIFI_CONNECTED_BIT BIT0
@@ -160,19 +161,20 @@ static void wifi_event_handler(
 			    memset(ap_info, 0, sizeof(ap_info));
 			    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
 			    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
+			    
 			    eez::Value value = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_WIFI_RECORD_LIST);
+			    
+				eez::ArrayValue *array = value.getArray();
+				WiFi_Record_tValue record = array->values[0];
+				
+			    ESP_LOGI(TAG, "RSSI \t\t%d", record.rssi());
+			    record.active(true);
+			    record.ssid("Gome Wifi");
 			    for (int i = 0; i < number; i++) {
 			        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
-			        auto array = value.getArray();
-			        eez::Value &item = array->values[i];
-					eez::Value active =
-					    eez::Value::makeJsonMemberRef(
-					        &item,
-					        eez::Value("active"),
-					        true
-					    );
+			        //auto &array = value.getArray();
+			        //eez::Value &item = array->values[i];
 					
-					active.getValue() = eez::Value(true);
 			    }
 				break;
 			}

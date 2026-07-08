@@ -28,7 +28,6 @@ void action_router_push(lv_event_t *e) {
 	    .page_id = static_cast<content_page_t>(page_id),
 	    .argument = nullptr
 	};
-    
     Router::instance().push(page);
     printf("value=%ld\n", page_id);
 }
@@ -49,6 +48,7 @@ void action_wifi_scan_start(lv_event_t * e) {
 
 void action_printf_hw(lv_event_t * e) {
 	printf("Hello World!");	
+	
 }
 
 extern "C" void action_switch_wifi_enabled(lv_event_t * e) {
