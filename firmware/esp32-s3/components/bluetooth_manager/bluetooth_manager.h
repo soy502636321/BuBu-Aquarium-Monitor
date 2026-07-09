@@ -17,36 +17,33 @@ typedef enum
     BLE_STATUS_DISCONNECTED,
     BLE_STATUS_ERROR
 
-} ble_status_t;
+} bluetooth_status_t;
 
 
 typedef struct
 {
-    ble_status_t status;
-
+    bluetooth_status_t status;
     uint16_t conn_id;
-
     char device_name[32];
-
-} ble_info_t;
-
+} bluetooth_info_t;
 
 
-esp_err_t ble_manager_init(
+
+esp_err_t bluetooth_manager_init(
         const char *device_name
 );
 
 
-void ble_manager_start(void);
+void bluetooth_manager_start(void);
 
 
-void ble_manager_stop(void);
+void bluetooth_manager_stop(void);
 
 
-ble_status_t ble_manager_get_status(void);
+bluetooth_status_t bluetooth_manager_get_status(void);
 
 
-ble_info_t ble_manager_get_info(void);
+bluetooth_info_t bluetooth_manager_get_info(void);
 
 
 

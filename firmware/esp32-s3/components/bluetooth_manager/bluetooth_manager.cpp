@@ -1,3 +1,6 @@
+#include <vector>
+#include <string>
+
 #include "bluetooth_manager.h"
 
 #include "esp_log.h"
@@ -7,32 +10,33 @@
 #include "nimble/nimble_port_freertos.h"
 
 #include "host/ble_hs.h"
+#include "host/ble_hs_adv.h"
 #include "services/gap/ble_svc_gap.h"
 
+static const char *TAG="BuBu-Aquarium-Monitor[bluetooth_manager]";
 
-static const char *TAG="ble_manager";
-
-
-static ble_info_t ble_info;
-
-
-
-static int ble_gap_event(
-        struct ble_gap_event *event,
-        void *arg)
+struct BLE_Device
 {
+    char name[32];
+    ble_addr_t addr;
+    int rssi;
+};
 
+static bluetooth_info_t bluetooth_info;
+
+std::vector<BLE_Device> ble_devices;
+
+static uint8_t own_addr_type;
+
+static int ble_event_callback(struct ble_gap_event *event, void *arg) {
     switch(event->type)
     {
-
     case BLE_GAP_EVENT_CONNECT:
-
         if(event->connect.status == 0)
         {
-            ble_info.status =
+            bluetooth_info.status =
                 BLE_STATUS_CONNECTED;
-
-            ble_info.conn_id =
+            bluetooth_info.conn_id =
                 event->connect.conn_handle;
 
 
@@ -43,7 +47,7 @@ static int ble_gap_event(
         }
         else
         {
-            ble_info.status =
+            bluetooth_info.status =
                 BLE_STATUS_ADVERTISING;
         }
 
@@ -53,16 +57,70 @@ static int ble_gap_event(
 
     case BLE_GAP_EVENT_DISCONNECT:
 
-        ble_info.status =
+        bluetooth_info.status =
             BLE_STATUS_DISCONNECTED;
 
 
-        ble_manager_start();
+        bluetooth_manager_start();
 
         break;
 
+	case BLE_GAP_EVENT_DISC:
+	{
+		struct ble_hs_adv_fields fields;
+
+        int rc = ble_hs_adv_parse_fields(
+            &fields,
+            event->disc.data,
+            event->disc.length_data
+        );
+
+        char name[32] = {0};
+
+        if(rc == 0)
+        {
+            // 完整名称
+            if(fields.name != NULL && fields.name_len > 0)
+            {
+                int len = fields.name_len;
+
+                if(len >= sizeof(name))
+                    len = sizeof(name)-1;
+
+                memcpy(
+                    name,
+                    fields.name,
+                    len
+                );
+
+                name[len] = '\0';
+            }
+            // 简短名称
+            else if(fields.name != NULL)
+            {
+                memcpy(
+                    name,
+                    fields.name,
+                    fields.name_len
+                );
+            }
+        }
 
 
+        ESP_LOGI(TAG,
+            "name=%s RSSI=%d",
+            name,
+            event->disc.rssi
+        );
+        }
+		break;
+	case BLE_GAP_EVENT_DISC_COMPLETE:
+		ESP_LOGI(TAG, "BLE_GAP_EVENT_DISC_COMPLETE_蓝牙扫描完成，发现%d个设备", sizeof(ble_devices));
+		for (auto &dev : ble_devices)
+		{
+		    ESP_LOGI(TAG, "name=%s rssi=%d", dev.name, dev.rssi);
+		}
+		break;
     default:
         break;
 
@@ -72,26 +130,22 @@ static int ble_gap_event(
     return 0;
 }
 
-
-
-
-void ble_advertise(void)
+void bluetooth_advertise(void)
 {
 
     struct ble_gap_adv_params adv_params={};
-
 
     ble_gap_adv_start(
         BLE_OWN_ADDR_PUBLIC,
         NULL,
         BLE_HS_FOREVER,
         &adv_params,
-        ble_gap_event,
+        ble_event_callback,
         NULL
     );
 
 
-    ble_info.status =
+    bluetooth_info.status =
         BLE_STATUS_ADVERTISING;
 
 }
@@ -99,52 +153,28 @@ void ble_advertise(void)
 
 
 
-static void ble_on_sync(void)
+static void bluetooth_on_sync(void)
 {
-    ble_advertise();
+    bluetooth_advertise();
 }
 
+esp_err_t bluetooth_manager_init(const char *device_name) {
+	ESP_LOGI(TAG, "蓝牙功能初始化");
+    memset(&bluetooth_info, 0, sizeof(bluetooth_info));
+    strcpy(bluetooth_info.device_name, device_name);
 
-
-
-
-esp_err_t ble_manager_init(
-        const char *device_name)
-{
-
-    memset(
-        &ble_info,
-        0,
-        sizeof(ble_info)
-    );
-
-
-    strcpy(
-        ble_info.device_name,
-        device_name
-    );
-
-
-    ble_info.status =
-        BLE_STATUS_INIT;
-
-
+    bluetooth_info.status = BLE_STATUS_INIT;
 
     nimble_port_init();
 
-
     ble_svc_gap_init();
-
 
     ble_svc_gap_device_name_set(
         device_name
     );
 
-
     ble_hs_cfg.sync_cb =
-        ble_on_sync;
-
-
+        bluetooth_on_sync;
 
     nimble_port_freertos_init(
         [](void *param)
@@ -153,37 +183,62 @@ esp_err_t ble_manager_init(
         }
     );
 
-
     return ESP_OK;
 }
 
 
 
-void ble_manager_start(void)
+void bluetooth_manager_start(void)
 {
-    ble_advertise();
+    // bluetooth_advertise();
+    
+   struct ble_gap_disc_params params={
+    .itvl = 0x0010,
+    .window = 0x0010,
+    .filter_policy = 0,
+    .limited = 0,
+    .passive = 0,   // 关键
+    .filter_duplicates = 1,
+   };
+
+    int rc =
+        ble_gap_disc(
+            own_addr_type,
+            5000,
+            &params,
+            ble_event_callback,
+            NULL
+        );
+
+
+    if(rc != 0)
+    {
+        ESP_LOGE(TAG,
+            "scan failed:%d",
+            rc);
+    }
 }
 
 
 
-void ble_manager_stop(void)
+void bluetooth_manager_stop(void)
 {
     ble_gap_adv_stop();
 
-    ble_info.status =
+    bluetooth_info.status =
         BLE_STATUS_IDLE;
 }
 
 
 
-ble_status_t ble_manager_get_status(void)
+bluetooth_status_t bluetooth_manager_get_status(void)
 {
-    return ble_info.status;
+    return bluetooth_info.status;
 }
 
 
 
-ble_info_t ble_manager_get_info(void)
+bluetooth_info_t bluetooth_manager_get_info(void)
 {
-    return ble_info;
+    return bluetooth_info;
 }

@@ -157,24 +157,19 @@ static void wifi_event_handler(
             esp_wifi_connect();
             break;
 		case WIFI_EVENT_SCAN_DONE: {
+				ESP_LOGI(TAG, "WiFi扫描完成");
 			    uint16_t ap_count = 0;
 			    memset(ap_info, 0, sizeof(ap_info));
 			    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
 			    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
 			    
 			    eez::Value value = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_WIFI_RECORD_LIST);
-			    
-				eez::ArrayValue *array = value.getArray();
-				WiFi_Record_tValue record = array->values[0];
-				
-			    ESP_LOGI(TAG, "RSSI \t\t%d", record.rssi());
-			    record.active(true);
-			    record.ssid("Gome Wifi");
+			    eez::ArrayValue *array = value.getArray();
 			    for (int i = 0; i < number; i++) {
 			        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
-			        //auto &array = value.getArray();
-			        //eez::Value &item = array->values[i];
-					
+			        WiFi_Record_tValue record = array->values[i];
+			        record.active(true);
+			    	record.ssid((const char *) ap_info[i].ssid);
 			    }
 				break;
 			}
@@ -344,3 +339,4 @@ WiFi_Status wifi_manager_get_status(void)
 {
     return wifi_info.status;
 }
+

@@ -9,6 +9,8 @@ idf_component_register(
         "src/ui/fonts"
         "src/ui/images"
 	REQUIRES 
+        lvgl
 		esp_wifi
 		wifi_manager
+		bluetooth_manager
 )

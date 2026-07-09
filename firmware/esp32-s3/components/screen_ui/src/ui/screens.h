@@ -149,9 +149,14 @@ typedef struct _objects_t {
     lv_obj_t *obj7__obj24__obj0__obj33;
     lv_obj_t *obj7__obj24__obj0__obj34;
     lv_obj_t *obj7__obj24__obj0__obj35;
+    lv_obj_t *obj7__obj24__obj0__obj36;
+    lv_obj_t *obj7__obj24__obj0__obj37;
     lv_obj_t *obj7__obj24__obj1;
     lv_obj_t *obj7__obj24__obj1__obj0;
+    lv_obj_t *obj7__obj24__obj1__obj0__obj0;
+    lv_obj_t *obj7__obj24__obj1__obj0__obj1;
     lv_obj_t *obj7__obj24__obj1__obj1;
+    lv_obj_t *obj7__obj24__obj1__obj2;
     lv_obj_t *obj7__obj24__obj2;
     lv_obj_t *obj7__obj24__obj3;
     lv_obj_t *obj7__obj24__obj4;
@@ -245,6 +250,9 @@ void tick_user_widget_setting_content_network_setting_wi_fi_widget(void *flowSta
 
 void create_user_widget_setting_content_network_setting_bluetooth_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_setting_content_network_setting_bluetooth_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_bluetooth_record_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_bluetooth_record_widget(void *flowState, int startWidgetIndex);
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

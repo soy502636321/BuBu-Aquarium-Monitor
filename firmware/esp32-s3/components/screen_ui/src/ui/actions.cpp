@@ -9,6 +9,7 @@
 #include "lvgl.h"
 
 #include "wifi_manager.h"
+#include "bluetooth_manager.h"
 
 static const char *TAG = "BuBu-Aquarium-Monitor_actions.h";
 
@@ -48,7 +49,6 @@ void action_wifi_scan_start(lv_event_t * e) {
 
 void action_printf_hw(lv_event_t * e) {
 	printf("Hello World!");	
-	
 }
 
 extern "C" void action_switch_wifi_enabled(lv_event_t * e) {
@@ -59,3 +59,13 @@ extern "C" void action_switch_wifi_enabled(lv_event_t * e) {
 		wifi_manager_scan(); 
 	}
 }
+
+extern "C" void action_switch_bluetooth_enabled(lv_event_t * e) {
+	lv_obj_t *switch_obj = lv_event_get_target(e);
+	bool checked = lv_obj_has_state(switch_obj, LV_STATE_CHECKED);
+	if (checked) {
+		ESP_LOGI(TAG, "启用蓝牙扫描...");
+		bluetooth_manager_start();
+	}
+}
+

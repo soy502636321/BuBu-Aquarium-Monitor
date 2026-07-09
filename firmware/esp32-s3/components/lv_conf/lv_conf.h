@@ -1,7 +1,4 @@
-#define LV_CONF_INCLUDE_SIMPLE 1
+#pragma message("******** LV_CONF.H LOADED ********")
 
-#define LV_MEM_CUSTOM 1
-
-#define LV_MEM_CUSTOM_ALLOC malloc
-#define LV_MEM_CUSTOM_FREE free
-#define LV_MEM_CUSTOM_REALLOC realloc
+#define LV_USE_PERF_MONITOR 1
+#define LV_USE_MEM_MONITOR 1

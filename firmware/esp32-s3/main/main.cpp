@@ -24,6 +24,7 @@
 #include "vars.h"
 
 #include "wifi_manager.h"
+#include "bluetooth_manager.h"
 
 #define EXAMPLE_DISPLAY_ROTATION LV_DISP_ROT_90
 #define EXAMPLE_LCD_H_RES 320
@@ -42,49 +43,13 @@ static lv_indev_t *lvgl_touch_indev = NULL;
 
 void lv_port_init(void);
 
-void wifi_task() {
-	/*
-	ESP_LOGI("MEM", "free heap=%"  PRIu32, esp_get_free_heap_size());
-	ESP_LOGI("MEM", "free internal=%zu", heap_caps_get_free_size(MALLOC_CAP_INTERNAL));
-	ESP_LOGI(TAG, "Start Scan WiFi...");
-	ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
-    assert(sta_netif);
-
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-
-    uint16_t number = 10;
-    wifi_ap_record_t ap_info[10];
-    uint16_t ap_count = 0;
-    memset(ap_info, 0, sizeof(ap_info));
-
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-    ESP_ERROR_CHECK(esp_wifi_start());
-
-    esp_wifi_scan_start(NULL, true);
-    ESP_LOGI(TAG, "End Scan WiFi...");
-    
-    ESP_LOGI(TAG, "Max AP number ap_info can hold = %u", number);
-    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_num(&ap_count));
-    ESP_ERROR_CHECK(esp_wifi_scan_get_ap_records(&number, ap_info));
-    ESP_LOGI(TAG, "Total APs scanned = %u, actual AP number ap_info holds = %u", ap_count, number);
-    for (int i = 0; i < number; i++) {
-        ESP_LOGI(TAG, "SSID \t\t%s", ap_info[i].ssid);
-        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
-        print_auth_mode(ap_info[i].authmode);
-        if (ap_info[i].authmode != WIFI_AUTH_WEP) {
-            print_cipher_type(ap_info[i].pairwise_cipher, ap_info[i].group_cipher);
-        }
-        ESP_LOGI(TAG, "Channel \t\t%d", ap_info[i].primary);
-    }
-	*/    
-}
-
 extern "C" void app_main(void)
 {
-
+    ESP_LOGI("MEM - 前",
+        "Internal RAM: %u bytes",
+        heap_caps_get_free_size(
+            MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT
+        ));
     i2c_master_bus_handle_t i2c_bus_handle = bsp_i2c_init();
 
     bsp_display_init(&io_handle, &panel_handle, LCD_BUFFER_SIZE);
@@ -93,6 +58,12 @@ extern "C" void app_main(void)
     bsp_display_set_brightness(100);
     bsp_touch_init(i2c_bus_handle, EXAMPLE_LCD_V_RES,EXAMPLE_LCD_H_RES , 1);
     lv_port_init();
+    
+        ESP_LOGI("MEM - 后",
+        "Internal RAM: %u bytes",
+        heap_caps_get_free_size(
+            MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT
+        ));
     
     esp_err_t ret = nvs_flash_init();
 
@@ -105,17 +76,24 @@ extern "C" void app_main(void)
 
     ESP_ERROR_CHECK(ret);
 
-    wifi_manager_init(); // 初始化WiFi
+	// WiFi初始化
+    // wifi_manager_init(); 
+    // 蓝牙初始化
+    bluetooth_manager_init("BuBu-Aquarium-Monitor-ID");
 	
     if (lvgl_port_lock(0))
     {
         ui_init();
+        lvgl_port_unlock();
     }
     
     while (1) {
-        lv_timer_handler();  // LVGL刷新
-        ui_tick();           // ⭐ Flow核心驱动
-        vTaskDelay(pdMS_TO_TICKS(5));        
+        if(lvgl_port_lock(100))
+        {
+            ui_tick();
+            lvgl_port_unlock();
+        }
+	    vTaskDelay(pdMS_TO_TICKS(25));        
 	}
 }
 
