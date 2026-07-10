@@ -19,7 +19,12 @@ extern void action_device_firmware_ota(lv_event_t * e);
 extern void action_wifi_scan_start(lv_event_t * e);
 extern void action_printf_hw(lv_event_t * e);
 extern void action_switch_wifi_enabled(lv_event_t * e);
-extern void action_switch_bluetooth_enabled(lv_event_t * e);
+extern void action_connect_bluetooth(lv_event_t * e);
+extern void action_bluetooth_record_update_event(lv_event_t * e);
+extern void action_bluetooth_start_scan(lv_event_t * e);
+extern void action_bluetooth_stop_scan(lv_event_t * e);
+
+void actions_init();
 
 #ifdef __cplusplus
 }

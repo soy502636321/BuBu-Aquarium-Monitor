@@ -7,4 +7,5 @@ idf_component_register(
         bt
         nvs_flash
         esp_timer
+        screen_ui
 )

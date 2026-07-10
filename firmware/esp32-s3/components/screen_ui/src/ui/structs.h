@@ -14,14 +14,14 @@ enum FlowStructures {
     FLOW_STRUCTURE_MESSAGE_T = 16384,
     FLOW_STRUCTURE_DEVICE_T = 16385,
     FLOW_STRUCTURE_WI_FI_RECORD_T = 16386,
-    FLOW_STRUCTURE_BLUETOOTH_RECORD_T = 16387
+    FLOW_STRUCTURE_BLUETOOTH_RECORD = 16387
 };
 
 enum FlowArrayOfStructures {
     FLOW_ARRAY_OF_STRUCTURE_MESSAGE_T = 81920,
     FLOW_ARRAY_OF_STRUCTURE_DEVICE_T = 81921,
     FLOW_ARRAY_OF_STRUCTURE_WI_FI_RECORD_T = 81922,
-    FLOW_ARRAY_OF_STRUCTURE_BLUETOOTH_RECORD_T = 81923
+    FLOW_ARRAY_OF_STRUCTURE_BLUETOOTH_RECORD = 81923
 };
 
 enum Message_tFlowStructureFields {
@@ -46,11 +46,11 @@ enum WiFi_Record_tFlowStructureFields {
     FLOW_STRUCTURE_WI_FI_RECORD_T_NUM_FIELDS
 };
 
-enum Bluetooth_Record_tFlowStructureFields {
-    FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_NAME = 0,
-    FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_RSSI = 1,
-    FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_ACTIVE = 2,
-    FLOW_STRUCTURE_BLUETOOTH_RECORD_T_NUM_FIELDS
+enum BluetoothRecordFlowStructureFields {
+    FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_NAME = 0,
+    FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_RSSI = 1,
+    FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_ACTIVE = 2,
+    FLOW_STRUCTURE_BLUETOOTH_RECORD_NUM_FIELDS
 };
 
 struct Message_tValue {
@@ -168,41 +168,41 @@ struct WiFi_Record_tValue {
 };
 
 typedef ArrayOf<WiFi_Record_tValue, FLOW_ARRAY_OF_STRUCTURE_WI_FI_RECORD_T> ArrayOfWiFi_Record_tValue;
-struct Bluetooth_Record_tValue {
+struct BluetoothRecordValue {
     Value value;
     
-    Bluetooth_Record_tValue() {
-        value = Value::makeArrayRef(FLOW_STRUCTURE_BLUETOOTH_RECORD_T_NUM_FIELDS, FLOW_STRUCTURE_BLUETOOTH_RECORD_T, 0);
+    BluetoothRecordValue() {
+        value = Value::makeArrayRef(FLOW_STRUCTURE_BLUETOOTH_RECORD_NUM_FIELDS, FLOW_STRUCTURE_BLUETOOTH_RECORD, 0);
     }
     
-    Bluetooth_Record_tValue(Value value) : value(value) {}
+    BluetoothRecordValue(Value value) : value(value) {}
     
     operator Value() const { return value; }
     
     operator bool() const { return value.isArray(); }
     
     const char *name() {
-        return value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_NAME].getString();
+        return value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_NAME].getString();
     }
     void name(const char *name) {
-        value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_NAME] = StringValue(name);
+        value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_NAME] = StringValue(name);
     }
     
     int rssi() {
-        return value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_RSSI].getInt();
+        return value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_RSSI].getInt();
     }
     void rssi(int rssi) {
-        value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_RSSI] = IntegerValue(rssi);
+        value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_RSSI] = IntegerValue(rssi);
     }
     
     bool active() {
-        return value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_ACTIVE].getBoolean();
+        return value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_ACTIVE].getBoolean();
     }
     void active(bool active) {
-        value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_T_FIELD_ACTIVE] = BooleanValue(active);
+        value.getArray()->values[FLOW_STRUCTURE_BLUETOOTH_RECORD_FIELD_ACTIVE] = BooleanValue(active);
     }
 };
 
-typedef ArrayOf<Bluetooth_Record_tValue, FLOW_ARRAY_OF_STRUCTURE_BLUETOOTH_RECORD_T> ArrayOfBluetooth_Record_tValue;
+typedef ArrayOf<BluetoothRecordValue, FLOW_ARRAY_OF_STRUCTURE_BLUETOOTH_RECORD> ArrayOfBluetoothRecordValue;
 
 #endif /*EEZ_LVGL_UI_STRUCTS_H*/

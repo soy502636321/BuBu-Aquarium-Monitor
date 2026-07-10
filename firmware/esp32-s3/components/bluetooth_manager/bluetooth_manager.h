@@ -3,50 +3,69 @@
 #include <stdint.h>
 #include "esp_err.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define BLUETOOTH_DEVICE_MAX_SIZE 10
 
+struct bluetooth_device_t {
+  char name[32];
+  uint8_t addr[6];
+  int rssi;
+};
 
-typedef enum
-{
-    BLE_STATUS_IDLE = 0,
-    BLE_STATUS_INIT,
-    BLE_STATUS_ADVERTISING,
-    BLE_STATUS_CONNECTED,
-    BLE_STATUS_DISCONNECTED,
-    BLE_STATUS_ERROR
+enum bluetooth_status_t {
+  BLE_STATUS_INIT,
+  BLE_STATUS_IDLE,
+  BLE_STATUS_CONNECTED,
+  BLE_STATUS_DISCONNECTED,
+  BLE_STATUS_ADVERTISING
+};
 
-} bluetooth_status_t;
+class BluetoothManager {
 
+public:
+  // 获取单例
+  static BluetoothManager &instance();
 
-typedef struct
-{
-    bluetooth_status_t status;
-    uint16_t conn_id;
-    char device_name[32];
-} bluetooth_info_t;
+  // 初始化
+  esp_err_t init(const char *device_name);
 
+  // 开始扫描
+  void start_scan();
 
+  // 停止
+  void stop_scan();
 
-esp_err_t bluetooth_manager_init(
-        const char *device_name
-);
+  bluetooth_status_t getStatus();
 
+  bluetooth_device_t *getDevices();
 
-void bluetooth_manager_start(void);
+  int getDeviceCount();
 
+private:
+  // 构造私有化
+  BluetoothManager();
 
-void bluetooth_manager_stop(void);
+  // 禁止复制
+  BluetoothManager(const BluetoothManager &) = delete;
 
+  BluetoothManager &operator=(const BluetoothManager &) = delete;
 
-bluetooth_status_t bluetooth_manager_get_status(void);
+private:
+  static int gapEventHandler(struct ble_gap_event *event, void *arg);
 
+  int handleEvent(struct ble_gap_event *event);
 
-bluetooth_info_t bluetooth_manager_get_info(void);
+  void advertise();
 
+  void onSync();
 
+private:
+  char device_name[32];
 
-#ifdef __cplusplus
-}
-#endif
+  bluetooth_status_t status;
+
+  uint16_t conn_id;
+
+  bluetooth_device_t device_list[BLUETOOTH_DEVICE_MAX_SIZE];
+
+  int device_count;
+};

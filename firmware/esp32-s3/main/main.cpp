@@ -79,7 +79,7 @@ extern "C" void app_main(void)
 	// WiFi初始化
     // wifi_manager_init(); 
     // 蓝牙初始化
-    bluetooth_manager_init("BuBu-Aquarium-Monitor-ID");
+    BluetoothManager::instance().init("BuBu-Aquarium-Monitor");
 	
     if (lvgl_port_lock(0))
     {
