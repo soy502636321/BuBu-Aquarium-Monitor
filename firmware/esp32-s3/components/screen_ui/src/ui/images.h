@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-extern const lv_img_dsc_t img_app_home;
+extern const lv_img_dsc_t img_icon_home_32;
 extern const lv_img_dsc_t img_icon_device_water_level;
 extern const lv_img_dsc_t img_icon_device_water_temp;
 extern const lv_img_dsc_t img_icon_device_water_ph;
@@ -16,9 +16,10 @@ extern const lv_img_dsc_t img_icon_water_temp_32;
 extern const lv_img_dsc_t img_icon_unknown_32;
 extern const lv_img_dsc_t img_icon_water_level_32;
 extern const lv_img_dsc_t img_icon_water_ph_32;
-extern const lv_img_dsc_t img_app_device_32;
-extern const lv_img_dsc_t img_app_message_32;
-extern const lv_img_dsc_t img_app_setting_32;
+extern const lv_img_dsc_t img_icon_device_32;
+extern const lv_img_dsc_t img_icon_message_32;
+extern const lv_img_dsc_t img_icon_setting_32;
+extern const lv_img_dsc_t img_icon_logo_32;
 
 #ifndef EXT_IMG_DESC_T
 #define EXT_IMG_DESC_T
@@ -28,7 +29,7 @@ typedef struct _ext_img_desc_t {
 } ext_img_desc_t;
 #endif
 
-extern const ext_img_desc_t images[12];
+extern const ext_img_desc_t images[13];
 
 #ifdef __cplusplus
 }

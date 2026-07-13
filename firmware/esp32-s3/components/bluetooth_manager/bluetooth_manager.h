@@ -51,6 +51,10 @@ private:
 
 private:
   static int gapEventHandler(struct ble_gap_event *event, void *arg);
+  
+  void handleConnectEvent(struct ble_gap_event *event);
+  
+  void handleDiscEvent(struct ble_gap_event *event);
 
   int handleEvent(struct ble_gap_event *event);
 

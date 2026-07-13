@@ -1,0 +1,15 @@
+/*
+ * 自动化入口
+ *
+ *  Created on: 2026年7月13日
+ *      Author: Hu
+ */
+
+#ifndef COMPONENTS_AUTOMATION_INCLUDE_AUTOMATION_H_
+#define COMPONENTS_AUTOMATION_INCLUDE_AUTOMATION_H_
+
+
+
+
+
+#endif /* COMPONENTS_AUTOMATION_INCLUDE_AUTOMATION_H_ */

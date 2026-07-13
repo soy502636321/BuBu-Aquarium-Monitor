@@ -59,7 +59,9 @@ esp_err_t BluetoothManager::init(const char *name) {
   return ESP_OK;
 }
 
-void BluetoothManager::onSync() { advertise(); }
+void BluetoothManager::onSync() { 
+	// advertise(); 
+}
 
 void BluetoothManager::advertise() {
 
@@ -74,7 +76,6 @@ void BluetoothManager::advertise() {
 void BluetoothManager::start_scan() {
 
   device_count = 0;
-
   struct ble_gap_disc_params params = {.itvl = 0x0010,
                                        .window = 0x0010,
                                        .filter_policy = 0,
@@ -82,8 +83,7 @@ void BluetoothManager::start_scan() {
                                        .passive = 0,
                                        .filter_duplicates = 1};
 
-  int rc =
-      ble_gap_disc(BLE_OWN_ADDR_PUBLIC, 5000, &params, gapEventHandler, this);
+  int rc = ble_gap_disc(BLE_OWN_ADDR_PUBLIC, 5000, &params, gapEventHandler, this);
 
   ESP_LOGI(TAG, "scan result=%d", rc);
 }
@@ -101,20 +101,39 @@ int BluetoothManager::gapEventHandler(struct ble_gap_event *event, void *arg) {
   return manager->handleEvent(event);
 }
 
+void BluetoothManager::handleConnectEvent(struct ble_gap_event *event) {
+  if (event->connect.status == 0) {
+    this->status = BLE_STATUS_CONNECTED;
+    this->conn_id = event->connect.conn_handle;
+    ESP_LOGI(TAG, "connected");
+  }
+}
+
+void BluetoothManager::handleDiscEvent(struct ble_gap_event *event) {
+  struct ble_hs_adv_fields fields;
+  int rc = ble_hs_adv_parse_fields(&fields, event->disc.data, event->disc.length_data);
+  if (rc == 0 && fields.name != NULL) {
+    if (device_count < BLUETOOTH_DEVICE_MAX_SIZE) {
+      auto &dev = device_list[device_count++];
+      memset(&dev, 0, sizeof(dev));
+      memcpy(dev.addr, event->disc.addr.val, 6);
+      memcpy(dev.name, fields.name, fields.name_len);
+      dev.rssi = event->disc.rssi;
+      ESP_LOGI(TAG,
+               "设备名称:[%s] 设备地址:[%02X:%02X:%02X:%02X:%02X:%02X] "
+               "设备信号:[%d]",
+               dev.name, dev.addr[0], dev.addr[1], dev.addr[2], dev.addr[3],
+               dev.addr[4], dev.addr[5], dev.rssi);
+    }
+  }
+}
+
 int BluetoothManager::handleEvent(struct ble_gap_event *event) {
 
   switch (event->type) {
 
   case BLE_GAP_EVENT_CONNECT: {
-
-    if (event->connect.status == 0) {
-      status = BLE_STATUS_CONNECTED;
-
-      conn_id = event->connect.conn_handle;
-
-      ESP_LOGI(TAG, "connected");
-    }
-
+	this->handleConnectEvent(event);
     break;
   }
   case BLE_GAP_EVENT_DISC: {

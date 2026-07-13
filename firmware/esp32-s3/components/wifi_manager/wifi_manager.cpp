@@ -56,7 +56,7 @@ static void wifi_event_handler(
 			    eez::ArrayValue *array = value.getArray();
 			    for (int i = 0; i < number; i++) {
 			        ESP_LOGI(TAG, "RSSI \t\t%d", ap_info[i].rssi);
-			        WiFi_Record_tValue record = array->values[i];
+			        WiFiRecordValue record = array->values[i];
 			        record.active(true);
 			    	record.ssid((const char *) ap_info[i].ssid);
 			    }

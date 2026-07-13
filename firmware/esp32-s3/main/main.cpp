@@ -7,6 +7,7 @@
 
 #include "esp_wifi.h"
 #include "esp_log.h"
+#include "esp_heap_caps.h"
 
 #include "bsp_i2c.h"
 #include "bsp_display.h"
@@ -42,6 +43,25 @@ static lv_disp_t *lvgl_disp;
 static lv_indev_t *lvgl_touch_indev = NULL;
 
 void lv_port_init(void);
+
+void monitor_memory(void)
+{
+    // 监控 PSRAM 使用情况
+    size_t psram_total = heap_caps_get_total_size(MALLOC_CAP_SPIRAM);
+    size_t psram_free = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+    size_t psram_used = psram_total - psram_free;
+    
+    ESP_LOGI("MEM", "PSRAM: Total=%u KB, Used=%u KB, Free=%u KB", 
+             psram_total / 1024, psram_used / 1024, psram_free / 1024);
+    
+    // 监控内部 SRAM 使用情况
+    size_t sram_total = heap_caps_get_total_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    size_t sram_free = heap_caps_get_free_size(MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
+    size_t sram_used = sram_total - sram_free;
+    
+    ESP_LOGI("MEM", "SRAM: Total=%u KB, Used=%u KB, Free=%u KB", 
+             sram_total / 1024, sram_used / 1024, sram_free / 1024);
+}
 
 extern "C" void app_main(void)
 {
@@ -93,7 +113,8 @@ extern "C" void app_main(void)
             ui_tick();
             lvgl_port_unlock();
         }
-	    vTaskDelay(pdMS_TO_TICKS(25));        
+	    vTaskDelay(pdMS_TO_TICKS(25));
+	    // monitor_memory();        
 	}
 }
 

@@ -24,6 +24,17 @@ extern void action_bluetooth_record_update_event(lv_event_t * e);
 extern void action_bluetooth_start_scan(lv_event_t * e);
 extern void action_bluetooth_stop_scan(lv_event_t * e);
 
+enum {
+    ACTION_ON_PWM_VALUE_CHANGED_PROPERTY_PWD_INDEX,
+    ACTION_ON_PWM_VALUE_CHANGED_PROPERTY_PWM_VALUE,
+};
+extern void action_on_pwm_value_changed(lv_event_t * e);
+
+enum {
+    ACTION_ON_SWITCH_VALUE_CHANGED_PROPERTY_SWITCH_CHECKED,
+};
+extern void action_on_switch_value_changed(lv_event_t * e);
+
 void actions_init();
 
 #ifdef __cplusplus

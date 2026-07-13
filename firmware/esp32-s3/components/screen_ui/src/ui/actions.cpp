@@ -9,11 +9,12 @@
 #include "vars.h"
 #include <cstdio>
 #include <stdint.h>
+#include <sys/_intsup.h>
 
 #include "bluetooth_manager.h"
 #include "wifi_manager.h"
 
-static const char *TAG = "BuBu-Aquarium-Monitor_actions.h";
+static const char *TAG = "BuBu-Aquarium-Monitor[ui-actions]";
 
 lv_event_code_t MY_EVENT_UPDATE_DEVICE =
     (lv_event_code_t)(LV_EVENT_VALUE_CHANGED + 1);
@@ -77,7 +78,7 @@ extern "C" void action_bluetooth_stop_scan(lv_event_t *e) {
     eez::Value value = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_BLUETOOTH_RECORD_LIST);
     eez::ArrayValue *array = value.getArray();
 	for (int i = 0; i < array->arraySize; i++) {
-    BluetoothRecordValue record = array->values[i];  // 也可以直接操作
+    	BluetoothRecordValue record = array->values[i];  // 也可以直接操作
 		printf("action_bluetooth_stop_scan......%s", record.name());
 		record.active(false);
 	}
@@ -88,6 +89,16 @@ extern "C" void action_connect_bluetooth(lv_event_t *e) {
 }
 
 extern "C" void action_bluetooth_record_update_event(lv_event_t *e) {}
+
+extern "C" void action_on_pwm_value_changed(lv_event_t *e) {
+	  eez::Value pwm_value = eez::flow::getUserProperty(ACTION_ON_PWM_VALUE_CHANGED_PROPERTY_PWM_VALUE);
+	  ESP_LOGI(TAG, "获取值%d", pwm_value.getInt());
+}
+
+extern "C" void action_on_switch_value_changed(lv_event_t *e) {
+	eez::Value checked_value = eez::flow::getUserProperty(ACTION_ON_SWITCH_VALUE_CHANGED_PROPERTY_SWITCH_CHECKED);
+	ESP_LOGI(TAG, "获取开关开启状态=%s", checked_value.getBoolean() ? "开启" : "关闭");
+}
 
 void actions_init() {
   lv_obj_add_event_cb(objects.main_screen, action_bluetooth_record_update_event,

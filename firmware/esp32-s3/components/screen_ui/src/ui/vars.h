@@ -47,6 +47,28 @@ typedef enum {
     WiFi_Status_FAILED = 6
 } WiFi_Status;
 
+typedef enum {
+    MessageStatus_MSG_STATUS_UNREAD = 0,
+    MessageStatus_MSG_STATUS_READ = 1,
+    MessageStatus_MSG_STATUS_ARCHIVED = 2,
+    MessageStatus_MSG_STATUS_DELETED = 3
+} MessageStatus;
+
+typedef enum {
+    MessageType_NOTIFICATION = 0,
+    MessageType_ALARM = 1,
+    MessageType_WARNING = 2,
+    MessageType_INFO = 3,
+    MessageType_ERROR = 4
+} MessageType;
+
+typedef enum {
+    DeviceDataStatus_Unknown = 0,
+    DeviceDataStatus_Normal = 1,
+    DeviceDataStatus_Warning = 2,
+    DeviceDataStatus_Alarm = 3
+} DeviceDataStatus;
+
 // Flow global variables
 
 enum FlowGlobalVariables {
@@ -56,8 +78,8 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_DEVICE_CONTENT_HIDDEN = 3,
     FLOW_GLOBAL_VARIABLE_SETTING_CONTENT_HIDDEN = 4,
     FLOW_GLOBAL_VARIABLE_MESSAGE_QUEUE_INDEX = 5,
-    FLOW_GLOBAL_VARIABLE_MESSAGE_QUEUE = 6,
-    FLOW_GLOBAL_VARIABLE_DEVICE_QUEUE = 7,
+    FLOW_GLOBAL_VARIABLE_MESSAGE_RECORD_LIST = 6,
+    FLOW_GLOBAL_VARIABLE_DEVICE_LIST = 7,
     FLOW_GLOBAL_VARIABLE_TXT_UNKNOWN = 8,
     FLOW_GLOBAL_VARIABLE_TXT_WATER_TEMP = 9,
     FLOW_GLOBAL_VARIABLE_TXT_DEVICE_NAME = 10,
@@ -80,9 +102,14 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_TXT_RETENTION_PERIOD = 27,
     FLOW_GLOBAL_VARIABLE_TXT_SCREEN_BRIGHTNESS = 28,
     FLOW_GLOBAL_VARIABLE_TXT_AUTO_BRIGHTNESS = 29,
-    FLOW_GLOBAL_VARIABLE_WIFI_RECORD_LIST = 30,
-    FLOW_GLOBAL_VARIABLE_WIFI_RECORD_CONNECTED = 31,
-    FLOW_GLOBAL_VARIABLE_BLUETOOTH_RECORD_LIST = 32
+    FLOW_GLOBAL_VARIABLE_WIFI_ENABLED = 30,
+    FLOW_GLOBAL_VARIABLE_WIFI_RECORD_LIST = 31,
+    FLOW_GLOBAL_VARIABLE_WIFI_RECORD_CONNECTED = 32,
+    FLOW_GLOBAL_VARIABLE_BLUETOOTH_RECORD_LIST = 33,
+    FLOW_GLOBAL_VARIABLE_BLUETOOTH_ENABLED = 34,
+    FLOW_GLOBAL_VARIABLE_DEVICE_DATA_LIST = 35,
+    FLOW_GLOBAL_VARIABLE_DEVICE_PWM_LIST = 36,
+    FLOW_GLOBAL_VARIABLE_DEVICE_SWITCH_LIST = 37
 };
 
 // Native global variables
@@ -91,8 +118,6 @@ extern int32_t get_var_content_page();
 extern void set_var_content_page(int32_t value);
 extern WiFi_Status get_var_wifi_status();
 extern void set_var_wifi_status(WiFi_Status value);
-extern bool get_var_wifi_enabled();
-extern void set_var_wifi_enabled(bool value);
 
 #ifdef __cplusplus
 }
