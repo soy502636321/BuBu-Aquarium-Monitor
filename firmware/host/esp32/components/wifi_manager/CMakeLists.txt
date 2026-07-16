@@ -1,5 +1,6 @@
 idf_component_register(
-    SRCS 
+    SRCS
+    	"src/wifi_event.cpp" 
         "src/wifi_manager.cpp"
     INCLUDE_DIRS
         "include"
@@ -8,5 +9,6 @@ idf_component_register(
         esp_event
         esp_netif
         nvs_flash
+        event_bus
         screen_ui
 )

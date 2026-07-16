@@ -47,17 +47,6 @@ static void event_handler_cb_menu_fcuntion_btn_icon_image(lv_event_t *e) {
     }
 }
 
-static void event_handler_cb_home_content_obj7(lv_event_t *e) {
-    lv_event_code_t event = lv_event_get_code(e);
-    void *flowState = lv_event_get_user_data(e);
-    (void)flowState;
-    
-    if (event == LV_EVENT_CLICKED) {
-        e->user_data = (void *)0;
-        action_printf_hw(e);
-    }
-}
-
 static void event_handler_cb_message_content_obj21(lv_event_t *e) {
     lv_event_code_t event = lv_event_get_code(e);
     void *flowState = lv_event_get_user_data(e);
@@ -287,12 +276,12 @@ static void event_handler_cb_setting_content_network_setting_wi_fi_widget_obj1(l
         lv_obj_t *ta = lv_event_get_target(e);
         if (tick_value_change_obj != ta) {
             bool value = lv_obj_has_state(ta, LV_STATE_CHECKED);
-            assignBooleanProperty(flowState, 3, 4, value, "Failed to assign Checked state");
+            assignBooleanProperty(flowState, 3, 3, value, "Failed to assign Checked state");
         }
     }
     if (event == LV_EVENT_VALUE_CHANGED) {
         e->user_data = (void *)0;
-        action_switch_wifi_enabled(e);
+        flowPropagateValueLVGLEvent(flowState, 3, 0, e);
     }
 }
 
@@ -1024,7 +1013,6 @@ void create_user_widget_home_content(lv_obj_t *parent_obj, void *flowState, int 
                             lv_obj_set_style_bg_opa(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
                             lv_obj_set_style_border_width(obj, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
                             create_user_widget_data_card(obj, getFlowState(flowState, 2), startWidgetIndex + 1);
-                            lv_obj_add_event_cb(obj, event_handler_cb_home_content_obj7, LV_EVENT_ALL, flowState);
                         }
                         {
                             lv_obj_t *obj = lv_obj_create(parent_obj);
@@ -3682,20 +3670,7 @@ void tick_user_widget_setting_content_network_setting_wi_fi_widget(void *flowSta
         }
     }
     {
-        bool new_val = evalBooleanProperty(flowState, 3, 3, "Failed to evaluate Hidden flag");
-        bool cur_val = lv_obj_has_flag(((lv_obj_t **)&objects)[startWidgetIndex + 2], LV_OBJ_FLAG_HIDDEN);
-        if (new_val != cur_val) {
-            tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 2];
-            if (new_val) {
-                lv_obj_add_flag(((lv_obj_t **)&objects)[startWidgetIndex + 2], LV_OBJ_FLAG_HIDDEN);
-            } else {
-                lv_obj_clear_flag(((lv_obj_t **)&objects)[startWidgetIndex + 2], LV_OBJ_FLAG_HIDDEN);
-            }
-            tick_value_change_obj = NULL;
-        }
-    }
-    {
-        bool new_val = evalBooleanProperty(flowState, 3, 4, "Failed to evaluate Checked state");
+        bool new_val = evalBooleanProperty(flowState, 3, 3, "Failed to evaluate Checked state");
         bool cur_val = lv_obj_has_state(((lv_obj_t **)&objects)[startWidgetIndex + 2], LV_STATE_CHECKED);
         if (new_val != cur_val) {
             tick_value_change_obj = ((lv_obj_t **)&objects)[startWidgetIndex + 2];

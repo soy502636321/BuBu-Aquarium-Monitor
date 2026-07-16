@@ -1,16 +1,16 @@
 {
   "navigation": {
     "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/0",
-    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/7",
-    "selectedActionObject": "[LVGL-DEMO.eez-project]:/actions/15",
-    "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/8",
-    "selectedStructureObject": "[LVGL-DEMO.eez-project]:/variables/structures/1",
+    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/17",
+    "selectedActionObject": "[LVGL-DEMO.eez-project]:/actions/20",
+    "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/33",
+    "selectedStructureObject": "[LVGL-DEMO.eez-project]:/variables/structures/2",
     "selectedEnumObject": "[LVGL-DEMO.eez-project]:/variables/enums/5",
     "selectedThemeObject": "[LVGL-DEMO.eez-project]:/themes/0",
     "selectedFontObject": "[LVGL-DEMO.eez-project]:/fonts/0",
     "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/6",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Global"
+      "variables-tab/sub-navigation/selected-item": "Structs"
     }
   },
   "layoutModel": {
@@ -132,7 +132,7 @@
                 {
                   "type": "tabset",
                   "id": "#c0a5d074-d7be-4119-971e-99b360b73129",
-                  "weight": 1.0538536082151955,
+                  "weight": 1.072079357143566,
                   "selected": 1,
                   "enableClose": false,
                   "children": [
@@ -165,7 +165,7 @@
                 {
                   "type": "tabset",
                   "id": "#24b9b613-47e0-4737-8be3-ca7fd123eeea",
-                  "weight": 1.0075022288941813,
+                  "weight": 0.9892764799658108,
                   "enableClose": false,
                   "children": [
                     {
@@ -201,17 +201,17 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 48.874741168835186,
-              "selected": 23,
+              "selected": 14,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
                 {
                   "type": "tab",
                   "id": "#61472e28-b677-4cf9-ac5e-0c76067c22db",
-                  "name": "DeviceCard",
+                  "name": "SettingContent_NetworkSettingWidget",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/11",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/16",
                     "permanent": false
                   },
                   "icon": "svg:user_widget"
@@ -274,10 +274,10 @@
                 {
                   "type": "tab",
                   "id": "#d3913067-0540-4622-9343-47708e51f24d",
-                  "name": "on_bluetooth_status_switch",
+                  "name": "on_wifi_status_switch",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/actions/15",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/actions/20",
                     "permanent": false
                   },
                   "icon": "material:code"
@@ -296,7 +296,7 @@
                 {
                   "type": "tab",
                   "id": "#6a531ad8-6309-4d78-87a2-80a50f2cea7a",
-                  "name": "BluetoothRecordWidget",
+                  "name": "WiFiRecordWidget",
                   "component": "editor",
                   "config": {
                     "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/20",
@@ -341,7 +341,7 @@
                 {
                   "type": "tab",
                   "id": "#cb2f183f-14c1-4b8c-b9e7-0082aadb492c",
-                  "name": "SettingContent_NetworkSetting_WiFiWidget",
+                  "name": "SettingContent_NetworkSetting_BluetoothWidget",
                   "component": "editor",
                   "config": {
                     "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/18",
@@ -363,7 +363,7 @@
                 {
                   "type": "tab",
                   "id": "#1aae9914-5936-4f46-915f-f378b075caea",
-                  "name": "SettingContent_NetworkSettingWidget",
+                  "name": "SettingContent_NetworkSetting_WiFiWidget",
                   "component": "editor",
                   "config": {
                     "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/17",
@@ -462,7 +462,7 @@
                 {
                   "type": "tab",
                   "id": "#d3445358-3347-4d91-9184-a12510f2d3ff",
-                  "name": "DeviceShortcutContent",
+                  "name": "MessageCard",
                   "component": "editor",
                   "config": {
                     "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/7",
@@ -1593,11 +1593,7 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "1": {
-            "1": {
-              "$selected": true
-            }
-          }
+          "1": {}
         }
       },
       "transform": {
@@ -1639,11 +1635,7 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "0": {
-            "2": {
-              "$selected": true
-            }
-          },
+          "0": {},
           "1": {}
         }
       },
@@ -1755,15 +1747,18 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
+          "1": {},
           "2": {
-            "$selected": true
+            "1": {
+              "$selected": true
+            }
           }
         }
       },
       "transform": {
         "translate": {
           "x": -145,
-          "y": -140
+          "y": -40
         },
         "scale": 1
       },
@@ -1778,13 +1773,17 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "$selected": true
+          "0": {
+            "1": {
+              "$selected": true
+            }
+          }
         }
       },
       "transform": {
         "translate": {
           "x": -145,
-          "y": -140
+          "y": -40
         },
         "scale": 1
       },
@@ -1912,15 +1911,7 @@
     },
     "[LVGL-DEMO.eez-project]:/userWidgets/11[flow-state]": {
       "selectionFront": {},
-      "selectionBack": {
-        "0": {
-          "1": {
-            "0": {
-              "$selected": true
-            }
-          }
-        }
-      },
+      "selectionBack": {},
       "transform": {
         "translate": {
           "x": -40,
@@ -2037,6 +2028,46 @@
         "position": 0,
         "secondToPx": 200,
         "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/7[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/18[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/19[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/20[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
       }
     }
   },

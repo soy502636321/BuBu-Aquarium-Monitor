@@ -61,7 +61,7 @@ extern "C" void action_switch_wifi_enabled(lv_event_t *e) {
   bool checked = lv_obj_has_state(switch_obj, LV_STATE_CHECKED);
   if (checked) {
     ESP_LOGI(TAG, "启用WiFi，开始扫描...");
-    wifi_manager_scan();
+    WiFiManager::instance().scan_start();
   }
 }
 
@@ -109,6 +109,13 @@ extern "C" void action_on_switch_value_changed(lv_event_t *e) {
         0
     );
 }
+
+extern "C" void action_on_wifi_enabled(lv_event_t * e) {
+	ESP_LOGI(TAG, "启用WiFi，开始扫描WiFi...");
+    WiFiManager::instance().scan_start();
+};
+extern "C" void action_on_wifi_disabled(lv_event_t * e) {};
+extern "C" void action_on_wifi_status_switch(lv_event_t * e) {};
 
 void actions_init() {
   lv_obj_add_event_cb(objects.main_screen, action_bluetooth_record_update_event,

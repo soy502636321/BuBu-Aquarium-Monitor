@@ -100,7 +100,7 @@ extern "C" void app_main(void)
 
 	EventBus::instance().init();
 	// WiFi初始化
-    // wifi_manager_init(); 
+    WiFiManager::instance().init(); 
     // 蓝牙初始化
     BluetoothManager::instance().init("BuBu-Aquarium-Monitor");
     
@@ -122,8 +122,6 @@ extern "C" void app_main(void)
 	    // monitor_memory();        
 	}
 }
-
-
 
 static void touchpad_read(lv_indev_drv_t *indev_drv, lv_indev_data_t *data)
 {
