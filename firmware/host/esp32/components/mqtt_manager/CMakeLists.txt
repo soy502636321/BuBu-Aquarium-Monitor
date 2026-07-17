@@ -1,10 +1,13 @@
 idf_component_register(
     SRCS
+    	"src/mqtt_config.cpp"
         "src/mqtt_manager.cpp"
     INCLUDE_DIRS
         "include"
     REQUIRES
         nvs_flash
         esp_timer
-        mqtt           
+        mqtt
+        json
+        host_info          
 )

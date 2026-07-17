@@ -1,12 +1,12 @@
 /*
- * device_event.h
+ * wifi_event.h
  *
  *  Created on: 2026年7月15日
  *      Author: Hu
  */
 
-#ifndef COMPONENTS_DEVICE_MANAGER_INCLUDE_DEVICE_EVENT_H_
-#define COMPONENTS_DEVICE_MANAGER_INCLUDE_DEVICE_EVENT_H_
+#ifndef COMPONENTS_DEVICE_MANAGER_INCLUDE_WIFI_EVENT_H_
+#define COMPONENTS_DEVICE_MANAGER_INCLUDE_WIFI_EVENT_H_
 
 #include "esp_event.h"
 #include <stdint.h>
@@ -21,4 +21,4 @@ enum WiFiUserEvent : uint8_t
 };
 
 
-#endif /* COMPONENTS_DEVICE_MANAGER_INCLUDE_DEVICE_EVENT_H_ */
+#endif /* COMPONENTS_DEVICE_MANAGER_INCLUDE_WIFI_EVENT_H_ */

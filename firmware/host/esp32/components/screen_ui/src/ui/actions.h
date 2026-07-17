@@ -39,6 +39,11 @@ extern void action_on_wifi_enabled(lv_event_t * e);
 extern void action_on_wifi_disabled(lv_event_t * e);
 extern void action_on_wifi_status_switch(lv_event_t * e);
 
+enum {
+    ACTION_ON_WIFI_CONNECT_PROPERTY_RECORD_INDEX,
+};
+extern void action_on_wifi_connect(lv_event_t * e);
+
 void actions_init();
 
 #ifdef __cplusplus

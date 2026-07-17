@@ -1,0 +1,11 @@
+idf_component_register(
+    SRCS
+    	"src/host_info.cpp"
+    INCLUDE_DIRS
+        "include"
+    REQUIRES
+        esp_event
+        esp_netif
+        nvs_flash
+        event_bus
+)

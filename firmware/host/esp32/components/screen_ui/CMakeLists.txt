@@ -10,9 +10,9 @@ idf_component_register(
         "src/ui/images"
 	REQUIRES 
         lvgl
+        event_bus
 		esp_wifi
 		wifi_manager
 		bluetooth_manager
-		event_bus
 		device_manager
 )

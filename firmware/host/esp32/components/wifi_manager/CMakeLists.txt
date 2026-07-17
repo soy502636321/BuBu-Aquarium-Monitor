@@ -1,13 +1,14 @@
 idf_component_register(
     SRCS
+    	"src/wifi_manager.cpp"
     	"src/wifi_event.cpp" 
-        "src/wifi_manager.cpp"
     INCLUDE_DIRS
         "include"
     REQUIRES
         esp_wifi
         esp_event
         esp_netif
+        mqtt_manager
         nvs_flash
         event_bus
         screen_ui

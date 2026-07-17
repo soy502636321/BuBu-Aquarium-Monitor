@@ -1,4 +1,14 @@
 #include "actions.h"
+
+#include "bluetooth_manager.h"
+#include "wifi_manager.h"
+#include "bluetooth_manager.h"
+#include "wifi_manager.h"
+#include "event_bus.h"
+#include "wifi_event.h"
+#include "device_event.h"
+#include "event_bus.h"
+
 #include "eez-flow.h"
 #include "structs.h"
 #include "esp_log.h"
@@ -10,11 +20,6 @@
 #include <cstdio>
 #include <stdint.h>
 #include <sys/_intsup.h>
-
-#include "bluetooth_manager.h"
-#include "wifi_manager.h"
-#include "event_bus.h"
-#include "device_event.h"
 
 static const char *TAG = "BuBu-Aquarium-Monitor[ui-actions]";
 
@@ -117,7 +122,19 @@ extern "C" void action_on_wifi_enabled(lv_event_t * e) {
 extern "C" void action_on_wifi_disabled(lv_event_t * e) {};
 extern "C" void action_on_wifi_status_switch(lv_event_t * e) {};
 
+extern "C" void action_on_wifi_connect(lv_event_t *e) {
+	eez::Value recordIndexValue = eez::flow::getUserProperty(ACTION_ON_WIFI_CONNECT_PROPERTY_RECORD_INDEX);
+	int32_t recordIndex = recordIndexValue.getInt32();
+    EventBus::instance()
+    .publish(
+        WIFI_USER_EVENT,
+        static_cast<int32_t>(WiFiUserEvent::WIFI_CONNECT),
+        &recordIndex,
+        sizeof(int32_t) 
+    );	
+}
+
+
 void actions_init() {
-  lv_obj_add_event_cb(objects.main_screen, action_bluetooth_record_update_event,
-                      MY_EVENT_UPDATE_DEVICE, NULL);
+  lv_obj_add_event_cb(objects.main_screen, action_bluetooth_record_update_event, MY_EVENT_UPDATE_DEVICE, NULL);
 }

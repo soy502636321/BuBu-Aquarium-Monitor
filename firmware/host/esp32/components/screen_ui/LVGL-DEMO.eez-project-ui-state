@@ -1,8 +1,8 @@
 {
   "navigation": {
     "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/0",
-    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/17",
-    "selectedActionObject": "[LVGL-DEMO.eez-project]:/actions/20",
+    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/20",
+    "selectedActionObject": "[LVGL-DEMO.eez-project]:/actions/21",
     "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/33",
     "selectedStructureObject": "[LVGL-DEMO.eez-project]:/variables/structures/2",
     "selectedEnumObject": "[LVGL-DEMO.eez-project]:/variables/enums/5",
@@ -10,7 +10,7 @@
     "selectedFontObject": "[LVGL-DEMO.eez-project]:/fonts/0",
     "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/6",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Structs"
+      "variables-tab/sub-navigation/selected-item": "Actions"
     }
   },
   "layoutModel": {
@@ -132,7 +132,7 @@
                 {
                   "type": "tabset",
                   "id": "#c0a5d074-d7be-4119-971e-99b360b73129",
-                  "weight": 1.072079357143566,
+                  "weight": 1.4930062856500015,
                   "selected": 1,
                   "enableClose": false,
                   "children": [
@@ -165,7 +165,7 @@
                 {
                   "type": "tabset",
                   "id": "#24b9b613-47e0-4737-8be3-ca7fd123eeea",
-                  "weight": 0.9892764799658108,
+                  "weight": 0.8774686064785097,
                   "enableClose": false,
                   "children": [
                     {
@@ -182,7 +182,7 @@
                 {
                   "type": "tabset",
                   "id": "#f1537029-6b77-46c7-a7ce-8bb46ead01a2",
-                  "weight": 0.9386441628906221,
+                  "weight": 0.6295251078714885,
                   "enableClose": false,
                   "children": [
                     {
@@ -201,7 +201,7 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 48.874741168835186,
-              "selected": 14,
+              "selected": 8,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
@@ -274,10 +274,10 @@
                 {
                   "type": "tab",
                   "id": "#d3913067-0540-4622-9343-47708e51f24d",
-                  "name": "on_wifi_status_switch",
+                  "name": "on_wifi_connect",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/actions/20",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/actions/21",
                     "permanent": false
                   },
                   "icon": "material:code"
@@ -491,7 +491,7 @@
                 {
                   "type": "tabset",
                   "id": "#4ec54923-3466-48a9-83b0-f0cde8f0c8b3",
-                  "weight": 1.501813784764208,
+                  "weight": 1.9536903039073805,
                   "children": [
                     {
                       "type": "tab",
@@ -506,7 +506,7 @@
                 {
                   "type": "tabset",
                   "id": "#0e283413-96a0-4cbd-944a-1fa928b8e344",
-                  "weight": 1.498186215235792,
+                  "weight": 1.0463096960926195,
                   "children": [
                     {
                       "type": "tab",
@@ -1749,7 +1749,7 @@
         "0": {
           "1": {},
           "2": {
-            "1": {
+            "0": {
               "$selected": true
             }
           }
@@ -1758,7 +1758,7 @@
       "transform": {
         "translate": {
           "x": -145,
-          "y": -40
+          "y": -140
         },
         "scale": 1
       },
@@ -1891,14 +1891,13 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "1": {},
           "$selected": true
         }
       },
       "transform": {
         "translate": {
           "x": -240,
-          "y": -160
+          "y": 40
         },
         "scale": 1
       },
@@ -2066,6 +2065,16 @@
         "translate": {
           "x": 0,
           "y": 0
+        },
+        "scale": 1
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/21[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 600
         },
         "scale": 1
       }

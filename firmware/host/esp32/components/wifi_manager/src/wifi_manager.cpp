@@ -1,6 +1,8 @@
 #include "wifi_manager.h"
+#include "lwip/sockets.h"
 #include "wifi_event.h"
 #include "event_bus.h"      // ★★★ 添加 EventBus 头文件 ★★★
+#include "mqtt_manager.h" 
 
 // 确保包含所有必要的头文件
 #include <cstring>
@@ -475,7 +477,6 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
                 mgr.on_disconnected(info);
                 break;
             }
-            
             case WIFI_EVENT_SCAN_DONE:
                 mgr.on_scan_done();
                 break;
@@ -485,14 +486,27 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
         }
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
-        mgr.on_connected();
+        mgr.on_connected(); // 连接网络成功
+        MqttManager::instance().init();
     }
 }
 
 void WiFiManager::user_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
     auto& mgr = instance();
-
     if (event_base == WIFI_USER_EVENT) {
-        
+		switch(event_id) {
+			case WIFI_CONNECT: {
+				int32_t recordIndex = *static_cast<int32_t*>(event_data);
+                ESP_LOGI("EVENT", "Received record index: %ld", recordIndex);
+                WiFiAPInfo ap = WiFiManager::instance().get_scan_results()[recordIndex];
+                ESP_LOGI("EVENT", "Received record index: %s", ap.ssid.c_str());
+                
+                WiFiManager::instance().connect(ap.ssid, "hs86862801", ap.auth_mode);
+                
+				break;
+			}
+			default:
+				break;
+		}        
     }
 }

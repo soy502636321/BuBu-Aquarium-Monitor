@@ -21,6 +21,8 @@ DeviceManager &DeviceManager::instance() {
 
 void DeviceManager::onDeviceRegisterEvent(Device *device) {
 	ESP_LOGI(TAG, "触发设备在线事件");
+	//测试mqtt的发送
+	
 }
 
 void DeviceManager::onDeviceUnregisterEvent(Device *device) {

@@ -24,6 +24,7 @@
 #include "actions.h"
 #include "vars.h"
 
+#include "host_info.h"
 #include "wifi_manager.h"
 #include "bluetooth_manager.h"
 #include "device_manager.h"
@@ -36,6 +37,12 @@
 
 esp_lcd_panel_io_handle_t io_handle = NULL;
 esp_lcd_panel_handle_t panel_handle = NULL;
+
+// 事件标记租
+#define WIFI_READY_BIT  (1 << 0)  //网络就绪 
+#define MQTT_READY_BIT           (1 << 1)   // MQTT 已连接
+#define OTA_READY_BIT        (1 << 3)   // OTA 更新可用
+#define SYSTEM_READY_BIT       (1 << 4)   // 系统已启动
 
 lv_disp_drv_t disp_drv;
 
@@ -97,6 +104,9 @@ extern "C" void app_main(void)
     }
 
     ESP_ERROR_CHECK(ret);
+    
+    // 获取设备信息
+    auto& hostInfo = HostInfo::instance();
 
 	EventBus::instance().init();
 	// WiFi初始化
