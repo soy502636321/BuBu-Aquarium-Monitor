@@ -1,7 +1,7 @@
 idf_component_register(
     SRCS
-    	"src/mqtt_config.cpp"
-        "src/mqtt_manager.cpp"
+    	"src/common.cpp"
+        "src/json_converter.cpp"
     INCLUDE_DIRS
         "include"
     REQUIRES
@@ -9,8 +9,7 @@ idf_component_register(
         esp_timer
         mqtt
         json
-        common
         host_info
         device_manager
-        event_bus    
+        event_bus          
 )

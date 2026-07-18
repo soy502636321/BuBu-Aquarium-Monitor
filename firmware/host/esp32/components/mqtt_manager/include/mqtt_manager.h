@@ -83,10 +83,7 @@ private:
     ~MqttManager();
 
     // -------- 事件处理器（静态） --------
-    static void eventHandler(void* handler_args,
-                             esp_event_base_t base,
-                             int32_t event_id,
-                             void* event_data);
+    static void eventHandler(void* handler_args, esp_event_base_t base, int32_t event_id, void* event_data);
 
     // -------- 成员变量 --------
     esp_mqtt_client_handle_t client_ = nullptr;

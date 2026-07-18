@@ -24,7 +24,7 @@ public:
 	// 默认：开发环境
 		static constexpr std::string_view BROKER    = "mqtt://broker.emqx.io";
 	    static constexpr int           PORT         = 1883;
-	    static constexpr std::string_view USERNAME  = "";
+	    static constexpr std::string_view USERNAME  = ""; 
 	    static constexpr std::string_view PASSWORD  = "";
 	    static constexpr bool SSL_ENABLED = false;
 		static constexpr const char* ca_cert() {

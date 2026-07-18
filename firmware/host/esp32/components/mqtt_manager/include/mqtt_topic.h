@@ -13,6 +13,7 @@
 
 #include <string>
 #include <cstdio>
+#include "host_info.h"
 
 // ============================================================================
 // ★★★ MQTT 主题配置 ★★★
@@ -21,17 +22,18 @@
 struct MqttTopicConfig {
     // -------- 主题模板（使用 %s 占位符）--------
     // 格式: 项目名/用户ID/设备ID/类型
-    
-    static constexpr const char* TEMPLATE_DATA     = "BuBu-Aquarium-Monitor/%s/%s/data";
-    static constexpr const char* TEMPLATE_STATUS   = "BuBu-Aquarium-Monitor/%s/%s/status";
-    static constexpr const char* TEMPLATE_COMMAND  = "BuBu-Aquarium-Monitor/%s/%s/command";
-    static constexpr const char* TEMPLATE_EVENT    = "BuBu-Aquarium-Monitor/%s/%s/event";
-    static constexpr const char* TEMPLATE_RESPONSE = "BuBu-Aquarium-Monitor/%s/%s/response";
-    static constexpr const char* TEMPLATE_CONFIG   = "BuBu-Aquarium-Monitor/%s/%s/config";
-    static constexpr const char* TEMPLATE_OTA      = "BuBu-Aquarium-Monitor/%s/%s/ota";
+    static constexpr const char* TEMPLATE_DATA      = "BuBu-Aquarium-Monitor/%s/data";
+    static constexpr const char* TEMPLATE_HEARTBEAT = "BuBu-Aquarium-Monitor/%s/heartbeat";
+    static constexpr const char* TEMPLATE_STATUS    = "BuBu-Aquarium-Monitor/%s/%s/status";
+    static constexpr const char* TEMPLATE_COMMAND   = "BuBu-Aquarium-Monitor/%s/command";
+    static constexpr const char* TEMPLATE_EVENT     = "BuBu-Aquarium-Monitor/%s/%s/event";
+    static constexpr const char* TEMPLATE_RESPONSE  = "BuBu-Aquarium-Monitor/%s/%s/response";
+    static constexpr const char* TEMPLATE_CONFIG    = "BuBu-Aquarium-Monitor/%s/%s/config";
+    static constexpr const char* TEMPLATE_OTA       = "BuBu-Aquarium-Monitor/%s/ota";
     
     // -------- QoS 配置 --------
     static constexpr int QOS_DATA     = 0;   // 传感器数据，允许丢失
+    static constexpr int QOS_HEARTBEAT     = 0;   // 传感器数据，允许丢失
     static constexpr int QOS_STATUS   = 1;   // 状态上报，确保送达
     static constexpr int QOS_COMMAND  = 1;   // 控制指令，确保送达
     static constexpr int QOS_EVENT    = 1;   // 事件通知，确保送达
@@ -48,11 +50,20 @@ struct MqttTopicConfig {
     // ========================================================================
     
     /**
+     * @brief 生成心跳上报主题
+     */
+    static std::string makeHeartbeatTopic() {
+        char topic[128];
+        snprintf(topic, sizeof(topic), TEMPLATE_HEARTBEAT, HostInfo::instance().getHostId().c_str());
+        return std::string(topic);
+    }
+    
+    /**
      * @brief 生成数据上报主题
      */
-    static std::string makeDataTopic(const std::string& userId, const std::string& boardId) {
+    static std::string makeDataTopic() {
         char topic[128];
-        snprintf(topic, sizeof(topic), TEMPLATE_DATA, userId.c_str(), boardId.c_str());
+        snprintf(topic, sizeof(topic), TEMPLATE_DATA, HostInfo::instance().getHostId().c_str());
         return std::string(topic);
     }
     
@@ -68,9 +79,9 @@ struct MqttTopicConfig {
     /**
      * @brief 生成控制指令主题（需要订阅）
      */
-    static std::string makeCommandTopic(const std::string& userId, const std::string& boardId) {
+    static std::string makeCommandTopic() {
         char topic[128];
-        snprintf(topic, sizeof(topic), TEMPLATE_COMMAND, userId.c_str(), boardId.c_str());
+        snprintf(topic, sizeof(topic), TEMPLATE_COMMAND, HostInfo::instance().getHostId().c_str());
         return std::string(topic);
     }
     
@@ -104,9 +115,9 @@ struct MqttTopicConfig {
     /**
      * @brief 生成 OTA 主题
      */
-    static std::string makeOtaTopic(const std::string& userId, const std::string& boardId) {
+    static std::string makeOtaTopic() {
         char topic[128];
-        snprintf(topic, sizeof(topic), TEMPLATE_OTA, userId.c_str(), boardId.c_str());
+        snprintf(topic, sizeof(topic), TEMPLATE_OTA, HostInfo::instance().getHostId().c_str());
         return std::string(topic);
     }
 };
