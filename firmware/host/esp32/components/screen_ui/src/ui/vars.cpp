@@ -1,6 +1,7 @@
 #include "vars.h"
 
 int32_t content_page;
+bool loading;
 
 
 WiFi_Status wifi_status; // WiFi 状态图标显示
@@ -29,4 +30,12 @@ extern "C" bool get_var_wifi_enabled() {
 
 extern "C" void set_var_wifi_enabled(bool value) {
     wifi_enabled = value;
+}
+
+extern "C" bool get_var_loading() {
+    return loading;
+}
+
+extern "C" void set_var_loading(bool value) {
+    loading = value;
 }

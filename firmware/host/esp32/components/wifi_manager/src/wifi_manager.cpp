@@ -1,4 +1,5 @@
 #include "wifi_manager.h"
+#include "actions.h"
 #include "lwip/sockets.h"
 #include "wifi_event.h"
 #include "event_bus.h"      // ★★★ 添加 EventBus 头文件 ★★★
@@ -467,11 +468,16 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
                 ESP_LOGI(TAG, "WiFi station started");
                 break;
                 
-            case WIFI_EVENT_STA_CONNECTED:
+            case WIFI_EVENT_STA_CONNECTED: {
                 ESP_LOGI(TAG, "WiFi connected to AP");
                 mgr.update_status(WiFiStatus::CONNECTING);
+				lv_event_t e = {0};
+				e.target = lv_scr_act();  // 使用当前屏幕作为目标
+				e.code = LV_EVENT_CLICKED;
+				
+                action_close_loading(&e);
                 break;
-                
+                }
             case WIFI_EVENT_STA_DISCONNECTED: {
                 auto* info = static_cast<wifi_event_sta_disconnected_t*>(event_data);
                 mgr.on_disconnected(info);
@@ -505,7 +511,13 @@ void WiFiManager::user_event_handler(void* arg, esp_event_base_t event_base, int
                 WiFiAPInfo ap = WiFiManager::instance().get_scan_results()[recordIndexValue.getInt32()];
                 ESP_LOGI("EVENT", "Received record index: %s", ap.ssid.c_str());
                 
+                
+                //eez::Value loadingValue = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_LOADING);
+                //eez::flow::setGlobalVariable(FLOW_GLOBAL_VARIABLE_LOADING, eez::BooleanValue(true));
+                
                 WiFiManager::instance().connect(ap.ssid, password, ap.auth_mode);
+                //eez::Value loadingValue = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_LOADING);
+                //ESP_LOGI("EVENT", "验证值是否改变: %s", loadingValue.getBoolean() ? "true" : "false");
 				break;
 			}
 			default:

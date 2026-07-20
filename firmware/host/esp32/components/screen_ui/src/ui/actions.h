@@ -46,6 +46,9 @@ enum {
 extern void action_on_wifi_connect(lv_event_t * e);
 
 extern void action_printf(lv_event_t * e);
+extern void action_show_loading(lv_event_t * e);
+extern void action_close_loading(lv_event_t * e);
+extern void action_update_loading(lv_event_t * e);
 
 void actions_init();
 

@@ -286,7 +286,6 @@ typedef struct _objects_t {
     lv_obj_t *obj7__obj59;
     lv_obj_t *loading;
     lv_obj_t *loading__obj63;
-    lv_obj_t *loading__obj64;
     lv_obj_t *header_container;
     lv_obj_t *body_container;
     lv_obj_t *sidebar_container;

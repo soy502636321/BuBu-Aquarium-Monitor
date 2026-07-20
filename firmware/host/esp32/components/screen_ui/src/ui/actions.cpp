@@ -59,7 +59,10 @@ void action_wifi_scan_start(lv_event_t *e) {
   // esp_wifi_scan_start(NULL, false);
 }
 
-void action_printf_hw(lv_event_t *e) { printf("Hello World!"); }
+void action_printf_hw(lv_event_t *e) {
+	set_var_loading(true); 
+	printf("Hello World!"); 
+}
 
 void action_printf(lv_event_t *e) {
     const char * text = (const char *)lv_event_get_user_data(e);
@@ -142,6 +145,17 @@ extern "C" void action_on_wifi_connect(lv_event_t *e) {
     );	
 }
 
+
+extern "C" void action_show_loading(lv_event_t * e) {
+	lv_obj_clear_flag(objects.loading, LV_OBJ_FLAG_HIDDEN);     // 隐藏
+
+};
+extern "C" void action_close_loading(lv_event_t * e) {
+	lv_obj_add_flag(objects.loading, LV_OBJ_FLAG_HIDDEN);     // 隐藏
+};
+extern "C" void action_update_loading(lv_event_t * e) {
+	
+};
 
 void actions_init() {
   lv_obj_add_event_cb(objects.main_screen, action_bluetooth_record_update_event, MY_EVENT_UPDATE_DEVICE, NULL);

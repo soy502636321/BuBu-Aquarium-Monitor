@@ -119,8 +119,7 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_WIFI_PASSWORD_INPUT_HIDDLE = 38,
     FLOW_GLOBAL_VARIABLE_WIFI_RECORD_INDEX = 39,
     FLOW_GLOBAL_VARIABLE_WIFI_RECORD_AUTO_CONNECT = 40,
-    FLOW_GLOBAL_VARIABLE_LOADING = 41,
-    FLOW_GLOBAL_VARIABLE_LOADING_TEXT = 42
+    FLOW_GLOBAL_VARIABLE_LOADING_TEXT = 41
 };
 
 // Native global variables
@@ -129,6 +128,8 @@ extern int32_t get_var_content_page();
 extern void set_var_content_page(int32_t value);
 extern WiFi_Status get_var_wifi_status();
 extern void set_var_wifi_status(WiFi_Status value);
+extern bool get_var_loading();
+extern void set_var_loading(bool value);
 
 #ifdef __cplusplus
 }
