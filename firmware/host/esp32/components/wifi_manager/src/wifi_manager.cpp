@@ -487,6 +487,7 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         mgr.on_connected(); // 连接网络成功
+        // 清理WiFi连接相关的内存
         MqttManager::instance().init();
     }
 }
@@ -496,13 +497,15 @@ void WiFiManager::user_event_handler(void* arg, esp_event_base_t event_base, int
     if (event_base == WIFI_USER_EVENT) {
 		switch(event_id) {
 			case WIFI_CONNECT: {
-				int32_t recordIndex = *static_cast<int32_t*>(event_data);
-                ESP_LOGI("EVENT", "Received record index: %ld", recordIndex);
-                WiFiAPInfo ap = WiFiManager::instance().get_scan_results()[recordIndex];
+    			const char* password = static_cast<const char*>(event_data);
+                ESP_LOGI("EVENT", "Received WiFi Password: %s", password);
+                ESP_LOGI("EVENT", "Password length: %d", strlen(password));
+
+				eez::Value recordIndexValue = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_WIFI_RECORD_INDEX);
+                WiFiAPInfo ap = WiFiManager::instance().get_scan_results()[recordIndexValue.getInt32()];
                 ESP_LOGI("EVENT", "Received record index: %s", ap.ssid.c_str());
                 
-                WiFiManager::instance().connect(ap.ssid, "hs86862801", ap.auth_mode);
-                
+                WiFiManager::instance().connect(ap.ssid, password, ap.auth_mode);
 				break;
 			}
 			default:

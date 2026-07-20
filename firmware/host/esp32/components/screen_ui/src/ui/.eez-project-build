@@ -28,6 +28,7 @@
     "styles.h",
     "ui.c",
     "ui.h",
+    "ui_extension.h",
     "vars.h"
   ]
 }

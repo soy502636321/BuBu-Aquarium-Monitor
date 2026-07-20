@@ -61,6 +61,11 @@ void action_wifi_scan_start(lv_event_t *e) {
 
 void action_printf_hw(lv_event_t *e) { printf("Hello World!"); }
 
+void action_printf(lv_event_t *e) {
+    const char * text = (const char *)lv_event_get_user_data(e);
+    printf("User text: %s\n", text != NULL ? text : "没有内容");
+}
+
 extern "C" void action_switch_wifi_enabled(lv_event_t *e) {
   lv_obj_t *switch_obj = lv_event_get_target(e);
   bool checked = lv_obj_has_state(switch_obj, LV_STATE_CHECKED);
@@ -125,12 +130,15 @@ extern "C" void action_on_wifi_status_switch(lv_event_t * e) {};
 extern "C" void action_on_wifi_connect(lv_event_t *e) {
 	eez::Value recordIndexValue = eez::flow::getUserProperty(ACTION_ON_WIFI_CONNECT_PROPERTY_RECORD_INDEX);
 	int32_t recordIndex = recordIndexValue.getInt32();
+	
+	eez::Value passwordValue = eez::flow::getUserProperty(ACTION_ON_WIFI_CONNECT_PROPERTY_PASSWORD);
+	const char* password = passwordValue.getString(); 
     EventBus::instance()
     .publish(
         WIFI_USER_EVENT,
         static_cast<int32_t>(WiFiUserEvent::WIFI_CONNECT),
-        &recordIndex,
-        sizeof(int32_t) 
+        password,
+        strlen(password) + 1
     );	
 }
 

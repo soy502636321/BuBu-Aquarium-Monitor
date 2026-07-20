@@ -12,11 +12,15 @@ extern "C" {
 enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
     SCREEN_ID_MAIN_SCREEN = 1,
-    _SCREEN_ID_LAST = 1
+    SCREEN_ID_WI_FI_PASSWORD_INPUT_SCREEN = 2,
+    SCREEN_ID_LOADING_SCREEN = 3,
+    _SCREEN_ID_LAST = 3
 };
 
 typedef struct _objects_t {
     lv_obj_t *main_screen;
+    lv_obj_t *wi_fi_password_input_screen;
+    lv_obj_t *loading_screen;
     lv_obj_t *obj0;
     lv_obj_t *obj0__home_menu_btn_1;
     lv_obj_t *obj0__obj60;
@@ -43,34 +47,34 @@ typedef struct _objects_t {
     lv_obj_t *obj4__obj0;
     lv_obj_t *obj4__icon_image;
     lv_obj_t *obj4__obj1;
-    lv_obj_t *home_content;
-    lv_obj_t *home_content__obj7;
-    lv_obj_t *home_content__obj7__obj0;
-    lv_obj_t *home_content__obj8;
-    lv_obj_t *home_content__obj8__obj0;
-    lv_obj_t *home_content__obj9;
-    lv_obj_t *home_content__obj9__obj0;
-    lv_obj_t *home_content__obj10;
-    lv_obj_t *home_content__obj10__obj0;
-    lv_obj_t *home_content__obj11;
-    lv_obj_t *home_content__obj11__obj0;
-    lv_obj_t *home_content__obj12;
-    lv_obj_t *home_content__obj12__obj0;
-    lv_obj_t *home_content__obj13;
-    lv_obj_t *home_content__obj13__obj0;
-    lv_obj_t *home_content__obj14;
-    lv_obj_t *home_content__obj14__obj0;
-    lv_obj_t *home_content__obj15;
-    lv_obj_t *home_content__obj15__obj0;
-    lv_obj_t *home_content__obj16;
-    lv_obj_t *home_content__obj16__obj0;
-    lv_obj_t *home_content__obj17;
-    lv_obj_t *home_content__obj17__obj0;
-    lv_obj_t *home_content__obj18;
-    lv_obj_t *home_content__obj18__obj0;
-    lv_obj_t *home_content__obj19;
-    lv_obj_t *home_content__obj19__obj0;
-    lv_obj_t *home_content__home_content;
+    lv_obj_t *home_content_1;
+    lv_obj_t *home_content_1__obj7;
+    lv_obj_t *home_content_1__obj7__obj0;
+    lv_obj_t *home_content_1__obj8;
+    lv_obj_t *home_content_1__obj8__obj0;
+    lv_obj_t *home_content_1__obj9;
+    lv_obj_t *home_content_1__obj9__obj0;
+    lv_obj_t *home_content_1__obj10;
+    lv_obj_t *home_content_1__obj10__obj0;
+    lv_obj_t *home_content_1__obj11;
+    lv_obj_t *home_content_1__obj11__obj0;
+    lv_obj_t *home_content_1__obj12;
+    lv_obj_t *home_content_1__obj12__obj0;
+    lv_obj_t *home_content_1__obj13;
+    lv_obj_t *home_content_1__obj13__obj0;
+    lv_obj_t *home_content_1__obj14;
+    lv_obj_t *home_content_1__obj14__obj0;
+    lv_obj_t *home_content_1__obj15;
+    lv_obj_t *home_content_1__obj15__obj0;
+    lv_obj_t *home_content_1__obj16;
+    lv_obj_t *home_content_1__obj16__obj0;
+    lv_obj_t *home_content_1__obj17;
+    lv_obj_t *home_content_1__obj17__obj0;
+    lv_obj_t *home_content_1__obj18;
+    lv_obj_t *home_content_1__obj18__obj0;
+    lv_obj_t *home_content_1__obj19;
+    lv_obj_t *home_content_1__obj19__obj0;
+    lv_obj_t *home_content_1__home_content;
     lv_obj_t *message_content;
     lv_obj_t *message_content__obj20;
     lv_obj_t *message_content__obj20__obj0;
@@ -280,16 +284,29 @@ typedef struct _objects_t {
     lv_obj_t *obj7__obj57;
     lv_obj_t *obj7__obj58;
     lv_obj_t *obj7__obj59;
+    lv_obj_t *loading;
+    lv_obj_t *loading__obj63;
+    lv_obj_t *loading__obj64;
     lv_obj_t *header_container;
     lv_obj_t *body_container;
     lv_obj_t *sidebar_container;
     lv_obj_t *content_container;
+    lv_obj_t *obj8;
+    lv_obj_t *wifi_password_textarea;
+    lv_obj_t *obj9;
+    lv_obj_t *obj10;
 } objects_t;
 
 extern objects_t objects;
 
 void create_screen_main_screen();
 void tick_screen_main_screen();
+
+void create_screen_wi_fi_password_input_screen();
+void tick_screen_wi_fi_password_input_screen();
+
+void create_screen_loading_screen();
+void tick_screen_loading_screen();
 
 void create_user_widget_menu_fcuntion_btn(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_menu_fcuntion_btn(void *flowState, int startWidgetIndex);
@@ -365,6 +382,9 @@ void tick_user_widget_switch_card(void *flowState, int startWidgetIndex);
 
 void create_user_widget_data_card(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_data_card(void *flowState, int startWidgetIndex);
+
+void create_user_widget_loading_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_loading_widget(void *flowState, int startWidgetIndex);
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);
