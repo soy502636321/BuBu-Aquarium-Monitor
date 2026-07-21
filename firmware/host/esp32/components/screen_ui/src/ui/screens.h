@@ -13,13 +13,15 @@ enum ScreensEnum {
     _SCREEN_ID_FIRST = 1,
     SCREEN_ID_MAIN_SCREEN = 1,
     SCREEN_ID_WI_FI_PASSWORD_INPUT_SCREEN = 2,
-    SCREEN_ID_LOADING_SCREEN = 3,
-    _SCREEN_ID_LAST = 3
+    SCREEN_ID_LAUNCH_SCREEN = 3,
+    SCREEN_ID_LOADING_SCREEN = 4,
+    _SCREEN_ID_LAST = 4
 };
 
 typedef struct _objects_t {
     lv_obj_t *main_screen;
     lv_obj_t *wi_fi_password_input_screen;
+    lv_obj_t *launch_screen;
     lv_obj_t *loading_screen;
     lv_obj_t *obj0;
     lv_obj_t *obj0__home_menu_btn_1;
@@ -286,6 +288,22 @@ typedef struct _objects_t {
     lv_obj_t *obj7__obj59;
     lv_obj_t *loading;
     lv_obj_t *loading__obj63;
+    lv_obj_t *success_toast;
+    lv_obj_t *success_toast__toast;
+    lv_obj_t *success_toast__type;
+    lv_obj_t *success_toast__message;
+    lv_obj_t *warning_toast;
+    lv_obj_t *warning_toast__toast;
+    lv_obj_t *warning_toast__type;
+    lv_obj_t *warning_toast__message;
+    lv_obj_t *danger_toast;
+    lv_obj_t *danger_toast__toast;
+    lv_obj_t *danger_toast__type;
+    lv_obj_t *danger_toast__message;
+    lv_obj_t *info_toast;
+    lv_obj_t *info_toast__toast;
+    lv_obj_t *info_toast__type;
+    lv_obj_t *info_toast__message;
     lv_obj_t *header_container;
     lv_obj_t *body_container;
     lv_obj_t *sidebar_container;
@@ -294,6 +312,8 @@ typedef struct _objects_t {
     lv_obj_t *wifi_password_textarea;
     lv_obj_t *obj9;
     lv_obj_t *obj10;
+    lv_obj_t *obj11;
+    lv_obj_t *obj12;
 } objects_t;
 
 extern objects_t objects;
@@ -303,6 +323,9 @@ void tick_screen_main_screen();
 
 void create_screen_wi_fi_password_input_screen();
 void tick_screen_wi_fi_password_input_screen();
+
+void create_screen_launch_screen();
+void tick_screen_launch_screen();
 
 void create_screen_loading_screen();
 void tick_screen_loading_screen();
@@ -384,6 +407,9 @@ void tick_user_widget_data_card(void *flowState, int startWidgetIndex);
 
 void create_user_widget_loading_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
 void tick_user_widget_loading_widget(void *flowState, int startWidgetIndex);
+
+void create_user_widget_toast_widget(lv_obj_t *parent_obj, void *flowState, int startWidgetIndex);
+void tick_user_widget_toast_widget(void *flowState, int startWidgetIndex);
 
 void tick_screen_by_id(enum ScreensEnum screenId);
 void tick_screen(int screen_index);

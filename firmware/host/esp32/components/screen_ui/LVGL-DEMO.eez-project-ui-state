@@ -1,15 +1,15 @@
 {
   "navigation": {
-    "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/2",
-    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/26",
-    "selectedActionObject": "[LVGL-DEMO.eez-project]:/actions/24",
-    "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/43",
+    "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/1",
+    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/11",
+    "selectedActionObject": "[LVGL-DEMO.eez-project]:/actions/-1",
+    "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/45",
     "selectedStructureObject": "[LVGL-DEMO.eez-project]:/variables/structures/2",
     "selectedEnumObject": "[LVGL-DEMO.eez-project]:/variables/enums/4",
     "selectedFontObject": "[LVGL-DEMO.eez-project]:/fonts/0",
-    "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/11",
+    "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/13",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Widgets"
+      "variables-tab/sub-navigation/selected-item": "Global"
     }
   },
   "layoutModel": {
@@ -30,7 +30,7 @@
           },
           {
             "type": "border",
-            "selected": 4,
+            "selected": 2,
             "size": 213.5,
             "location": "right",
             "children": [
@@ -79,7 +79,7 @@
           {
             "type": "border",
             "selected": 0,
-            "size": 70.5,
+            "size": 208.5,
             "location": "bottom",
             "children": [
               {
@@ -204,14 +204,25 @@
               "children": [
                 {
                   "type": "tab",
-                  "id": "#63f8c6a9-8407-4131-b47b-9809013465d3",
-                  "name": "close_loading",
+                  "id": "#1aa3ff0d-9067-4d96-b565-b7fcfd3acc89",
+                  "name": "DataDetailScreen",
                   "component": "editor",
                   "config": {
-                    "objectPath": "[LVGL-DEMO.eez-project]:/actions/24",
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userPages/4",
                     "permanent": false
                   },
-                  "icon": "material:code"
+                  "icon": "svg:page"
+                },
+                {
+                  "type": "tab",
+                  "id": "#6293146f-0a5d-4e53-8604-6ee2868344ce",
+                  "name": "DeviceDetail",
+                  "component": "editor",
+                  "config": {
+                    "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/11",
+                    "permanent": false
+                  },
+                  "icon": "svg:user_widget"
                 },
                 {
                   "type": "tab",
@@ -220,7 +231,7 @@
                   "component": "editor",
                   "config": {
                     "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/26",
-                    "permanent": false
+                    "permanent": true
                   },
                   "icon": "svg:user_widget"
                 },
@@ -429,7 +440,7 @@
                 {
                   "type": "tab",
                   "id": "#d3445358-3347-4d91-9184-a12510f2d3ff",
-                  "name": "DeviceShortcutContent",
+                  "name": "MessageCard",
                   "component": "editor",
                   "config": {
                     "objectPath": "[LVGL-DEMO.eez-project]:/userWidgets/7",
@@ -1336,7 +1347,9 @@
       "selectionBack": {
         "0": {
           "0": {
-            "0": {}
+            "0": {
+              "$selected": true
+            }
           },
           "1": {
             "1": {}
@@ -1361,11 +1374,13 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "0": {}
+          "0": {
+            "0": {
+              "$selected": true
+            }
+          }
         },
-        "2": {
-          "$selected": true
-        }
+        "2": {}
       },
       "transform": {
         "translate": {
@@ -1385,15 +1400,13 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "0": {
-            "$selected": true
-          }
+          "0": {}
         }
       },
       "transform": {
         "translate": {
           "x": -240,
-          "y": -60
+          "y": -160
         },
         "scale": 0.75
       },
@@ -1875,9 +1888,8 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "2": {
-            "$selected": true
-          }
+          "2": {},
+          "$selected": true
         }
       },
       "transform": {
@@ -1976,8 +1988,134 @@
       "selectionFront": {},
       "selectionBack": {
         "0": {
-          "0": {},
+          "0": {}
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": 40
+        },
+        "scale": 0.75
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/26[flow-state]": {
+      "selection": {
+        "2": {
           "$selected": true
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/actions/15[flow-state]": {
+      "selection": {},
+      "transform": {
+        "translate": {
+          "x": 0,
+          "y": 0
+        },
+        "scale": 1
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/21[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "$selected": true
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -20
+        },
+        "scale": 0.75
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userPages/3[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "0": {},
+          "1": {
+            "$selected": true
+          },
+          "4": {}
+        }
+      },
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": 40
+        },
+        "scale": 0.75
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/23[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {},
+      "transform": {
+        "translate": {
+          "x": -40,
+          "y": -30
+        },
+        "scale": 0.75
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userWidgets/11[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {},
+      "transform": {
+        "translate": {
+          "x": -240,
+          "y": -160
+        },
+        "scale": 0.75
+      },
+      "timeline": {
+        "isEditorActive": false,
+        "position": 0,
+        "secondToPx": 200,
+        "scrollLeft": 0
+      }
+    },
+    "[LVGL-DEMO.eez-project]:/userPages/4[flow-state]": {
+      "selectionFront": {},
+      "selectionBack": {
+        "0": {
+          "0": {
+            "$selected": true
+          }
         }
       },
       "transform": {
@@ -2010,22 +2148,14 @@
   "lvglPart": "MAIN",
   "lvglState": "CHECKED",
   "lvglExpandedPropertiesGroup": [
-    "IMAGE",
-    "MISCELLANEOUS",
-    "TEXT",
-    "PADDING",
-    "OUTLINE",
-    "BACKGROUND",
-    "SHADOW",
-    "LINE",
-    "LAYOUT",
+    "MARGIN",
     "POSITION AND SIZE",
-    "BORDER",
-    "MARGIN"
+    "BACKGROUND",
+    "TEXT"
   ],
   "showInactiveFlowsInDebugger": true,
   "globalFlowZoom": true,
   "flowZoom": 0.75,
   "implementationLanguage": "C++",
-  "openDialogDefaultPath": "C:\\Users\\Hu\\Downloads\\settings.png"
+  "openDialogDefaultPath": "C:\\Users\\Hu\\Downloads\\ChatGPT Image 2026年7月13日 18_18_10 (4).png"
 }

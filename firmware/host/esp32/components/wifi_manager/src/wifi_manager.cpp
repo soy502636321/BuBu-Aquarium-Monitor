@@ -1,6 +1,7 @@
 #include "wifi_manager.h"
 #include "actions.h"
 #include "lwip/sockets.h"
+#include "psa_crypto_se.h"
 #include "wifi_event.h"
 #include "event_bus.h"     
 #include "ui_event.h"
@@ -208,9 +209,7 @@ std::vector<WiFiAPInfo> WiFiManager::get_scan_results() const {
 // 连接管理
 // ============================================================================
 
-esp_err_t WiFiManager::connect(const std::string& ssid, 
-                                const std::string& password,
-                                WiFiAuthMode auth_mode) {
+esp_err_t WiFiManager::connect(const std::string& ssid, const std::string& password, WiFiAuthMode auth_mode) {
     if (!m_is_initialized) {
         ESP_LOGE(TAG, "WiFiManager not initialized");
         return ESP_ERR_INVALID_STATE;
@@ -490,13 +489,17 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         mgr.on_connected(); // 连接网络成功
         
+		UILoadingData loading_data;
+		loading_data.on_complete = [](bool success, void* user_data) {
+			eez_flow_pop_screen(LV_SCR_LOAD_ANIM_NONE, 200, 0);
+		};
 	    EventBus::instance()
-	    .publish(
-	        UI_EVENT,
-	        static_cast<int32_t>(UIEvent::UI_HIDE_LOADING),
-	        nullptr,
-	        0
-	    );
+		    .publish(
+		        UI_EVENT,
+		        static_cast<int32_t>(UIEvent::UI_HIDE_LOADING),
+		        &loading_data,
+		        sizeof(loading_data)
+		    );
         
         // 清理WiFi连接相关的内存
         MqttManager::instance().init();
@@ -509,6 +512,14 @@ void WiFiManager::user_event_handler(void* arg, esp_event_base_t event_base, int
     if (event_base == WIFI_USER_EVENT) {
 		switch(event_id) {
 			case WIFI_CONNECT: {
+				esp_err_t ret = esp_wifi_disconnect();
+			   
+			    if (ret != ESP_ERR_WIFI_NOT_CONNECT && ret != ESP_OK) {
+			        ESP_LOGE(TAG, "❌ 断开连接失败: %s", esp_err_to_name(ret));
+			        break;
+			    }
+			    vTaskDelay(pdMS_TO_TICKS(100)); // 等待断开完成
+			    
     			const char* password = static_cast<const char*>(event_data);
                 ESP_LOGI("EVENT", "Received WiFi Password: %s", password);
                 ESP_LOGI("EVENT", "Password length: %d", strlen(password));
@@ -517,13 +528,7 @@ void WiFiManager::user_event_handler(void* arg, esp_event_base_t event_base, int
                 WiFiAPInfo ap = WiFiManager::instance().get_scan_results()[recordIndexValue.getInt32()];
                 ESP_LOGI("EVENT", "Received record index: %s", ap.ssid.c_str());
                 
-                
-                //eez::Value loadingValue = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_LOADING);
-                //eez::flow::setGlobalVariable(FLOW_GLOBAL_VARIABLE_LOADING, eez::BooleanValue(true));
-                
                 WiFiManager::instance().connect(ap.ssid, password, ap.auth_mode);
-                //eez::Value loadingValue = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_LOADING);
-                //ESP_LOGI("EVENT", "验证值是否改变: %s", loadingValue.getBoolean() ? "true" : "false");
 				break;
 			}
 			default:

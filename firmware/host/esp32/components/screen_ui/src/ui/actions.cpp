@@ -8,6 +8,7 @@
 #include "wifi_event.h"
 #include "device_event.h"
 #include "event_bus.h"
+#include "ui_event.h"
 
 #include "eez-flow.h"
 #include "structs.h"
@@ -116,8 +117,8 @@ extern "C" void action_on_switch_value_changed(lv_event_t *e) {
 	
     EventBus::instance()
     .publish(
-        DEVICE_EVENT,
-        static_cast<int32_t>(DeviceEvent::DEVICE_REGISTER),
+        UI_EVENT,
+        UIEvent::UI_SHOW_SUCCESS_TOAST,
         nullptr,
         0
     );

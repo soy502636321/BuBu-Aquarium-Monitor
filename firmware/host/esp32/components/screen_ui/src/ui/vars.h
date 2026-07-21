@@ -130,6 +130,10 @@ extern WiFi_Status get_var_wifi_status();
 extern void set_var_wifi_status(WiFi_Status value);
 extern bool get_var_loading();
 extern void set_var_loading(bool value);
+extern int32_t get_var_launch_progress();
+extern void set_var_launch_progress(int32_t value);
+extern const char *get_var_launch_message();
+extern void set_var_launch_message(const char *value);
 
 #ifdef __cplusplus
 }

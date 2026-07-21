@@ -13,6 +13,7 @@
     "images/ui_image_icon_device_water_ph.c",
     "images/ui_image_icon_device_water_temp.c",
     "images/ui_image_icon_home_32.c",
+    "images/ui_image_icon_logo_128.c",
     "images/ui_image_icon_logo_32.c",
     "images/ui_image_icon_message_32.c",
     "images/ui_image_icon_setting_32.c",
