@@ -1,5 +1,6 @@
 idf_component_register(
-    SRCS 
+    SRCS
+    	"src/ui_event.cpp" 
         "src/event_bus.cpp"
     INCLUDE_DIRS
         "include"

@@ -2,7 +2,8 @@
 #include "actions.h"
 #include "lwip/sockets.h"
 #include "wifi_event.h"
-#include "event_bus.h"      // ★★★ 添加 EventBus 头文件 ★★★
+#include "event_bus.h"     
+#include "ui_event.h"
 #include "mqtt_manager.h" 
 
 // 确保包含所有必要的头文件
@@ -471,11 +472,6 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
             case WIFI_EVENT_STA_CONNECTED: {
                 ESP_LOGI(TAG, "WiFi connected to AP");
                 mgr.update_status(WiFiStatus::CONNECTING);
-				lv_event_t e = {0};
-				e.target = lv_scr_act();  // 使用当前屏幕作为目标
-				e.code = LV_EVENT_CLICKED;
-				
-                action_close_loading(&e);
                 break;
                 }
             case WIFI_EVENT_STA_DISCONNECTED: {
@@ -493,8 +489,18 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         mgr.on_connected(); // 连接网络成功
+        
+	    EventBus::instance()
+	    .publish(
+	        UI_EVENT,
+	        static_cast<int32_t>(UIEvent::UI_HIDE_LOADING),
+	        nullptr,
+	        0
+	    );
+        
         // 清理WiFi连接相关的内存
         MqttManager::instance().init();
+        
     }
 }
 

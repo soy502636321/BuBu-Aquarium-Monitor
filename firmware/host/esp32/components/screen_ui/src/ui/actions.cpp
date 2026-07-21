@@ -148,7 +148,6 @@ extern "C" void action_on_wifi_connect(lv_event_t *e) {
 
 extern "C" void action_show_loading(lv_event_t * e) {
 	lv_obj_clear_flag(objects.loading, LV_OBJ_FLAG_HIDDEN);     // 隐藏
-
 };
 extern "C" void action_close_loading(lv_event_t * e) {
 	lv_obj_add_flag(objects.loading, LV_OBJ_FLAG_HIDDEN);     // 隐藏
