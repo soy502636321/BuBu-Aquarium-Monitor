@@ -128,7 +128,18 @@ extern "C" void action_on_wifi_enabled(lv_event_t * e) {
 	ESP_LOGI(TAG, "启用WiFi，开始扫描WiFi...");
     WiFiManager::instance().scan_start();
 };
-extern "C" void action_on_wifi_disabled(lv_event_t * e) {};
+extern "C" void action_on_wifi_disabled(lv_event_t * e) {
+	WiFiManager::instance().scan_stop(); // 关闭扫描
+	//重置WiFi显示列表
+	eez::Value wifi_record_list_value = eez::flow::getGlobalVariable(FLOW_GLOBAL_VARIABLE_WIFI_RECORD_LIST);
+    eez::ArrayValue *array = wifi_record_list_value.getArray();
+	for (int i = 0; i < array->arraySize; i++) {
+		WiFiRecordValue record = array->values[i];
+		record.ssid("");
+		record.rssi(0);
+		record.active(false);
+	}
+};
 extern "C" void action_on_wifi_status_switch(lv_event_t * e) {};
 
 extern "C" void action_on_wifi_connect(lv_event_t *e) {
@@ -157,6 +168,22 @@ extern "C" void action_update_loading(lv_event_t * e) {
 	
 };
 
+std::string wifi_enabled_text = "未启用";
+
+extern "C" const char *get_var_wifi_enabled_text() {
+    return wifi_enabled_text.c_str();
+}
+
+extern "C" void set_var_wifi_enabled_text(const char *value) {
+    wifi_enabled_text = value;
+}
+
+void action_on_wifi_connected_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
+	ESP_LOGI(TAG, "测试WiFi事件");
+	set_var_wifi_enabled_text("WiFi Name");
+}
+
 void actions_init() {
   lv_obj_add_event_cb(objects.main_screen, action_bluetooth_record_update_event, MY_EVENT_UPDATE_DEVICE, NULL);
+	esp_event_handler_register(WIFI_EVENT, WIFI_EVENT_STA_CONNECTED, &action_on_wifi_connected_event, nullptr);
 }

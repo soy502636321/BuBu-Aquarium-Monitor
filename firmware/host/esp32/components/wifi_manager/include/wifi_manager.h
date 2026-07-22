@@ -18,6 +18,39 @@
 // 枚举定义（enum class 类型安全）
 // ============================================================================
 
+// ============ 标准 802.11 原因码 (1-24) ============
+#define WIFI_REASON_UNSPECIFIED              1   // 未知原因
+#define WIFI_REASON_AUTH_EXPIRE              2   // 认证过期
+#define WIFI_REASON_AUTH_LEAVE               3   // 发起方取消认证
+#define WIFI_REASON_ASSOC_EXPIRE             4   // 关联过期
+#define WIFI_REASON_ASSOC_TOOMANY            5   // 关联数过多
+#define WIFI_REASON_NOT_AUTHED               6   // 未认证
+#define WIFI_REASON_NOT_ASSOCED              7   // 未关联
+#define WIFI_REASON_ASSOC_LEAVE              8   // 发起方取消关联
+#define WIFI_REASON_ASSOC_NOT_AUTHED         9   // 关联但未认证
+#define WIFI_REASON_DISASSOC_PWRCAP          10  // 功率不足断开
+#define WIFI_REASON_DISASSOC_SUPCHAN         11  // 信道不支持
+#define WIFI_REASON_IE_INVALID               13  // IE无效
+#define WIFI_REASON_MIC_FAILURE              14  // MIC校验失败（密码错误）
+#define WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT   15  // 4次握手超时（密码错误）
+#define WIFI_REASON_GROUP_KEY_UPDATE_TIMEOUT 16  // 组密钥更新超时
+#define WIFI_REASON_IE_IN_4WAY_DIFFERS       17  // IE在4次握手中不匹配
+#define WIFI_REASON_GROUP_CIPHER_INVALID     18  // 组加密方式无效
+#define WIFI_REASON_PAIRWISE_CIPHER_INVALID  19  // 点对点加密无效
+#define WIFI_REASON_AKMP_INVALID             20  // AKMP无效
+#define WIFI_REASON_UNSUPP_RSN_IE_VERSION    21  // RSN版本不支持
+#define WIFI_REASON_INVALID_RSN_IE_CAP       22  // RSN能力无效
+#define WIFI_REASON_802_1X_AUTH_FAILED       23  // 802.1X认证失败
+#define WIFI_REASON_CIPHER_SUITE_REJECTED    24  // 加密套件被拒绝
+
+// ============ ESP32 自定义原因码 (200+) ============
+#define WIFI_REASON_BEACON_TIMEOUT           200 // 信标超时（信号弱）
+#define WIFI_REASON_NO_AP_FOUND              201 // 未找到AP
+#define WIFI_REASON_AUTH_FAIL                202 // 认证失败（密码错误）
+#define WIFI_REASON_ASSOC_FAIL               203 // 关联失败
+#define WIFI_REASON_HANDSHAKE_TIMEOUT        204 // 握手超时
+#define WIFI_REASON_CRYPTO_INIT_FAIL         214 // 加密初始化失败
+
 enum class WiFiStatus : uint8_t {
     DISCONNECTED = 0,
     CONNECTING,
@@ -132,6 +165,8 @@ public:
      */
     esp_err_t scan_start(uint16_t scan_time_ms = 300, bool show_hidden = true);
     
+    esp_err_t scan_stop();
+    
     /**
      * @brief 获取扫描结果（同步，需等待扫描完成）
      */
@@ -172,6 +207,9 @@ public:
     bool is_connected() const { return m_info.status == WiFiStatus::CONNECTED; }
     std::optional<int8_t> get_rssi() const;
     std::optional<std::string> get_ip() const;
+    
+    // 错误信息（最简单）
+    std::string getErrorMessage(int reason);
 
     // ----------------------------------------------------------------
     // 回调注册

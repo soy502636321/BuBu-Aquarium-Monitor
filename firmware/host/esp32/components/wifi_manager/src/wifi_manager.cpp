@@ -56,6 +56,76 @@ static std::string bssid_to_string(const uint8_t bssid[6]) {
     return std::string(buf);
 }
 
+
+std::string WiFiManager::getErrorMessage(int reason) {
+switch (reason) {
+        // 认证相关 (1-24)
+        case WIFI_REASON_UNSPECIFIED:
+            return "未知错误";
+        case WIFI_REASON_AUTH_EXPIRE:
+            return "认证超时";
+        case WIFI_REASON_AUTH_LEAVE:
+            return "主动断开认证";
+        case WIFI_REASON_ASSOC_EXPIRE:
+            return "关联超时";
+        case WIFI_REASON_ASSOC_TOOMANY:
+            return "设备数过多，路由器拒绝连接";
+        case WIFI_REASON_NOT_AUTHED:
+            return "未认证";
+        case WIFI_REASON_NOT_ASSOCED:
+            return "未关联";
+        case WIFI_REASON_ASSOC_LEAVE:
+            return "主动断开关联";
+        case WIFI_REASON_ASSOC_NOT_AUTHED:
+            return "关联但未认证";
+        case WIFI_REASON_DISASSOC_PWRCAP:
+            return "功率不足断开";
+        case WIFI_REASON_DISASSOC_SUPCHAN:
+            return "信道不支持断开";
+        case WIFI_REASON_IE_INVALID:
+            return "IE信息无效";
+        case WIFI_REASON_MIC_FAILURE:
+            return "MIC校验失败(密码错误)";
+        case WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT:
+            return "4次握手超时(密码错误或信号弱)";  // ⭐ 最常见
+        case WIFI_REASON_GROUP_KEY_UPDATE_TIMEOUT:
+            return "组密钥更新超时";
+        case WIFI_REASON_IE_IN_4WAY_DIFFERS:
+            return "IE在4次握手中不匹配";
+        case WIFI_REASON_GROUP_CIPHER_INVALID:
+            return "组加密方式无效";
+        case WIFI_REASON_PAIRWISE_CIPHER_INVALID:
+            return "点对点加密方式无效";
+        case WIFI_REASON_AKMP_INVALID:
+            return "AKMP无效";
+        case WIFI_REASON_UNSUPP_RSN_IE_VERSION:
+            return "RSN IE版本不支持";
+        case WIFI_REASON_INVALID_RSN_IE_CAP:
+            return "RSN IE能力无效";
+        case WIFI_REASON_802_1X_AUTH_FAILED:
+            return "802.1X认证失败";
+        case WIFI_REASON_CIPHER_SUITE_REJECTED:
+            return "加密套件被拒绝";
+            
+        // ESP32 自定义错误码 (200+)
+        case WIFI_REASON_BEACON_TIMEOUT:
+            return "信标超时(信号太弱或路由器无响应)";
+        case WIFI_REASON_NO_AP_FOUND:
+            return "未找到AP(SSID不存在或信号太弱)";
+        case WIFI_REASON_AUTH_FAIL:
+            return "认证失败(密码错误)";
+        case WIFI_REASON_ASSOC_FAIL:
+            return "关联失败";
+        case WIFI_REASON_HANDSHAKE_TIMEOUT:
+            return "握手超时";
+        case WIFI_REASON_CRYPTO_INIT_FAIL:
+            return "密码错误";
+            
+        default:
+            return "未知错误";
+    }
+}
+
 // ============================================================================
 // 初始化 / 反初始化
 // ============================================================================
@@ -201,6 +271,19 @@ esp_err_t WiFiManager::scan_start(uint16_t scan_time_ms, bool show_hidden) {
     return ret;
 }
 
+/*停止WiFi扫描*/
+esp_err_t WiFiManager::scan_stop() {
+	esp_err_t err = esp_wifi_scan_stop();
+        if (err == ESP_OK) {
+            ESP_LOGI(TAG, "停止WiFi掃描成功");
+        } else if (err == ESP_ERR_WIFI_STATE) {
+            ESP_LOGW(TAG, "无法停止WiFi扫描，WiFi已连接");
+        } else {
+            ESP_LOGE(TAG, "停止WiFi掃描失敗，错误【%d】", err);
+        }
+        return err;
+};
+
 std::vector<WiFiAPInfo> WiFiManager::get_scan_results() const {
     return m_scan_results;
 }
@@ -219,6 +302,14 @@ esp_err_t WiFiManager::connect(const std::string& ssid, const std::string& passw
         ESP_LOGE(TAG, "SSID cannot be empty");
         return ESP_ERR_INVALID_ARG;
     }
+	UILoadingData* loading_data = new UILoadingData("WiFi正在连接");
+	   EventBus::instance()
+		    .publish(
+		        UI_EVENT,
+		        UIEvent::UI_SHOW_LOADING,
+		        loading_data,
+		        sizeof(UILoadingData)
+			);
 
     ESP_LOGI(TAG, "Connecting to SSID: %s", ssid.c_str());
     
@@ -272,7 +363,7 @@ void WiFiManager::disconnect(bool user_disconnect) {
     esp_wifi_disconnect();
 }
 
-esp_err_t WiFiManager::reconnect() {
+	esp_err_t WiFiManager::reconnect() {
     if (!m_is_initialized) {
         return ESP_ERR_INVALID_STATE;
     }
@@ -405,7 +496,7 @@ void WiFiManager::on_scan_done() {
 }
 
 void WiFiManager::on_connected() {
-    // 获取 IP 地址
+    // 获取 IP 地址,网络连接成功
     esp_netif_t* netif = esp_netif_get_handle_from_ifkey("WIFI_STA_DEF");
     if (netif) {
         esp_netif_ip_info_t ip_info;
@@ -421,9 +512,31 @@ void WiFiManager::on_connected() {
     ESP_LOGI(TAG, "Connected to %s, IP: %s, RSSI: %d dBm",
              m_info.ssid.c_str(), m_info.ip.c_str(), m_info.rssi);
     
+    // 连接成功回调
     if (m_connect_callback) {
         m_connect_callback(true, m_info);
     }
+    
+   // 关闭加载
+   UILoadingData loading_data("WiFi正在连接", [](bool success, void* user_data) {
+			eez_flow_pop_screen(LV_SCR_LOAD_ANIM_NONE, 200, 0);
+	});
+	   EventBus::instance()
+		    .publish(
+		        UI_EVENT,
+		        UIEvent::UI_HIDE_LOADING,
+		        &loading_data,
+		        sizeof(loading_data)
+			);
+	// 发送成功信息
+	    UIToastData* toastData = new UIToastData("WiFi连接成功");
+	    EventBus::instance()
+		    .publish(
+		        UI_EVENT,
+		        UIEvent::UI_SHOW_SUCCESS_TOAST,
+		        toastData,
+		        sizeof(UIToastData)
+			);
 }
 
 void WiFiManager::on_disconnected(wifi_event_sta_disconnected_t* info) {
@@ -452,6 +565,25 @@ void WiFiManager::on_disconnected(wifi_event_sta_disconnected_t* info) {
     if (m_disconnect_callback) {
         m_disconnect_callback();
     }
+   
+	EventBus::instance()
+		    .publish(
+		        UI_EVENT,
+		        UIEvent::UI_HIDE_LOADING,
+		        nullptr,
+		        0
+			);
+			
+	std::string error_message = getErrorMessage(reason);
+	
+	    UIToastData* toastData = new UIToastData(error_message);
+	    EventBus::instance()
+		    .publish(
+		        UI_EVENT,
+		        UIEvent::UI_SHOW_SUCCESS_TOAST,
+		        toastData,
+		        sizeof(UIToastData)
+			);
 }
 
 // ============================================================================
@@ -488,18 +620,6 @@ void WiFiManager::event_handler(void* arg, esp_event_base_t event_base,
     }
     else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         mgr.on_connected(); // 连接网络成功
-        
-		UILoadingData loading_data;
-		loading_data.on_complete = [](bool success, void* user_data) {
-			eez_flow_pop_screen(LV_SCR_LOAD_ANIM_NONE, 200, 0);
-		};
-	    EventBus::instance()
-		    .publish(
-		        UI_EVENT,
-		        static_cast<int32_t>(UIEvent::UI_HIDE_LOADING),
-		        &loading_data,
-		        sizeof(loading_data)
-		    );
         
         // 清理WiFi连接相关的内存
         MqttManager::instance().init();

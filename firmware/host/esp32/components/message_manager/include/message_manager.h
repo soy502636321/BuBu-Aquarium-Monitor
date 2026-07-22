@@ -1,0 +1,15 @@
+/*
+ * message_manager.h
+ *
+ *  Created on: 2026年7月22日
+ *      Author: Hu
+ */
+
+#ifndef COMPONENTS_MESSAGE_MANAGER_INCLUDE_MESSAGE_MANAGER_H_
+#define COMPONENTS_MESSAGE_MANAGER_INCLUDE_MESSAGE_MANAGER_H_
+
+
+
+
+
+#endif /* COMPONENTS_MESSAGE_MANAGER_INCLUDE_MESSAGE_MANAGER_H_ */

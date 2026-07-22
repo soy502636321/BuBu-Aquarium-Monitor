@@ -9,6 +9,12 @@ extern "C" {
 
 #include "lvgl.h"
 
+// Style: test_font_style
+lv_style_t *get_style_test_font_style_MAIN_DEFAULT();
+lv_style_t *get_style_test_font_style_MAIN_CHECKED();
+void add_style_test_font_style(lv_obj_t *obj);
+void remove_style_test_font_style(lv_obj_t *obj);
+
 #ifdef __cplusplus
 }
 #endif

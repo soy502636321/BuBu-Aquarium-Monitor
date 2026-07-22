@@ -1,0 +1,15 @@
+idf_component_register(
+    SRCS
+        "src/message_manager.cpp"
+    INCLUDE_DIRS
+        "include"
+    REQUIRES
+        nvs_flash
+        esp_timer
+        mqtt
+        json
+        common
+        host_info
+        device_manager
+        event_bus    
+)
