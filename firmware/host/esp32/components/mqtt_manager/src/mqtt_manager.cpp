@@ -1,7 +1,7 @@
 #include "mqtt_manager.h"
 #include "event_bus.h"
 #include "data_types.h"
-#include "device_event.h" 
+#include "device_event.hpp" 
 #include "mqtt_config.h"
 #include "mqtt_topic.h"
 

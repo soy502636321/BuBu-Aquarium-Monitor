@@ -509,8 +509,7 @@ void WiFiManager::on_connected() {
     update_info_from_ap();
     update_status(WiFiStatus::CONNECTED);
     
-    ESP_LOGI(TAG, "Connected to %s, IP: %s, RSSI: %d dBm",
-             m_info.ssid.c_str(), m_info.ip.c_str(), m_info.rssi);
+    ESP_LOGI(TAG, "Connected to %s, IP: %s, RSSI: %d dBm", m_info.ssid.c_str(), m_info.ip.c_str(), m_info.rssi);
     
     // 连接成功回调
     if (m_connect_callback) {

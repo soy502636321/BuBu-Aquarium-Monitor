@@ -11,12 +11,6 @@ extern "C" {
 // enum declarations
 
 typedef enum {
-    DeviceType_device_unknown = 0,
-    DeviceType_sensor_water_temp = 1,
-    DeviceType_sensor_water_level = 2
-} DeviceType;
-
-typedef enum {
     content_page_t_HOME_PAGE = 0,
     content_page_t_DEVICE_SHORTCUT_PAGE = 1,
     content_page_t_DEVICE_SETTING_PAGE = 2,
@@ -121,7 +115,8 @@ enum FlowGlobalVariables {
     FLOW_GLOBAL_VARIABLE_WIFI_RECORD_AUTO_CONNECT = 40,
     FLOW_GLOBAL_VARIABLE_LOADING_TEXT = 41,
     FLOW_GLOBAL_VARIABLE_BLUETOOTH_ENABLED_TEXT = 42,
-    FLOW_GLOBAL_VARIABLE_WIFI_LAST_RECORD = 43
+    FLOW_GLOBAL_VARIABLE_WIFI_LAST_RECORD = 43,
+    FLOW_GLOBAL_VARIABLE_BLUETOOTH_RECORD_INDEX = 44
 };
 
 // Native global variables

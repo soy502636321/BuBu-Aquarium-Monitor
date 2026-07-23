@@ -1,0 +1,11 @@
+idf_component_register(
+    SRCS
+    	"src/sd_card_manager.cpp"
+    INCLUDE_DIRS
+        "include"
+    REQUIRES
+        event_bus
+        driver 
+        sdmmc
+        fatfs
+)

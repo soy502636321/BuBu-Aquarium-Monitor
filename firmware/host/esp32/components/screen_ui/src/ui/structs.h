@@ -42,10 +42,9 @@ enum MessageFlowStructureFields {
 enum DeviceFlowStructureFields {
     FLOW_STRUCTURE_DEVICE_FIELD_ID = 0,
     FLOW_STRUCTURE_DEVICE_FIELD_NAME = 1,
-    FLOW_STRUCTURE_DEVICE_FIELD_TYPE = 2,
-    FLOW_STRUCTURE_DEVICE_FIELD_CATEGORY = 3,
-    FLOW_STRUCTURE_DEVICE_FIELD_ICON = 4,
-    FLOW_STRUCTURE_DEVICE_FIELD_ACTIVE = 5,
+    FLOW_STRUCTURE_DEVICE_FIELD_CATEGORY = 2,
+    FLOW_STRUCTURE_DEVICE_FIELD_ICON = 3,
+    FLOW_STRUCTURE_DEVICE_FIELD_ACTIVE = 4,
     FLOW_STRUCTURE_DEVICE_NUM_FIELDS
 };
 
@@ -161,13 +160,6 @@ struct DeviceValue {
     }
     void name(const char *name) {
         value.getArray()->values[FLOW_STRUCTURE_DEVICE_FIELD_NAME] = StringValue(name);
-    }
-    
-    DeviceType type() {
-        return (DeviceType)value.getArray()->values[FLOW_STRUCTURE_DEVICE_FIELD_TYPE].getInt();
-    }
-    void type(DeviceType type) {
-        value.getArray()->values[FLOW_STRUCTURE_DEVICE_FIELD_TYPE] = IntegerValue((int)type);
     }
     
     DeviceCategory category() {

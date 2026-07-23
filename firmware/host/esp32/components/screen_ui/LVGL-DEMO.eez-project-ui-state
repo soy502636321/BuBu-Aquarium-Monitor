@@ -1,15 +1,15 @@
 {
   "navigation": {
     "selectedUserPageObject": "[LVGL-DEMO.eez-project]:/userPages/0",
-    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/16",
+    "selectedUserWidgetObject": "[LVGL-DEMO.eez-project]:/userWidgets/26",
     "selectedGlobalVariableObject": "[LVGL-DEMO.eez-project]:/variables/globalVariables/47",
-    "selectedStructureObject": "[LVGL-DEMO.eez-project]:/variables/structures/2",
-    "selectedEnumObject": "[LVGL-DEMO.eez-project]:/variables/enums/4",
+    "selectedStructureObject": "[LVGL-DEMO.eez-project]:/variables/structures/1",
+    "selectedEnumObject": "[LVGL-DEMO.eez-project]:/variables/enums/3",
     "selectedStyleObject": "[LVGL-DEMO.eez-project]:/lvglStyles/styles/0",
     "selectedFontObject": "[LVGL-DEMO.eez-project]:/fonts/0",
     "selectedBitmapObject": "[LVGL-DEMO.eez-project]:/bitmaps/13",
     "subnavigationSelectedItems": {
-      "variables-tab/sub-navigation/selected-item": "Global"
+      "variables-tab/sub-navigation/selected-item": "Structs"
     }
   },
   "layoutModel": {
@@ -164,7 +164,7 @@
                 {
                   "type": "tabset",
                   "id": "#24b9b613-47e0-4737-8be3-ca7fd123eeea",
-                  "weight": 0.9672618595915322,
+                  "weight": 0.4121553692238443,
                   "enableClose": false,
                   "children": [
                     {
@@ -180,7 +180,7 @@
                 {
                   "type": "tabset",
                   "id": "#f1537029-6b77-46c7-a7ce-8bb46ead01a2",
-                  "weight": 0.812499962056887,
+                  "weight": 1.3676064524245743,
                   "enableClose": false,
                   "children": [
                     {
@@ -199,7 +199,7 @@
               "type": "tabset",
               "id": "EDITORS",
               "weight": 50.4025739290306,
-              "selected": 7,
+              "selected": 2,
               "enableDeleteWhenEmpty": false,
               "enableClose": false,
               "children": [
@@ -456,7 +456,7 @@
                 {
                   "type": "tabset",
                   "id": "#4ec54923-3466-48a9-83b0-f0cde8f0c8b3",
-                  "weight": 1.27734375,
+                  "weight": 2.199751861042184,
                   "children": [
                     {
                       "type": "tab",
@@ -472,7 +472,7 @@
                 {
                   "type": "tabset",
                   "id": "#0e283413-96a0-4cbd-944a-1fa928b8e344",
-                  "weight": 1.72265625,
+                  "weight": 0.8002481389578163,
                   "children": [
                     {
                       "type": "tab",

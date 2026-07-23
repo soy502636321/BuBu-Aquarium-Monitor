@@ -25,9 +25,11 @@
 #include "vars.h"
 
 #include "host_info.h"
+#include "sd_card_manager.hpp"
+#include "fs_manager.hpp"
 #include "wifi_manager.h"
 #include "bluetooth_manager.h"
-#include "device_manager.h"
+#include "device_manager.hpp"
 #include "event_bus.h"
 
 #define EXAMPLE_DISPLAY_ROTATION LV_DISP_ROT_90
@@ -109,6 +111,10 @@ extern "C" void app_main(void)
     auto& hostInfo = HostInfo::instance();
 
 	EventBus::instance().init();
+	// SD Card初始化
+	SDCardManager::getInstance().init();
+	// FS 初始化
+	FSManager::getInstance().init();
 	// WiFi初始化
     WiFiManager::instance().init(); 
     // 蓝牙初始化

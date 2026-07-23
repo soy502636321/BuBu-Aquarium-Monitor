@@ -6,7 +6,7 @@
 #include "wifi_manager.h"
 #include "event_bus.h"
 #include "wifi_event.h"
-#include "device_event.h"
+#include "device_event.hpp"
 #include "event_bus.h"
 #include "ui_event.h"
 
@@ -100,8 +100,20 @@ extern "C" void action_bluetooth_stop_scan(lv_event_t *e) {
 	}
 }
 
-extern "C" void action_connect_bluetooth(lv_event_t *e) {
-  printf("action_connect_bluetooth...");
+extern "C" void action_on_connect_bluetooth(lv_event_t *e) {
+  	eez::Value recordIndexValue = eez::flow::getUserProperty(ACTION_ON_CONNECT_BLUETOOTH_PROPERTY_RECORD_INDEX);
+	int32_t recordIndex = recordIndexValue.getInt32();
+	
+	/*
+	用户连接蓝牙事件
+    EventBus::instance()
+    .publish(
+        WIFI_USER_EVENT,
+        static_cast<int32_t>(WiFiUserEvent::WIFI_CONNECT),
+        password,
+        strlen(password) + 1
+    );
+    */
 }
 
 extern "C" void action_bluetooth_record_update_event(lv_event_t *e) {}
@@ -180,7 +192,10 @@ extern "C" void set_var_wifi_enabled_text(const char *value) {
 
 void action_on_wifi_connected_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data) {
 	ESP_LOGI(TAG, "测试WiFi事件");
-	set_var_wifi_enabled_text("WiFi Name");
+	wifi_event_sta_connected_t *event = (wifi_event_sta_connected_t *)event_data;
+	std::string ssid;
+	ssid.assign((char*)event->ssid, event->ssid_len);
+	set_var_wifi_enabled_text(ssid.c_str());
 }
 
 void actions_init() {
