@@ -15,9 +15,13 @@ ESP_EVENT_DECLARE_BASE(BLUETOOTH_USER_EVENT);
 
 enum BluetoothUserEvent : uint8_t
 {
-    BLUETOOTH_CONNECT = 0,
+    BLUETOOTH_USER_EVENT_CONNECT_REQUEST = 0,
+	BLUETOOTH_USER_EVENT_DISCONNECT_REQUEST, // 请求断开
+    BLUETOOTH_USER_EVENT_CONNECTED,          // 连接成功
+    BLUETOOTH_USER_EVENT_DISCONNECTED,       // 断开连接
+    BLUETOOTH_USER_EVENT_ERROR,              // 错误
     // -------------------------
-    BLUETOOTH_EVENT_COUNT  // 计数标记
+    BLUETOOTH_USER_EVENT_COUNT  // 计数标记
 };
 
 

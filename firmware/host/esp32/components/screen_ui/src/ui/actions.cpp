@@ -106,9 +106,9 @@ extern "C" void action_on_connect_bluetooth(lv_event_t *e) {
     EventBus::instance()
     .publish(
         BLUETOOTH_USER_EVENT,
-        static_cast<int32_t>(BluetoothUserEvent::BLUETOOTH_CONNECT),
-        nullptr,
-        0
+        static_cast<int32_t>(BluetoothUserEvent::BLUETOOTH_USER_EVENT_CONNECT_REQUEST),
+        &recordIndex,
+        sizeof(recordIndex)
     );
 }
 
