@@ -16,5 +16,8 @@
 .idea/
 *.iml
 
+# EEZ Studio
+*.eez-project-ui-state
+
 # Logs
 *.log

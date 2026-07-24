@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "bluetooth_manager.h"
+#include "bluetooth_event.hpp"
 
 #include "esp_log.h"
 #include "nvs_flash.h"

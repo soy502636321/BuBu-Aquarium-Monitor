@@ -1,6 +1,7 @@
 idf_component_register(
     SRCS
-        "src/bluetooth_manager.cpp"
+        "src/bluetooth_event.cpp"
+		"src/bluetooth_manager.cpp"
     INCLUDE_DIRS
         "include"
     REQUIRES

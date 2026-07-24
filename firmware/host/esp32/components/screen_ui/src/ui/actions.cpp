@@ -2,10 +2,10 @@
 
 #include "bluetooth_manager.h"
 #include "wifi_manager.h"
-#include "bluetooth_manager.h"
 #include "wifi_manager.h"
 #include "event_bus.h"
 #include "wifi_event.h"
+#include "bluetooth_event.hpp"
 #include "device_event.hpp"
 #include "event_bus.h"
 #include "ui_event.h"
@@ -24,8 +24,7 @@
 
 static const char *TAG = "BuBu-Aquarium-Monitor[ui-actions]";
 
-lv_event_code_t MY_EVENT_UPDATE_DEVICE =
-    (lv_event_code_t)(LV_EVENT_VALUE_CHANGED + 1);
+lv_event_code_t MY_EVENT_UPDATE_DEVICE = (lv_event_code_t)(LV_EVENT_VALUE_CHANGED + 1);
 
 void action_home_click(lv_event_t *e) {
   printf("Hello World!");
@@ -104,16 +103,13 @@ extern "C" void action_on_connect_bluetooth(lv_event_t *e) {
   	eez::Value recordIndexValue = eez::flow::getUserProperty(ACTION_ON_CONNECT_BLUETOOTH_PROPERTY_RECORD_INDEX);
 	int32_t recordIndex = recordIndexValue.getInt32();
 	
-	/*
-	用户连接蓝牙事件
     EventBus::instance()
     .publish(
-        WIFI_USER_EVENT,
-        static_cast<int32_t>(WiFiUserEvent::WIFI_CONNECT),
-        password,
-        strlen(password) + 1
+        BLUETOOTH_USER_EVENT,
+        static_cast<int32_t>(BluetoothUserEvent::BLUETOOTH_CONNECT),
+        nullptr,
+        0
     );
-    */
 }
 
 extern "C" void action_bluetooth_record_update_event(lv_event_t *e) {}
