@@ -10,12 +10,10 @@
 
 
 #include <vector>
-#include <map>
 #include <memory>
 #include <mutex>
 #include <functional>
 #include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
 #include "protocol_base.hpp"
 
 class DataReceiver {

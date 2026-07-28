@@ -17,3 +17,4 @@ dependencies:
   #   # All dependencies of `main` are public by default.
   #   public: true
   joltwallet/littlefs: ==1.22.3
+  espressif/esp-modbus: '*'

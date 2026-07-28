@@ -9,4 +9,6 @@ idf_component_register(
         esp_timer
         screen_ui
         bt
+		data_gateway
+		common
 )

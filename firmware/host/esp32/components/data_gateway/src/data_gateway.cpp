@@ -4,114 +4,72 @@
  *  Created on: 2026年7月23日
  *      Author: Hu
  */
-// components/data_gateway/src/data_gateway.cpp
 #include "data_gateway.hpp"
+#include "data_context.hpp"
+#include "processors/hex_to_packet_processor.hpp"
+#include "processors/packet_validator_processor.hpp"
+#include "processors/output_dispatcher_processor.hpp"
+
 #include "esp_log.h"
+#include "esp_timer.h"
 
-static const char* TAG = "DataGateway";
+#define TAG "BuBu-Aquarium-Monitor[data_gateway]"
 
-bool DataGateway::init(const DataGatewayConfig& config) {
-    if (m_running) {
-        ESP_LOGW(TAG, "Gateway already initialized");
-        return true;
-    }
-    
-    m_config = config;
-    
-    // 设置解析器的回调（默认空，由外部设置）
-    // m_parser.setRecordCallback(...);
-    
-    // 注册数据接收器的回调
-    m_receiver.setDataCallback([this](const std::vector<uint8_t>& data) {
-        this->onDataReceived(data);
-    });
-    
-    ESP_LOGI(TAG, "DataGateway initialized");
-    return true;
+DataGateway& DataGateway::instance()
+{
+	static DataGateway instance;
+
+	return instance;
 }
 
-void DataGateway::deinit() {
-    stop();
-    ESP_LOGI(TAG, "DataGateway deinitialized");
+void DataGateway::init() {
+	if (initialized) return;
+
+	setupPipeline();
+
+	initialized = true;
 }
 
-bool DataGateway::start() {
-    if (m_running) {
-        ESP_LOGW(TAG, "Gateway already running");
-        return true;
-    }
-    
-    if (!m_receiver.startAll()) {
-        m_last_error = "Failed to start receiver";
-        ESP_LOGE(TAG, "%s", m_last_error.c_str());
-        return false;
-    }
-    
-    m_running = true;
-    ESP_LOGI(TAG, "DataGateway started");
-    return true;
+void DataGateway::setupPipeline() {
+	pipeline
+		.addProcessor(new PacketValidatorProcessor())  // 第一步先验证数据是否正确
+		.addProcessor(new HexToPacketProcessor())
+		.addProcessor(new OutputDispatcherProcessor())
+	;
 }
 
-void DataGateway::stop() {
-    if (!m_running) {
-        return;
-    }
-    
-    m_receiver.stopAll();
-    m_running = false;
-    ESP_LOGI(TAG, "DataGateway stopped");
+void DataGateway::receive(const uint8_t* data, size_t length, DataSource source) {
+	if(data == nullptr || length == 0)
+	{
+		ESP_LOGW(TAG, "错误的数据");
+		return;
+	}
+
+	if(pipeline.size() <= 0)
+	{
+		ESP_LOGW(TAG, "数据处理管道没添加");
+		return;
+	}
+
+	DataContext context;
+
+	/*
+	 * 创建 DataPacket
+	 */
+	context.packet.source = source;
+	context.packet.timestamp = esp_timer_get_time() / 1000;
+	// 保存原始HEX
+	context.packet.payload.assign(data, data + length);
+	/*
+	 * 默认状态
+	 */
+	context.packet.valid = false;
+	/*
+	 * 进入处理管道
+	 */
+	pipeline.process(context);
 }
 
-bool DataGateway::registerProtocol(std::unique_ptr<ProtocolBase> protocol) {
-    return m_receiver.registerProtocol(std::move(protocol));
-}
-
-ProtocolBase* DataGateway::getProtocol(ProtocolType type) {
-    return m_receiver.getProtocol(type);
-}
-
-bool DataGateway::sendCommand(const std::string& device_id, const std::vector<uint8_t>& data) {
-    // 根据设备ID找到对应的协议
-    // 简化实现：发送到第一个可用的协议
-    if (m_receiver.getProtocolCount() == 0) {
-        m_last_error = "No protocol available";
-        return false;
-    }
-    
-    auto* protocol = m_receiver.getProtocol(ProtocolType::TTL_SERIAL);
-    if (protocol == nullptr) {
-        m_last_error = "No TTL protocol available";
-        return false;
-    }
-    
-    return protocol->sendCommand(data);
-}
-
-bool DataGateway::sendCommand(ProtocolType type, const std::vector<uint8_t>& data) {
-    auto* protocol = m_receiver.getProtocol(type);
-    if (protocol == nullptr) {
-        m_last_error = "Protocol not found";
-        return false;
-    }
-    
-    return protocol->sendCommand(data);
-}
-
-void DataGateway::onDataReceived(const std::vector<uint8_t>& data) {
-    // 转发给解析器
-    m_parser.parseRawData(data);
-}
-
-std::string DataGateway::getStatus() const {
-    std::string status = "DataGateway: ";
-    status += m_running ? "RUNNING" : "STOPPED";
-    status += ", protocols: " + std::to_string(m_receiver.getProtocolCount());
-    return status;
-}
-
-size_t DataGateway::getProtocolCount() const {
-    return m_receiver.getProtocolCount();
-}
 
 
 

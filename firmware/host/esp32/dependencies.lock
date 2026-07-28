@@ -9,6 +9,16 @@ dependencies:
       registry_url: https://components.espressif.com
       type: service
     version: 0.5.3
+  espressif/esp-modbus:
+    component_hash: a52eabcf5e1f81f16f730c70981e69338ea33aee9c44fa512c644d1d8942aa16
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 2.1.3
   espressif/esp_lcd_st77922:
     component_hash: 7e20e9eda5d6d22b1341b630f5bb6610c8bfb395380f07878c82eaf00828eab7
     dependencies:
@@ -45,10 +55,11 @@ dependencies:
       type: service
     version: 8.4.0
 direct_dependencies:
+- espressif/esp-modbus
 - espressif/esp_lcd_st77922
 - idf
 - joltwallet/littlefs
 - lvgl/lvgl
-manifest_hash: 36f0ee7ec1bba82f86018859c89b4a39b1d87646caca7d96a734a22fc0600e57
+manifest_hash: 9c924b480bd9bad167d67321f87005995271b53e3cbff707c9a1dc9ca5abe219
 target: esp32s3
 version: 2.0.0

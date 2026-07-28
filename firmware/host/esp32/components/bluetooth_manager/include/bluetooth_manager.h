@@ -5,6 +5,8 @@
 #include "esp_event.h"
 
 #define BLUETOOTH_DEVICE_MAX_SIZE 10
+#define BLUETOOTH_SERVICE_DATA_UUID "4eb240fb-aea0-4235-9b45-af0f9c76852b"
+#define BLUETOOTH_SERVICE_COMMAND_UUID "94d263bf-1df5-4ddb-901c-e2902511b385"
 
 struct bluetooth_device_t {
   char name[32];

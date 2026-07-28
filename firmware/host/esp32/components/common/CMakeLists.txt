@@ -7,9 +7,8 @@ idf_component_register(
     REQUIRES
         nvs_flash
         esp_timer
-        mqtt
-        json
-        host_info
+		host_info
         device_manager
-        event_bus          
+        event_bus
+		json
 )

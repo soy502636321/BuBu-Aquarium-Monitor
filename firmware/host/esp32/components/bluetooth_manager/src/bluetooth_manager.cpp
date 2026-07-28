@@ -6,6 +6,10 @@
 #include "bluetooth_manager.h"
 #include "bluetooth_event.hpp"
 
+#include "utils.hpp"
+#include "data_packet.hpp"
+#include "data_gateway.hpp"
+
 #include "esp_log.h"
 #include "esp_event.h"
 #include "nvs_flash.h"
@@ -21,10 +25,11 @@
 #include "nimble/nimble_port_freertos.h"
 
 #include "host/ble_hs.h"
+#include "host/ble_uuid.h"
 #include "host/ble_hs_adv.h"
-//#include "host/ble_gattc.h"   // ✅ 包含这个头文件
 
 #include "services/gap/ble_svc_gap.h"
+#include "services/gatt/ble_svc_gatt.h"
 
 static const char *TAG = "BuBu-Aquarium-Monitor[bluetooth_manager]";
 
@@ -195,21 +200,27 @@ int BluetoothManager::service_discovery_cb(
     }
 
     // 处理发现的每个服务
-    if (service != NULL) {
-        if (service->uuid.u.type == BLE_UUID_TYPE_16) {
-            uint16_t uuid16 = service->uuid.u16.value;
-            ESP_LOGI(TAG, "📋 Found service: 0x%04X, start=%d, end=%d", 
-                     uuid16, service->start_handle, service->end_handle);
-            
-            // 检查是否是Heart Rate Service (0x180D)
-            if (uuid16 == 0x180D) {
-                ESP_LOGI(TAG, "❤️ Found Heart Rate Service!");
-				ESP_LOGI(TAG, "  start_handle: 0x%04X", manager.heart_rate_start_handle);
-            	ESP_LOGI(TAG, "  end_handle:   0x%04X", manager.heart_rate_end_handle);
-                manager.heart_rate_start_handle = service->start_handle;
-                manager.heart_rate_end_handle = service->end_handle;
-            }
-        }
+    if (service != NULL && service->uuid.u.type == BLE_UUID_TYPE_128) {
+        	char uuid_str[40];
+    		ble_uuid_to_str((ble_uuid_t*)&service->uuid, uuid_str);
+
+        	ESP_LOGI(
+				TAG,
+				"Found 128-bit service UUID=%s start=%d end=%d",
+				uuid_str,
+				service->start_handle,
+				service->end_handle
+			);
+
+        	if(strcmp(uuid_str, BLUETOOTH_SERVICE_DATA_UUID) == 0)
+        	{
+        		ESP_LOGI(TAG, "发现采集板数据上报服务，服务UUID【%s】", uuid_str);
+        		manager.heart_rate_start_handle =
+					service->start_handle;
+
+        		manager.heart_rate_end_handle =
+					service->end_handle;
+        	}
     }
     
     return 0;
@@ -504,6 +515,9 @@ int BluetoothManager::event_handler(struct ble_gap_event *event, void *arg) {
 	  }
 	  case BLE_GAP_EVENT_NOTIFY_RX: {
 		  ESP_LOGI(TAG, "收到心跳数据");
+
+	  	uint8_t buffer[10] = {0};  // 全部初始化为 0
+	  	DataGateway::instance().receive(buffer, sizeof(buffer), DataSource::BLE);
     uint16_t len = OS_MBUF_PKTLEN(event->notify_rx.om);
     uint8_t *data = event->notify_rx.om->om_data;
     
