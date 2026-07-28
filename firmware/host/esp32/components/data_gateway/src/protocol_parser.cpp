@@ -122,14 +122,14 @@ DeviceRecord ProtocolParser::parseDataFrame(const std::vector<uint8_t>& data) {
         memcpy(&hum, data.data() + 4, 4);
         
         DataPoint temp_point;
-        temp_point.type = "temperature";
+        //temp_point.type = "temperature";
         temp_point.value = temp;
         temp_point.unit = "°C";
         temp_point.quality = 0;
         record.points.push_back(temp_point);
         
         DataPoint hum_point;
-        hum_point.type = "humidity";
+       // hum_point.type = "humidity";
         hum_point.value = hum;
         hum_point.unit = "%";
         hum_point.quality = 0;

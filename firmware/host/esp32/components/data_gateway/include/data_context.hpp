@@ -7,10 +7,10 @@
 
 #include "data_packet.hpp"
 
-struct DataContext
+		struct DataContext
 {
 	// 协议解析结果
-	DataPacket packet;
+		DataPacket packet;
 
 	// 当前产生的事件
 	//Event event;

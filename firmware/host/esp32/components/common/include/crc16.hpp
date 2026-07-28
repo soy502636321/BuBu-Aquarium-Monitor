@@ -47,9 +47,7 @@ namespace Utils
 
 
 
-		static inline bool verify(
-			const uint8_t* data,
-			size_t length)
+		static inline bool verify(const uint8_t* data,size_t length)
 		{
 			if(length < 3)
 			{

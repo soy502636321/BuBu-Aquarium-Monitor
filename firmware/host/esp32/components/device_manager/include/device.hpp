@@ -69,8 +69,74 @@ enum class CommandTarget : uint8_t {
     FIRMWARE = 6        // 固件升级
 };
 
+enum class DataPointType : uint8_t {
+    // ===== 水质参数 (0-19) =====
+    TEMPERATURE = 0,      // 温度
+    PH = 1,               // pH值
+    TDS = 2,              // 总溶解固体
+    TURBIDITY = 3,        // 浊度
+    OXYGEN = 4,           // 溶解氧
+    AMMONIA = 5,          // 氨氮
+    NITRITE = 6,          // 亚硝酸盐
+    NITRATE = 7,          // 硝酸盐
+    ORP = 8,              // 氧化还原电位
+    SALINITY = 9,         // 盐度
+    CO2 = 10,             // 二氧化碳
+    GH = 11,              // 总硬度
+    KH = 12,              // 碳酸盐硬度
+    CALCIUM = 13,         // 钙
+    MAGNESIUM = 14,       // 镁
+    CHLORINE = 15,        // 余氯
+    OZONE = 16,           // 臭氧
+    REDOX = 17,           // 氧化还原
+
+    // ===== 液位与水量 (20-29) =====
+    WATER_LEVEL = 20,     // 水位
+    WATER_VOLUME = 21,    // 水量
+    EVAPORATION = 22,     // 蒸发量
+
+    // ===== 设备状态 (30-49) =====
+    HEATER_STATE = 30,    // 加热器状态
+    HEATER_POWER = 31,    // 加热器功率
+    PUMP_STATE = 32,      // 水泵状态
+    PUMP_SPEED = 33,      // 水泵转速
+    LIGHT_STATE = 34,     // 灯光状态
+    LIGHT_INTENSITY = 35, // 灯光强度
+    LIGHT_COLOR_TEMP = 36,// 灯光色温
+    AIR_PUMP_STATE = 37,  // 气泵状态
+    FEEDER_STATE = 38,    // 喂食器状态
+    UV_STATE = 39,        // UV杀菌灯状态
+    CHILLER_STATE = 40,   // 冷水机状态
+    SOLENOID_STATE = 41,  // 电磁阀状态
+    FAN_STATE = 42,       // 风扇状态
+    POWER = 43,           // 总功率
+    CURRENT = 44,         // 电流
+    VOLTAGE = 45,         // 电压
+
+    // ===== 环境参数 (50-59) =====
+    ROOM_TEMP = 50,       // 室温
+    ROOM_HUMIDITY = 51,   // 环境湿度
+    ATM_PRESSURE = 52,    // 大气压
+    AMBIENT_LIGHT = 53,   // 环境光照
+
+    // ===== 倾角传感器 (60-69) =====
+    AXIS_X = 60,          // X轴倾角
+    AXIS_Y = 61,          // Y轴倾角
+    AXIS_Z = 62,          // Z轴倾角
+
+    // ===== 时间与统计 (70-79) =====
+    LAST_FEED_TIME = 70,  // 上次喂食时间
+    LAST_WATER_CHANGE = 71,// 上次换水时间
+    PUMP_RUNTIME = 72,    // 水泵运行时长
+    HEATER_RUNTIME = 73,  // 加热器运行时长
+    LIGHT_RUNTIME = 74,   // 灯光运行时长
+    UPTIME = 75,          // 系统运行时间
+
+    COUNT = 76            // 总数量（必须放最后）
+};
+
 struct DataPoint {
-    std::string type;        // 数据类型："temperature", "humidity", "state", "duty_cycle"
+    DataPointType type;        // 数据类型："temperature", "humidity", "state", "duty_cycle"
     float value;             // 数值
     std::string unit;        // 单位："°C", "%", "pH", "mg/L", "" (开关无单位)
     uint8_t quality = 0;     // 0=有效, 1=可疑, 2=无效
@@ -82,7 +148,7 @@ struct DataPoint {
     
     // 转换为字符串（便于调试）
     std::string toString() const {
-        return type + "=" + std::to_string(value) + (unit.empty() ? "" : unit);
+        return "=" + std::to_string(value) + (unit.empty() ? "" : unit);
     }
 };
 

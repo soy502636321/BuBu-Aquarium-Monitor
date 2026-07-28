@@ -12,10 +12,8 @@
 
 #include "esp_log.h"
 #include "esp_event.h"
-#include "nvs_flash.h"
 
 #include "freertos/FreeRTOS.h"
-#include "freertos/event_groups.h"
 
 #include "eez-flow.h"
 #include "structs.h"
@@ -29,7 +27,6 @@
 #include "host/ble_hs_adv.h"
 
 #include "services/gap/ble_svc_gap.h"
-#include "services/gatt/ble_svc_gatt.h"
 
 static const char *TAG = "BuBu-Aquarium-Monitor[bluetooth_manager]";
 
@@ -515,54 +512,13 @@ int BluetoothManager::event_handler(struct ble_gap_event *event, void *arg) {
 		  break;
 	  }
 	  case BLE_GAP_EVENT_NOTIFY_RX: {
-		  ESP_LOGI(TAG, "收到心跳数据");
-
-	  	uint8_t buffer[10] = {0};  // 全部初始化为 0
-	  	DataGateway::instance().receive(buffer, sizeof(buffer), DataSource::BLE);
-    uint16_t len = OS_MBUF_PKTLEN(event->notify_rx.om);
-    uint8_t *data = event->notify_rx.om->om_data;
-    
-    		ESP_LOGI(TAG, "📩 Heart Rate Notification:");
-    		ESP_LOG_BUFFER_HEX(TAG, data, len);
- 
-    uint8_t flags = data[0];
-    uint16_t heart_rate = 0;
-    uint16_t offset = 1;
- 
-    // ✅ 解析心率值
-    if (flags & 0x01) {
-        // 16-bit 心率值
-        if (len >= 3) {
-            heart_rate = (data[1] << 8) | data[2];
-            offset += 2;
-        }
-    } else {
-        // 8-bit 心率值
-        heart_rate = data[1];
-        offset += 1;
-    }
-    
-    ESP_LOGI(TAG, "❤️ Heart Rate: %d BPM", heart_rate);
-    
-    // ✅ 传感器接触状态
-    if (flags & 0x02) {
-        bool contact = (flags & 0x04) != 0;
-        ESP_LOGI(TAG, "  📍 Sensor Contact: %s", contact ? "YES" : "NO");
-    }
-    
-    // ✅ 能量消耗（如果有）
-    if ((flags & 0x08) && len >= offset + 2) {
-        uint16_t energy = (data[offset] << 8) | data[offset + 1];
-        ESP_LOGI(TAG, "  ⚡ Energy Expended: %d", energy);
-        offset += 2;
-    }
-    
-    // ✅ RR-Interval（如果有）
-    if ((flags & 0x10) && len >= offset + 2) {
-        uint16_t rr = (data[offset] << 8) | data[offset + 1];
-        ESP_LOGI(TAG, "  📊 RR-Interval: %.2f ms", rr / 1024.0);
-    }
-		  break;
+		ESP_LOGI(TAG, "收到心跳数据");
+		uint16_t data_len = OS_MBUF_PKTLEN(event->notify_rx.om);
+		uint8_t *data = event->notify_rx.om->om_data;
+		ESP_LOGI(TAG, "📩 Heart Rate Notification:");
+		ESP_LOG_BUFFER_HEX(TAG, data, data_len);
+	  	DataGateway::instance().receive(data, data_len, DataSource::BLE);
+	  	break;
 	  }
 	  case BLE_GAP_EVENT_MTU: {
 		  
