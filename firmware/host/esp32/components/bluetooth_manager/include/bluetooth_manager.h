@@ -44,9 +44,41 @@ public:
 
   int getDeviceCount();
   
+  void discover_descriptors(uint16_t conn_handle, uint16_t char_handle);
+  
+  // ==================== 描述符发现回调 ====================
+static int descriptor_discovery_cb(
+    uint16_t conn_handle,
+    const struct ble_gatt_error *error,
+        uint16_t characteristic_handle,     // ✅ 添加
+    const struct ble_gatt_dsc *dsc,
+    void *arg);
+  
+    // ✅ 启用通知
+    void enable_heart_rate_notifications(uint16_t conn_handle);
+    
+   // ✅ 回调函数
+    static int notify_callback(uint16_t conn_handle,
+                               const struct ble_gatt_error *error,
+                               struct ble_gatt_attr *attr,
+                               void *arg);
+  
 	static int event_handler(struct ble_gap_event *event, void *arg);
 	
+    //static int gattc_event_handler(struct ble_gattc_event *event, void *arg);
+	
 	static void user_event_handler(void *arg, esp_event_base_t base, int32_t id, void *data);
+	
+	static int service_discovery_cb(
+	    uint16_t conn_handle,
+	    const struct ble_gatt_error *error,
+	    const struct ble_gatt_svc *service,
+	    void *arg);
+	    
+    static int characteristic_discovery_cb(uint16_t conn_handle,
+                                           const struct ble_gatt_error *error,
+                                           const struct ble_gatt_chr *chr,
+                                           void *arg);
 
 private:
   // 构造私有化
@@ -68,6 +100,12 @@ private:
 
   int handleEvent(struct ble_gap_event *event);
   
+    // GATT 事件处理
+    void handleServiceDiscoveryCompleteEvent(struct ble_gattc_event *event);
+    void handleCharacteristicDiscoveredEvent(struct ble_gattc_event *event);
+    void handleNotifyEvent(struct ble_gattc_event *event);
+    void handleWriteEvent(struct ble_gattc_event *event);
+  
   void advertise();
 
   void onSync();
@@ -82,5 +120,14 @@ private:
   bluetooth_device_t device_list[BLUETOOTH_DEVICE_MAX_SIZE];
 
   int device_count;
+  
+  // 测试数据
+    // Heart Rate Service相关
+    uint16_t heart_rate_start_handle = 0;
+    uint16_t heart_rate_end_handle = 0;
+    uint16_t heart_rate_chr_handle = 0;        // 心率特征句柄
+    uint16_t heart_rate_ccc_handle = 0;        // CCCD句柄
+    bool heart_rate_notification_enabled = false;
+    uint16_t current_heart_rate = 0;
   
 };

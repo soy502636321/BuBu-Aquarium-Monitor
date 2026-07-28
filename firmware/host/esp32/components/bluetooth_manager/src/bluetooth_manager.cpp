@@ -22,6 +22,8 @@
 
 #include "host/ble_hs.h"
 #include "host/ble_hs_adv.h"
+//#include "host/ble_gattc.h"   // ✅ 包含这个头文件
+
 #include "services/gap/ble_svc_gap.h"
 
 static const char *TAG = "BuBu-Aquarium-Monitor[bluetooth_manager]";
@@ -150,11 +152,272 @@ esp_err_t BluetoothManager::connect(const uint8_t* addr, uint8_t addr_type) {
     }
 }
 
+int BluetoothManager::service_discovery_cb(
+    uint16_t conn_handle,
+    const struct ble_gatt_error *error,
+    const struct ble_gatt_svc *service,
+    void *arg)
+{
+    BluetoothManager& manager = BluetoothManager::instance();
+    
+    // ✅ 正确：检查 error->status
+    if (error->status != 0) {
+        if (error->status == BLE_HS_EDONE) {
+            // ✅ 所有服务发现完成！
+            ESP_LOGI(TAG, "✅ All services discovered!");
+            
+            // 如果找到了Heart Rate服务，开始发现其特征
+            if (manager.heart_rate_start_handle != 0) {
+                ESP_LOGI(TAG, "🔍 Starting characteristic discovery...");
+                // manager.discover_characteristics(conn_handle);
+			    // ✅ 在服务范围内发现特征
+			    int rc = ble_gattc_disc_all_chrs(
+			        conn_handle,
+			        manager.heart_rate_start_handle,          // 起始句柄
+			        manager.heart_rate_end_handle,            // 结束句柄
+			        manager.characteristic_discovery_cb,      // 回调函数
+			        NULL                              // 参数（使用单例，传NULL）
+			    );
+			    
+			    if (rc == 0) {
+			        ESP_LOGI(TAG, "✅ Characteristic discovery started");
+			    } else {
+			        ESP_LOGE(TAG, "❌ Failed to start characteristic discovery, rc=%d", rc);
+			    }
+            } else {
+                ESP_LOGW(TAG, "⚠️ Heart Rate Service not found!");
+            }
+            return 0;
+        }
+        
+        ESP_LOGE(TAG, "Service discovery error: %d", error->status);
+        return error->status;
+    }
+
+    // 处理发现的每个服务
+    if (service != NULL) {
+        if (service->uuid.u.type == BLE_UUID_TYPE_16) {
+            uint16_t uuid16 = service->uuid.u16.value;
+            ESP_LOGI(TAG, "📋 Found service: 0x%04X, start=%d, end=%d", 
+                     uuid16, service->start_handle, service->end_handle);
+            
+            // 检查是否是Heart Rate Service (0x180D)
+            if (uuid16 == 0x180D) {
+                ESP_LOGI(TAG, "❤️ Found Heart Rate Service!");
+				ESP_LOGI(TAG, "  start_handle: 0x%04X", manager.heart_rate_start_handle);
+            	ESP_LOGI(TAG, "  end_handle:   0x%04X", manager.heart_rate_end_handle);
+                manager.heart_rate_start_handle = service->start_handle;
+                manager.heart_rate_end_handle = service->end_handle;
+            }
+        }
+    }
+    
+    return 0;
+}
+
+// ==================== 写入CCCD完成回调 ====================
+int BluetoothManager::notify_callback(
+    uint16_t conn_handle,
+    const struct ble_gatt_error *error,
+    struct ble_gatt_attr *attr,
+    void *arg)
+{
+    if (error->status == 0) {
+        ESP_LOGI(TAG, "✅ Notifications enabled successfully!");
+        ESP_LOGI(TAG, "  attr_handle: 0x%04X", attr->handle);
+        ESP_LOGI(TAG, "  📡 Waiting for heart rate data...");
+    } else {
+        ESP_LOGE(TAG, "❌ Failed to enable notification, status=%d", error->status);
+    }
+    return 0;
+}
+
+// ==================== 启用通知（推荐） ====================
+void BluetoothManager::enable_heart_rate_notifications(uint16_t conn_handle)
+{
+    BluetoothManager& manager = BluetoothManager::instance();
+    
+    if (manager.heart_rate_chr_handle == 0) {
+        ESP_LOGE(TAG, "❌ Heart Rate characteristic not found!");
+        return;
+    }
+    
+    // ✅ 使用描述符发现中找到的 CCCD 句柄
+    if (manager.heart_rate_ccc_handle == 0) {
+        ESP_LOGE(TAG, "❌ CCCD handle not found!");
+        return;
+    }
+    
+    ESP_LOGI(TAG, "📨 Enabling Heart Rate notifications...");
+    ESP_LOGI(TAG, "  char_handle: 0x%04X", manager.heart_rate_chr_handle);
+    ESP_LOGI(TAG, "  cccd_handle: 0x%04X", manager.heart_rate_ccc_handle);
+    
+    // ✅ 写入 0x0001 启用通知
+    uint8_t value[2] = {0x01, 0x00};
+    
+    int rc = ble_gattc_write_flat(
+        conn_handle,
+        manager.heart_rate_ccc_handle,  // ✅ 使用 0x0019
+        value,
+        sizeof(value),
+        notify_callback,
+        NULL
+    );
+    
+    if (rc == 0) {
+        ESP_LOGI(TAG, "✅ Notification enable request sent to handle 0x%04X", 
+                 manager.heart_rate_ccc_handle);
+    } else {
+        ESP_LOGE(TAG, "❌ Failed to enable notifications, rc=%d", rc);
+    }
+}
+
+// ==================== 描述符发现回调 ====================
+int BluetoothManager::descriptor_discovery_cb(
+    uint16_t conn_handle,
+    const struct ble_gatt_error *error,
+    uint16_t characteristic_handle,
+    const struct ble_gatt_dsc *dsc,
+    void *arg)
+{
+    BluetoothManager& manager = BluetoothManager::instance();
+    
+    // ✅ 先检查 dsc == NULL（发现完成）
+    if (dsc == NULL) {
+        // 发现完成，不管 error->status（可能是 0 或 14）
+        ESP_LOGI(TAG, "✅ All descriptors discovered!");
+        
+        if (manager.heart_rate_ccc_handle != 0) {
+            ESP_LOGI(TAG, "📝 CCCD found: 0x%04X", manager.heart_rate_ccc_handle);
+            manager.enable_heart_rate_notifications(conn_handle);
+        } else {
+            ESP_LOGE(TAG, "❌ CCCD not found!");
+        }
+        return 0;
+    }
+
+    // ✅ 检查错误（只在 dsc != NULL 时检查）
+    if (error->status != 0) {
+        ESP_LOGE(TAG, "Descriptor discovery error: %d", error->status);
+        return error->status;
+    }
+
+    // ✅ 只处理 16-bit UUID
+    if (dsc->uuid.u.type == BLE_UUID_TYPE_16) {
+        uint16_t uuid16 = dsc->uuid.u16.value;
+        
+        // 转换为字符串（用于调试）
+        char uuid_str[64];
+        ble_uuid_to_str((ble_uuid_t*)&dsc->uuid, uuid_str);
+        ESP_LOGI(TAG, "📋 Descriptor: %s, handle=0x%04X", uuid_str, dsc->handle);
+        
+        // ✅ 只匹配 CCCD (0x2902)
+        if (uuid16 == 0x2902) {
+            ESP_LOGI(TAG, "📝 Found CCCD descriptor!");
+            ESP_LOGI(TAG, "  handle: 0x%04X", dsc->handle);
+            manager.heart_rate_ccc_handle = dsc->handle;
+        }
+    }
+    
+    return 0;
+}
+// ==================== 发现描述符 ====================
+void BluetoothManager::discover_descriptors(uint16_t conn_handle, uint16_t char_handle)
+{
+    BluetoothManager& manager = BluetoothManager::instance();
+    
+    ESP_LOGI(TAG, "🔍 Discovering descriptors for char_handle: 0x%04X", char_handle);
+    
+    // 获取特征所在的服务的范围
+    if (manager.heart_rate_start_handle == 0 || manager.heart_rate_end_handle == 0) {
+        ESP_LOGE(TAG, "❌ Service handle range not set!");
+        return;
+    }
+    
+    // ✅ 发现所有描述符
+    int rc = ble_gattc_disc_all_dscs(
+        conn_handle,
+        manager.heart_rate_start_handle,
+        manager.heart_rate_end_handle,
+        descriptor_discovery_cb,
+        NULL
+    );
+    
+    if (rc == 0) {
+        ESP_LOGI(TAG, "✅ Descriptor discovery started");
+    } else {
+        ESP_LOGE(TAG, "❌ Failed to discover descriptors, rc=%d", rc);
+    }
+}
+
+// 特征发现回调
+int BluetoothManager::characteristic_discovery_cb(
+    uint16_t conn_handle,
+    const struct ble_gatt_error *error,
+    const struct ble_gatt_chr *chr,
+    void *arg)
+{
+    BluetoothManager& manager = BluetoothManager::instance();
+
+    // ✅ 先检查 chr == NULL（发现完成）
+    if (chr == NULL) {
+        // 发现完成，不管 error->status 是什么（通常是 0 或 14）
+        ESP_LOGI(TAG, "✅ All characteristics discovered!");
+        
+        if (manager.heart_rate_chr_handle != 0) {
+            ESP_LOGI(TAG, "❤️ Heart Rate char handle: 0x%04X", manager.heart_rate_chr_handle);
+            // ✅ 启用通知
+            // manager.enable_heart_rate_notifications(conn_handle); //会错误
+            // ✅ 先发现描述符，找到 CCCD 后再启用通知
+			manager.discover_descriptors(conn_handle, manager.heart_rate_chr_handle);
+        } else {
+            ESP_LOGW(TAG, "⚠️ Heart Rate Measurement not found!");
+        }
+        return 0;
+    }
+
+    // ✅ 处理每个特征（chr != NULL）
+    // 如果是真正的错误，error->status != 0
+    if (error->status != 0) {
+        ESP_LOGE(TAG, "Characteristic discovery error: %d", error->status);
+        return error->status;
+    }
+
+    if (chr->uuid.u.type == BLE_UUID_TYPE_16) {
+        uint16_t uuid16 = chr->uuid.u16.value;
+        ESP_LOGI(TAG, "📋 Found characteristic: 0x%04X, def_handle=%d", 
+                 uuid16, chr->def_handle);
+        
+        if (uuid16 == 0x2A37) {
+            ESP_LOGI(TAG, "❤️ Found Heart Rate Measurement!");
+            manager.heart_rate_chr_handle = chr->def_handle;
+        }
+    }
+    
+    return 0;
+}
+
+
 void BluetoothManager::handleConnectEvent(struct ble_gap_event *event) {
   if (event->connect.status == 0) {
     this->status = BLE_STATUS_CONNECTED;
     this->conn_id = event->connect.conn_handle;
-    ESP_LOGI(TAG, "connected");
+    ESP_LOGI(TAG, "蓝牙设备连接成功");
+
+        // ✅ 主动发起服务发现
+        int rc = ble_gattc_disc_all_svcs(
+            event->connect.conn_handle,
+            service_discovery_cb,    // 回调函数
+            NULL                     // 回调参数
+        );
+        
+        if (rc == 0) {
+            ESP_LOGI(TAG, "Service discovery started");
+        }
+            
+  } else {
+	         ESP_LOGE(TAG, "❌ Connection failed, status=%d", event->connect.status);
+        this->status = BLE_STATUS_DISCONNECTED;
   }
 }
 
@@ -194,6 +457,22 @@ void BluetoothManager::handleDiscCompleteEvent(struct ble_gap_event *event) {
     }
 }
 
+
+void BluetoothManager::handleServiceDiscoveryCompleteEvent(struct ble_gattc_event *event) {
+    ESP_LOGI(TAG, "✅ Service discovery complete");
+    
+    // ✅ 现在可以开始查找特征了
+    // 方式1：直接搜索特定 UUID
+    ble_uuid_t target_uuid;
+    // 设置你需要的服务 UUID...
+    
+    // 方式2：或者在 BLE_GATTC_EVENT_DISC_CHR 中逐个匹配
+}
+
+void BluetoothManager::handleCharacteristicDiscoveredEvent(struct ble_gattc_event *event) {
+   
+}
+
 bluetooth_status_t BluetoothManager::getStatus() { return status; }
 
 bluetooth_device_t *BluetoothManager::getDevices() { return device_list; }
@@ -214,6 +493,64 @@ int BluetoothManager::event_handler(struct ble_gap_event *event, void *arg) {
 	  }
 	  case BLE_GAP_EVENT_DISC_COMPLETE: {
 		  mgr.handleDiscCompleteEvent(event);
+		  break;
+	  }
+		case BLE_GAP_EVENT_DISCONNECT: {
+    	ESP_LOGI(TAG, "❌ Disconnected, reason=%d", event->disconnect.reason);
+		  break;
+	  }
+	  case BLE_GAP_EVENT_ENC_CHANGE: {
+		  break;
+	  }
+	  case BLE_GAP_EVENT_NOTIFY_RX: {
+		  ESP_LOGI(TAG, "收到心跳数据");
+    uint16_t len = OS_MBUF_PKTLEN(event->notify_rx.om);
+    uint8_t *data = event->notify_rx.om->om_data;
+    
+    		ESP_LOGI(TAG, "📩 Heart Rate Notification:");
+    		ESP_LOG_BUFFER_HEX(TAG, data, len);
+ 
+    uint8_t flags = data[0];
+    uint16_t heart_rate = 0;
+    uint16_t offset = 1;
+ 
+    // ✅ 解析心率值
+    if (flags & 0x01) {
+        // 16-bit 心率值
+        if (len >= 3) {
+            heart_rate = (data[1] << 8) | data[2];
+            offset += 2;
+        }
+    } else {
+        // 8-bit 心率值
+        heart_rate = data[1];
+        offset += 1;
+    }
+    
+    ESP_LOGI(TAG, "❤️ Heart Rate: %d BPM", heart_rate);
+    
+    // ✅ 传感器接触状态
+    if (flags & 0x02) {
+        bool contact = (flags & 0x04) != 0;
+        ESP_LOGI(TAG, "  📍 Sensor Contact: %s", contact ? "YES" : "NO");
+    }
+    
+    // ✅ 能量消耗（如果有）
+    if ((flags & 0x08) && len >= offset + 2) {
+        uint16_t energy = (data[offset] << 8) | data[offset + 1];
+        ESP_LOGI(TAG, "  ⚡ Energy Expended: %d", energy);
+        offset += 2;
+    }
+    
+    // ✅ RR-Interval（如果有）
+    if ((flags & 0x10) && len >= offset + 2) {
+        uint16_t rr = (data[offset] << 8) | data[offset + 1];
+        ESP_LOGI(TAG, "  📊 RR-Interval: %.2f ms", rr / 1024.0);
+    }
+		  break;
+	  }
+	  case BLE_GAP_EVENT_MTU: {
+		  
 		  break;
 	  }
 		default:

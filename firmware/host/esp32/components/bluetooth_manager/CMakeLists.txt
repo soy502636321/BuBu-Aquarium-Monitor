@@ -5,8 +5,8 @@ idf_component_register(
     INCLUDE_DIRS
         "include"
     REQUIRES
-        bt
         nvs_flash
         esp_timer
         screen_ui
+        bt
 )
