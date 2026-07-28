@@ -226,6 +226,7 @@ int BluetoothManager::service_discovery_cb(
     return 0;
 }
 
+
 // ==================== 写入CCCD完成回调 ====================
 int BluetoothManager::notify_callback(
     uint16_t conn_handle,
@@ -394,12 +395,12 @@ int BluetoothManager::characteristic_discovery_cb(
         return error->status;
     }
 
-    if (chr->uuid.u.type == BLE_UUID_TYPE_16) {
+    if (chr->uuid.u.type == BLE_UUID_TYPE_128) {
         uint16_t uuid16 = chr->uuid.u16.value;
         ESP_LOGI(TAG, "📋 Found characteristic: 0x%04X, def_handle=%d", 
                  uuid16, chr->def_handle);
         
-        if (uuid16 == 0x2A37) {
+        if (uuid16 == 0x7685) {
             ESP_LOGI(TAG, "❤️ Found Heart Rate Measurement!");
             manager.heart_rate_chr_handle = chr->def_handle;
         }
