@@ -45,32 +45,32 @@ public:
     // ========== 文件读写操作 ==========
 
     // 写入文件（覆盖写入）
-    bool writeFile(const std::string& filepath, const std::string& data);
-    bool writeFile(const std::string& filepath, const std::vector<uint8_t>& data);
+    // bool writeFile(const std::string& filepath, const std::string& data);
+    // bool writeFile(const std::string& filepath, const std::vector<uint8_t>& data);
     
     // 追加写入
-    bool appendFile(const std::string& filepath, const std::string& data);
+    // bool appendFile(const std::string& filepath, const std::string& data);
     
     // 读取文件
-    bool readFile(const std::string& filepath, std::string& out_data);
-    bool readFileBinary(const std::string& filepath, std::vector<uint8_t>& out_data);
+    // bool readFile(const std::string& filepath, std::string& out_data);
+    // bool readFileBinary(const std::string& filepath, std::vector<uint8_t>& out_data);
     
     // 检查文件是否存在
-    bool fileExists(const std::string& filepath);
+    // bool fileExists(const std::string& filepath);
     
     // 删除文件
-    bool deleteFile(const std::string& filepath);
+    // bool deleteFile(const std::string& filepath);
 
     // ========== 目录操作 ==========
     
     // 创建目录（支持多级）
-    bool createDirectory(const std::string& dirpath);
+    // bool createDirectory(const std::string& dirpath);
     
     // 列出目录下的所有文件
-    std::vector<std::string> listFiles(const std::string& dirpath);
+    // std::vector<std::string> listFiles(const std::string& dirpath);
     
     // 删除目录（递归删除）
-    bool deleteDirectory(const std::string& dirpath);
+    // bool deleteDirectory(const std::string& dirpath);
 
     // ========== 存储信息 ==========
     
@@ -93,9 +93,6 @@ private:
     
     // 卸载SD卡
     void unmountSDCard();
-
-    // 内部辅助函数：获取文件路径（添加挂载点前缀）
-    std::string getFullPath(const std::string& relative_path) const;
 
 private:
     static SDCardManager* m_instance;
