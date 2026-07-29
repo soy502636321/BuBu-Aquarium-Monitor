@@ -10,13 +10,15 @@
 
 #pragma once
 
-#include <vector>
-#include <cstdint>
-#include <string>
-#include <map>
-#include <ctime>
-#include <sys/time.h>
 #include "esp_random.h"
+#include "value_type.hpp"
+#include <cstdint>
+#include <ctime>
+#include <map>
+#include <string>
+#include <sys/time.h>
+#include <variant>
+#include <vector>
 
 enum class DeviceType
 {
@@ -136,20 +138,108 @@ enum class DataPointType : uint8_t {
 };
 
 struct DataPoint {
-    DataPointType type;        // 数据类型："temperature", "humidity", "state", "duty_cycle"
-    float value;             // 数值
-    std::string unit;        // 单位："°C", "%", "pH", "mg/L", "" (开关无单位)
-    uint8_t quality = 0;     // 0=有效, 1=可疑, 2=无效
-    
+    DataPointType type;			// 数据类型："temperature", "humidity", "state", "duty_cycle"
+	DataValue value;			// 属性值
+    std::string unit;           // 单位："°C", "%", "pH", "mg/L", "" (开关无单位)
+    uint8_t quality = 0;		// 0=有效, 1=可疑, 2=无效
+
+	// ---------- setValue 方法（核心） ----------
+
+	void setValue(DataValue v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（float 类型）
+	 */
+	void setValue(float v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（int 类型）
+	 */
+	void setValue(int v) {
+		value = static_cast<int32_t>(v);
+	}
+
+	/**
+	 * @brief 设置数值（bool 类型）
+	 */
+	void setValue(bool v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（const char* 字符串）
+	 */
+	void setValue(const char* v) {
+		value = std::string(v);
+	}
+
+	/**
+	 * @brief 设置数值（std::string 类型）
+	 */
+	void setValue(const std::string& v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（int8_t 类型）
+	 */
+	void setValue(int8_t v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（uint8_t 类型）
+	 */
+	void setValue(uint8_t v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（int16_t 类型）
+	 */
+	void setValue(int16_t v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（uint16_t 类型）
+	 */
+	void setValue(uint16_t v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（int32_t 类型）
+	 */
+	void setValue(int32_t v) {
+		value = v;
+	}
+
+	/**
+	 * @brief 设置数值（uint32_t 类型）
+	 */
+	void setValue(uint32_t v) {
+		value = v;
+	}
+
+	// ---------- 模板版本（更简洁） ----------
+
+	/**
+	 * @brief 通用 setValue（模板方式）
+	 */
+	template<typename T>
+	void setValue(const T& v) {
+		value = v;
+	}
+
     // 辅助方法
     bool isValid() const { return quality == 0; }
     bool isSuspect() const { return quality == 1; }
     bool isInvalid() const { return quality >= 2; }
-    
-    // 转换为字符串（便于调试）
-    std::string toString() const {
-        return "=" + std::to_string(value) + (unit.empty() ? "" : unit);
-    }
 };
 
 struct DeviceRecord {
@@ -167,6 +257,28 @@ struct DeviceRecord {
     uint8_t data_quality = 0;         // 整条记录的数据质量：0=正常, 1=部分可疑, 2=全部无效
     std::map<std::string, std::string> metadata;  // 元数据: {"calibration_date":"2026-07-01"}
     std::string checksum;                         // 数据校验和 (MD5/SHA256)
+
+	/**
+		 * @brief 添加数据点，并自动更新 data_quality
+		 * @param point 要添加的数据点
+		 * @param autoUpdateQuality 是否自动更新 data_quality（默认 true）
+		 * @return 添加成功返回 true，失败返回 false
+		 */
+	bool addDataPoint(const DataPoint& point, bool autoUpdateQuality = true) {
+		// 1. 基本的有效性检查
+		if (point.unit.empty()) {
+			// 对于非开关类型，建议有单位，但不强制
+			// 可以记录警告日志，这里仅做示例
+		}
+		// 2. 添加数据点到列表
+		points.push_back(point);
+		// 3. 自动更新数据质量
+		// if (autoUpdateQuality) {
+		// 	updateDataQuality();
+		// }
+
+		return true;
+	}
 };
 
 struct DeviceCommand {

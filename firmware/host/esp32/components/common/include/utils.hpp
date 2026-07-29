@@ -9,5 +9,6 @@
 
 #include "crc16.hpp"
 #include "uuid.hpp"
+#include "hex.hpp"
 
 #endif // ESP32_UTILS_HPP

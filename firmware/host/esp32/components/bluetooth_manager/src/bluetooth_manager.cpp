@@ -406,7 +406,6 @@ int BluetoothManager::characteristic_discovery_cb(
     return 0;
 }
 
-
 void BluetoothManager::handleConnectEvent(struct ble_gap_event *event) {
   if (event->connect.status == 0) {
     this->status = BLE_STATUS_CONNECTED;
