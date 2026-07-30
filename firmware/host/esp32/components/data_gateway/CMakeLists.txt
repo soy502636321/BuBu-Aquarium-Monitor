@@ -19,5 +19,6 @@ idf_component_register(
         vfs
         bt
         device_manager
+		storage_manager
 		common
 )

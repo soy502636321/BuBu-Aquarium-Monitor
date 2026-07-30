@@ -8,6 +8,7 @@
 #include "data_processor.hpp"
 #include "output/data_output.hpp"
 #include "output/esp_log_output.hpp"
+#include "output/storage_output.hpp"
 
 class OutputDispatcherProcessor : public IDataProcessor
 {
@@ -15,7 +16,8 @@ class OutputDispatcherProcessor : public IDataProcessor
 public:
 	OutputDispatcherProcessor()
 	{
-		registerOutput(new EspLogOutput()); // 注册分发到日志 为了调试
+		registerOutput(new EspLogOutput());		// 注册分发到日志 为了调试
+		registerOutput(new StorageOutput());	// 注册文件存储分发
 	}
 
 	void registerOutput(
