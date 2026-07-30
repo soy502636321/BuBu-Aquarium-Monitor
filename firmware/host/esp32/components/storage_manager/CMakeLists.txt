@@ -1,6 +1,6 @@
 idf_component_register(
     SRCS
-    	"src/fs_manager.cpp"
+    	"src/storage_manager.cpp"
     INCLUDE_DIRS
         "include"
     REQUIRES

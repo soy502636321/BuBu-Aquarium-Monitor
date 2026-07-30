@@ -1,11 +1,11 @@
 /*
- * fs_manager.cpp
+ * storage_manager.cpp
  *
  *  Created on: 2026年7月23日
  *      Author: Hu
  *  Modified: 切换至 LittleFS
  */
-#include "fs_manager.hpp"
+#include "storage_manager.hpp"
 #include "esp_littlefs.h"
 #include "esp_log.h"
 #include <cstring>
@@ -13,38 +13,38 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-static const char* TAG = "BuBu-Aquarium-Monitor[fs_manager]";
+static const char* TAG = "BuBu-Aquarium-Monitor[storage_manager]";
 
 // ==================== 静态成员初始化 ====================
 
-FSManager* FSManager::m_instance = nullptr;
+StorageManager* StorageManager::m_instance = nullptr;
 
 // ==================== 单例管理 ====================
 
-FSManager& FSManager::getInstance() {
+StorageManager& StorageManager::getInstance() {
     if (m_instance == nullptr) {
-        m_instance = new FSManager();
+        m_instance = new StorageManager();
     }
     return *m_instance;
 }
 
 // ==================== 构造函数/析构函数 ====================
 
-FSManager::FSManager() 
+StorageManager::StorageManager() 
     : m_mount_point(LITTLEFS_BASE_PATH)
     , m_last_error("")
     , m_is_mounted(false) {
-    ESP_LOGI(TAG, "FSManager created");
+    ESP_LOGI(TAG, "StorageManager created");
 }
 
-FSManager::~FSManager() {
+StorageManager::~StorageManager() {
     deinit();
     m_instance = nullptr;
 }
 
 // ==================== 初始化/反初始化 ====================
 
-bool FSManager::init(bool format_if_mount_failed) {
+bool StorageManager::init(bool format_if_mount_failed) {
     if (m_is_mounted) {
         ESP_LOGW(TAG, "LittleFS already mounted");
         return true;
@@ -86,7 +86,7 @@ bool FSManager::init(bool format_if_mount_failed) {
     return true;
 }
 
-void FSManager::deinit() {
+void StorageManager::deinit() {
     if (m_is_mounted) {
         esp_vfs_littlefs_unregister("littlefs");
         m_is_mounted = false;
@@ -96,7 +96,7 @@ void FSManager::deinit() {
 
 // ==================== 内部辅助函数 ====================
 
-std::string FSManager::getFullPath(const std::string& relative_path) const {
+std::string StorageManager::getFullPath(const std::string& relative_path) const {
     if (relative_path.empty()) {
         return m_mount_point;
     }
@@ -116,11 +116,11 @@ std::string FSManager::getFullPath(const std::string& relative_path) const {
     return full_path;
 }
 
-void FSManager::setError(const std::string& error) {
+void StorageManager::setError(const std::string& error) {
     m_last_error = error;
 }
 
-bool FSManager::ensureParentDirectoryExists(const std::string& path) {
+bool StorageManager::ensureParentDirectoryExists(const std::string& path) {
     std::string full_path = getFullPath(path);
     
     // 找到最后一个 '/'，提取目录部分
@@ -149,7 +149,7 @@ bool FSManager::ensureParentDirectoryExists(const std::string& path) {
 
 // ==================== 文件写入 ====================
 
-bool FSManager::writeFile(const std::string& path, const std::string& data) {
+bool StorageManager::writeFile(const std::string& path, const std::string& data) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -184,7 +184,7 @@ bool FSManager::writeFile(const std::string& path, const std::string& data) {
 
 // ==================== 文件读取 ====================
 
-bool FSManager::readFile(const std::string& path, std::string& out_data) {
+bool StorageManager::readFile(const std::string& path, std::string& out_data) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -227,7 +227,7 @@ bool FSManager::readFile(const std::string& path, std::string& out_data) {
 
 // ==================== 文件追加 ====================
 
-bool FSManager::appendFile(const std::string& path, const std::string& data) {
+bool StorageManager::appendFile(const std::string& path, const std::string& data) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -262,7 +262,7 @@ bool FSManager::appendFile(const std::string& path, const std::string& data) {
 
 // ==================== 文件信息 ====================
 
-bool FSManager::fileExists(const std::string& path) {
+bool StorageManager::fileExists(const std::string& path) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -273,7 +273,7 @@ bool FSManager::fileExists(const std::string& path) {
     return (stat(full_path.c_str(), &st) == 0);
 }
 
-bool FSManager::deleteFile(const std::string& path) {
+bool StorageManager::deleteFile(const std::string& path) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -290,7 +290,7 @@ bool FSManager::deleteFile(const std::string& path) {
     return true;
 }
 
-bool FSManager::getFileSize(const std::string& path, size_t& out_size) {
+bool StorageManager::getFileSize(const std::string& path, size_t& out_size) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -309,7 +309,7 @@ bool FSManager::getFileSize(const std::string& path, size_t& out_size) {
 
 // ==================== 目录操作 ====================
 
-bool FSManager::createDirectory(const std::string& path) {
+bool StorageManager::createDirectory(const std::string& path) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -331,7 +331,7 @@ bool FSManager::createDirectory(const std::string& path) {
     return true;
 }
 
-bool FSManager::directoryExists(const std::string& path) {
+bool StorageManager::directoryExists(const std::string& path) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -355,7 +355,7 @@ bool FSManager::directoryExists(const std::string& path) {
     }
 }
 
-std::vector<std::string> FSManager::listDirectory(const std::string& path) {
+std::vector<std::string> StorageManager::listDirectory(const std::string& path) {
     std::vector<std::string> items;
     
     if (!m_is_mounted) {
@@ -387,7 +387,7 @@ std::vector<std::string> FSManager::listDirectory(const std::string& path) {
     return items;
 }
 
-bool FSManager::deleteDirectory(const std::string& path) {
+bool StorageManager::deleteDirectory(const std::string& path) {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return false;
@@ -434,7 +434,7 @@ bool FSManager::deleteDirectory(const std::string& path) {
 
 // ==================== 存储信息 ====================
 
-size_t FSManager::getTotalBytes() {
+size_t StorageManager::getTotalBytes() {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return 0;
@@ -449,7 +449,7 @@ size_t FSManager::getTotalBytes() {
     return total;
 }
 
-size_t FSManager::getFreeBytes() {
+size_t StorageManager::getFreeBytes() {
     if (!m_is_mounted) {
         setError("LittleFS not mounted");
         return 0;
