@@ -6,6 +6,7 @@
 #define APP_TEMPLATE_LITTLEFS_STORAGE_HPP
 #include "base_storage.hpp"
 #include "esp_littlefs.h"
+#include "esp_log.h"
 #include <string>
 
 class LittleFSStorage : public BaseStorage<LittleFSStorage> {

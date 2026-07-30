@@ -25,7 +25,6 @@
 #include "vars.h"
 
 #include "host_info.h"
-#include "sd_card_manager.hpp"
 #include "storage_manager.hpp"
 #include "wifi_manager.h"
 #include "bluetooth_manager.h"
@@ -111,9 +110,7 @@ extern "C" void app_main(void)
     auto& hostInfo = HostInfo::instance();
 
 	EventBus::instance().init();
-	// SDCard初始化
-	SDCardManager::getInstance().init();
-	// 存储初始化
+	// 存储初始化(初始化SD挂载+Flash挂载)
 	StorageManager::getInstance().init();
 	// WiFi初始化
     WiFiManager::instance().init(); 

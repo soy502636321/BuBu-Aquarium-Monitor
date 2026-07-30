@@ -240,6 +240,74 @@ struct DataPoint {
     bool isValid() const { return quality == 0; }
     bool isSuspect() const { return quality == 1; }
     bool isInvalid() const { return quality >= 2; }
+
+	std::string getValueString(int precision = 2) const {
+        return std::visit([precision](auto&& arg) -> std::string {
+            using T = std::decay_t<decltype(arg)>;
+
+            if constexpr (std::is_same_v<T, float>) {
+                char buffer[32];
+                snprintf(buffer, sizeof(buffer), "%.*f", precision, arg);
+                return std::string(buffer);
+            }
+            else if constexpr (std::is_same_v<T, double>) {
+                char buffer[32];
+                snprintf(buffer, sizeof(buffer), "%.*f", precision, arg);
+                return std::string(buffer);
+            }
+            else if constexpr (std::is_same_v<T, int>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, long>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, long long>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, unsigned int>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, unsigned long>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, unsigned long long>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, int8_t>) {
+                return std::to_string(static_cast<int>(arg));
+            }
+            else if constexpr (std::is_same_v<T, uint8_t>) {
+                return std::to_string(static_cast<unsigned int>(arg));
+            }
+            else if constexpr (std::is_same_v<T, int16_t>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, uint16_t>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, int32_t>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, uint32_t>) {
+                return std::to_string(arg);
+            }
+            else if constexpr (std::is_same_v<T, bool>) {
+                return arg ? "true" : "false";
+            }
+            else if constexpr (std::is_same_v<T, std::string>) {
+                return arg;
+            }
+            else if constexpr (std::is_same_v<T, const char*>) {
+                return std::string(arg);
+            }
+            else if constexpr (std::is_same_v<T, char>) {
+                return std::string(1, arg);
+            }
+            else {
+                return "";
+            }
+        }, value);
+    }
 };
 
 struct DeviceRecord {

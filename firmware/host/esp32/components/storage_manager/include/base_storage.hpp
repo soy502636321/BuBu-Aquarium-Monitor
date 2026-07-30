@@ -8,7 +8,9 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <sstream>
 #include <cstring>
+#include <string>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>

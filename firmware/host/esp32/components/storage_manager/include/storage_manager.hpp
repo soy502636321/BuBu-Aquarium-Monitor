@@ -17,8 +17,8 @@ public:
 	static StorageManager& getInstance();
 
 	// ========== 初始化所有存储 ==========
-	bool initAll();
-	void deinitAll();
+	bool init();
+	void deinit();
 
 	// ========== 获取存储实例 ==========
 	SDCardStorage& getSDCard() { return m_sd_card; }
@@ -45,4 +45,5 @@ private:
 	SDCardStorage m_sd_card{"/sdcard"};
 	LittleFSStorage m_littlefs{"littlefs", "/littlefs"};
 };
+
 #endif /* COMPONENTS_STORAGE_MANAGER_INCLUDE_STORAGE_MANAGER_HPP_ */
