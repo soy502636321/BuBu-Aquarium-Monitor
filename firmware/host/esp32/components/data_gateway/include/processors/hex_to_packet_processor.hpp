@@ -41,7 +41,7 @@ public:
 		for (uint8_t i = 0; i < data_count; i++) {
 			DataPointType point_type = static_cast<DataPointType>(payload[point_pos]);  // 属性类型
 			ValueType point_value_type = static_cast<ValueType>(payload[point_pos + 1]); //属性值类型
-			uint8_t point_value_len = uint8_t(payload[point_pos + 2]);
+			uint8_t point_value_len = payload[point_pos + 2];
 			auto point_value = Utils::HEX::hex_to_value(point_value_type, payload + (point_pos + 2), point_value_len);
 
 			DataPoint point;
@@ -52,10 +52,8 @@ public:
 			ESP_LOGI(TAG, "=== DataPoint Created ===");
 			ESP_LOGI(TAG, "  Type: %d", static_cast<int>(point.type));
 			ESP_LOGI(TAG, "  Unit: %s", point.unit.c_str());
-			//ESP_LOGI(tag, "Value:  %d bytes", value.size());
 			std::visit([](auto&& arg) {
 				using T = std::decay_t<decltype(arg)>;
-
 				if constexpr (std::is_same_v<T, std::string>) {
 					ESP_LOGI("TAG", "Value: %s", arg.c_str());  // ✅ string 用 c_str()
 				} else {
