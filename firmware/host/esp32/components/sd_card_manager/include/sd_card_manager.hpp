@@ -42,36 +42,6 @@ public:
     // 检查SD卡是否已挂载
     bool isMounted() const { return m_is_mounted; }
 
-    // ========== 文件读写操作 ==========
-
-    // 写入文件（覆盖写入）
-    // bool writeFile(const std::string& filepath, const std::string& data);
-    // bool writeFile(const std::string& filepath, const std::vector<uint8_t>& data);
-    
-    // 追加写入
-    // bool appendFile(const std::string& filepath, const std::string& data);
-    
-    // 读取文件
-    // bool readFile(const std::string& filepath, std::string& out_data);
-    // bool readFileBinary(const std::string& filepath, std::vector<uint8_t>& out_data);
-    
-    // 检查文件是否存在
-    // bool fileExists(const std::string& filepath);
-    
-    // 删除文件
-    // bool deleteFile(const std::string& filepath);
-
-    // ========== 目录操作 ==========
-    
-    // 创建目录（支持多级）
-    // bool createDirectory(const std::string& dirpath);
-    
-    // 列出目录下的所有文件
-    // std::vector<std::string> listFiles(const std::string& dirpath);
-    
-    // 删除目录（递归删除）
-    // bool deleteDirectory(const std::string& dirpath);
-
     // ========== 存储信息 ==========
     
     // 获取总容量（字节）
