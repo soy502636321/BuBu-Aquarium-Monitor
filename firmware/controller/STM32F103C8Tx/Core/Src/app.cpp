@@ -4,6 +4,7 @@
 
 #include "DataGateway.hpp"
 #include "TimerScheduler.hpp"
+#include "Device.hpp"
 
 using namespace DataGateway;
 using namespace Components;
@@ -27,6 +28,23 @@ extern "C" {
 
         auto& timerScheduler = Components::TimerScheduler::getInstance();
 
+        // 注册临时任务，用于测试数据发送处理
+        timerScheduler.addTask("TEST", 10, []() {
+            printf("[TEST] Task executed!\r\n");
+            // 你的任务代码
+            DeviceRecord record;
+            record.device_id = "sensor_01";
+            record.device_name = "水温传感器";
+
+            // 添加数据点
+            DataPoint point;
+            point.setValue<float>(25.5);
+            record.addDataPoint(point);
+
+            ValveContext context;
+            context.packet = nullptr;
+            DataGateway::DataGateway::getInstance().transmit(context);
+        });
         timerScheduler.start();
 
         while (1) {

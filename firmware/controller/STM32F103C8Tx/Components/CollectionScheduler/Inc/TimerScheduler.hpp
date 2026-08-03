@@ -16,7 +16,7 @@ namespace Components {
 
     private:
         // -------- 单例模式 --------
-        TimerScheduler() : tick_time(0) {
+        TimerScheduler() : tick_seconds(0) {
             init();
         }
         ~TimerScheduler() = default;
@@ -27,7 +27,7 @@ namespace Components {
 
     private:
         std::vector<CollectionTask> tasks;
-        uint32_t tick_time;
+        uint32_t tick_seconds;
         bool initialized = false;
 
     public:
@@ -38,14 +38,8 @@ namespace Components {
         }
 
         void onTick() {
-            tick_time++;
-            printf("[TimerScheduler] %lu S -> onTimerTick\r\n", tick_time);
-
-            // ✅ 每 30 秒执行一次（从 30 开始，不在 0 时刻触发）
-            if (tick_time > 0 && tick_time % 10 == 0) {
-                printf("[TimerScheduler] 10S -> onTimerTick\r\n");
-                // 在这里执行你的 30 秒任务
-            }
+            tick_seconds++;
+            checkTasks();
         }
 
         void init(uint32_t initial_tick = 0) {
@@ -53,7 +47,7 @@ namespace Components {
                 printf("[TimerScheduler] 已初始化\r\n");
                 return;
             }
-            tick_time = initial_tick;
+            tick_seconds = initial_tick;
             initialized = true;
             printf("[TimerScheduler] 初始完成，一共 [%zu] 个人任务\r\n", tasks.size());
         }
@@ -63,24 +57,16 @@ namespace Components {
         }
 
         // 添加任务
-        void addTask(const char* name, uint32_t interval_ms,
-                     std::function<void()> callback) {
+        void addTask(const char* name, uint32_t interval_ms, std::function<void()> callback) {
             tasks.emplace_back(name, interval_ms, callback);
-        }
-
-        // 更新 tick (在 SysTick 或定时器中断中调用)
-        void tick(uint32_t ms) {
-            tick_time = ms;
-            checkTasks();
         }
 
         // 检查并执行任务
         void checkTasks() {
             for (auto& task : tasks) {
                 if (!task.enabled) continue;
-
-                if (tick_time - task.last_run_ms >= task.interval_ms) {
-                    task.last_run_ms = tick_time;
+                // ✅ 取模判断：当前 tick 能被 interval 整除时执行
+                if (tick_seconds > 0 && tick_seconds % task.interval_seconds == 0) {
                     if (task.callback) {
                         task.callback();
                     }

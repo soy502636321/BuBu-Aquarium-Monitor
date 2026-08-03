@@ -12,7 +12,7 @@ class ValvePacket {
 private:
     uint32_t sequence_;
     uint32_t timestamp_;
-    std::vector<uint8_t> data_;  // [type][value] * N
+    std::vector<uint8_t> data;  // [type][value] * N
 
 public:
     // -------- 构造函数 --------
@@ -20,7 +20,7 @@ public:
 
     // -------- 清空 --------
     void clear() {
-        data_.clear();
+        data.clear();
     }
 };
 
