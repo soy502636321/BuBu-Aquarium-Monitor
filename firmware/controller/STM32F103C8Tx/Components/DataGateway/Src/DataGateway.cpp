@@ -2,63 +2,54 @@
 #include "DataGateway.hpp"
 #include <cstdio>
 
-namespace DataGateway {
+#include "UartChannel.hpp"
 
-    // -------- 构造/析构 --------
-    DataGateway::DataGateway(): pipeline(), initialized(false) {
-        printf("[DataGateway] Constructor\n");
-        init();
+// -------- 初始化 --------
+void DataGateway::init() {
+    if (m_initialized) {
+        return;
     }
+    setupRxPipeline();
+    setupTxPipeline();
+    m_initialized = true;
+    printf("[DataGateway] initialized complete\n");
+}
 
-    DataGateway::~DataGateway() {
-        printf("[DataGateway] Destructor\n");
-    }
+// -------- 设置 Rx Pipeline --------
+void DataGateway::setupRxPipeline() {
+    // m_rx_pipeline->clearValves();
+    // 添加输入阀门
+    InputValve inputValve;
+    UartChannel& uart_channel = UartChannel::getInstance();
+    inputValve.addChannel(&uart_channel); // 添加串口输入
+    m_rx_pipeline->addValve(&inputValve);
+}
 
-    // -------- 初始化 --------
-    void DataGateway::init() {
-        if (initialized) {
-            printf("[DataGateway] Already initialized\n");
-            return;
-        }
+// -------- 设置 Tx Pipeline --------
+void DataGateway::setupTxPipeline() {
+    m_tx_pipeline->clearValves();
+    // TODO: 添加阀门
+    // pipeline.addValve(new LogValve());
+}
 
-        printf("[DataGateway] Initializing...\n");
-        setupPipeline();
-        initialized = true;
-        printf("[DataGateway] Initialized, pipeline size: %zu\n", pipeline.size());
-    }
+// -------- 传输 --------
+void DataGateway::transmit(const DataContext &content) {
+    // if (!initialized) {
+    //     printf("[DataGateway] Not initialized!\n");
+    //     return;
+    // }
 
-    // -------- 设置 Pipeline --------
-    void DataGateway::setupPipeline() {
-        printf("[DataGateway] Setting up pipeline...\n");
-        pipeline.clear();
+    printf("[DataGateway] Transmitting...\n");
 
-        // TODO: 添加阀门
-        // pipeline.addValve(new LogValve());
-        // pipeline.addValve(new ValidateValve());
+    // if (content.packet != nullptr) {
+    //     printf("  Packet: seq=%u, data_size=%zu\n",
+    //            content.packet->getSequence(),
+    //            content.packet->getData().size());
+    // }
 
-        printf("[DataGateway] Pipeline setup complete\n");
-    }
-
-    // -------- 传输 --------
-    void DataGateway::transmit(const ValveContext& content) {
-        // if (!initialized) {
-        //     printf("[DataGateway] Not initialized!\n");
-        //     return;
-        // }
-
-        printf("[DataGateway] Transmitting...\n");
-
-        // if (content.packet != nullptr) {
-        //     printf("  Packet: seq=%u, data_size=%zu\n",
-        //            content.packet->getSequence(),
-        //            content.packet->getData().size());
-        // }
-
-        // 执行 pipeline
-        // ValveContext& ctx = const_cast<ValveContext&>(content);
-        // bool result = pipeline.execute(ctx);
-        //
-        // printf("[DataGateway] Transmit %s\n", result ? "SUCCESS" : "FAIL");
-    }
-
-} // namespace DataGateway
+    // 执行 pipeline
+    // ValveContext& ctx = const_cast<ValveContext&>(content);
+    // bool result = pipeline.execute(ctx);
+    //
+    // printf("[DataGateway] Transmit %s\n", result ? "SUCCESS" : "FAIL");
+}

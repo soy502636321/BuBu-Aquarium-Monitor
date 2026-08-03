@@ -3,12 +3,6 @@
 #define DATA_GATEWAY_HPP
 
 #include "Pipeline.hpp"
-#include <vector>
-#include <memory>
-#include <string>
-#include <functional>
-
-namespace DataGateway {
 
 class DataGateway
 {
@@ -21,24 +15,27 @@ public:
 
 	void init();
 
-	void setupPipeline();
+	// -------- Pipeline 配置 --------
+	void setupTxPipeline();
+	void setupRxPipeline();
 
-    void transmit(const ValveContext& content);  // ✅ 添加声明
+    void transmit(const DataContext& content);  // ✅ 添加声明
 
 
 private:
 	// -------- 单例核心 --------
-    DataGateway();  // 私有构造函数
-    ~DataGateway();
+	DataGateway() = default;   // 空构造
+	~DataGateway() = default;  // 空析构
 
     // 禁止拷贝
     DataGateway(const DataGateway&) = delete;
     DataGateway& operator=(const DataGateway&) = delete;
 
-	Pipeline pipeline;
-	bool initialized = false;
+private:
+	// -------- Pipeline --------
+	ITxPipeline* m_tx_pipeline;
+	IRxPipeline* m_rx_pipeline;
+	bool m_initialized = false;
 };
-
-} // namespace DataGateway
 
 #endif // DATA_GATEWAY_HPP
