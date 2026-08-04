@@ -2,6 +2,7 @@
 #ifndef DATA_GATEWAY_HPP
 #define DATA_GATEWAY_HPP
 
+#include "ChannelManager.hpp"
 #include "Pipeline.hpp"
 
 class DataGateway
@@ -19,8 +20,8 @@ public:
 	void setupTxPipeline();
 	void setupRxPipeline();
 
-    void transmit(const DataContext& content);  // ✅ 添加声明
-
+    void transmit(DataContext &ctx) const;  // 发送
+	void receive(DataContext &ctx) const; // 接收
 
 private:
 	// -------- 单例核心 --------
@@ -32,9 +33,11 @@ private:
     DataGateway& operator=(const DataGateway&) = delete;
 
 private:
+	// ---
+	ChannelManager* m_channel_manager;
 	// -------- Pipeline --------
-	ITxPipeline* m_tx_pipeline;
-	IRxPipeline* m_rx_pipeline;
+	TxPipeline* m_tx_pipeline;
+	RxPipeline* m_rx_pipeline;
 	bool m_initialized = false;
 };
 

@@ -417,7 +417,7 @@ typedef enum
 /**
   * @brief  HAL TIM Callback pointer definition
   */
-typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to the TIM callback function */
+typedef  void (*pTIM_CallbackTypeDef)(TIM_HandleTypeDef *htim);  /*!< pointer to the TIM m_callback function */
 
 #endif /* USE_HAL_TIM_REGISTER_CALLBACKS */
 

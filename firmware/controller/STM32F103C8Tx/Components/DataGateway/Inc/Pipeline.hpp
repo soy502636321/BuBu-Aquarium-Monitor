@@ -16,15 +16,12 @@ public:
     virtual ~ITxPipeline() = default;
 
     // 处理发送数据包
-    virtual bool process(DataContext& ctx) = 0;
+    virtual bool execute(DataContext& ctx) = 0;
 
     // 阀门管理
-    virtual void addValve(std::shared_ptr<ITxValve> valve) = 0;
-    virtual void removeValve(const std::string& name) = 0;
+    virtual void addValve(ITxValve* valve) = 0;
     virtual void clearValves() = 0;
     virtual size_t getValveCount() const = 0;
-    virtual bool isEnabled() const = 0;
-    virtual void setEnabled(bool enable) = 0;
 };
 
 // ==================== Rx Pipeline ====================
@@ -32,18 +29,20 @@ class IRxPipeline {
 public:
     virtual ~IRxPipeline() = default;
     // 处理接收数据包
-    virtual bool process(DataContext& ctx) = 0;
+    virtual bool execute(DataContext& ctx) = 0;
     // 阀门管理
     virtual void addValve(IRxValve* valve) = 0;
+    virtual void clearValves() = 0;
+    virtual size_t getValveCount() const = 0;
 };
 
 // ==================== Tx Pipeline 默认实现 ====================
 class TxPipeline : public ITxPipeline {
 public:
     TxPipeline() {}
-    bool process(DataContext& ctx) override {
+    bool execute(DataContext& ctx) override {
         for (auto& valve : m_valves) {
-            if (!valve || !valve->isEnabled()) continue;
+            if (!valve) continue;
             if (!valve->process(ctx)) {
                 return false;  // 阀门处理失败
             }
@@ -54,10 +53,17 @@ public:
         return true;
     }
 
-    void addValve(ITxValve* valve) {
+    void addValve(ITxValve* valve) override {
         if (valve) {
             m_valves[m_valve_index++] = valve;
         }
+    }
+
+    void clearValves() override {
+    }
+
+    size_t getValveCount() const override {
+        return m_valve_index;
     }
 
 private:
@@ -70,9 +76,9 @@ class RxPipeline : public IRxPipeline {
 public:
     RxPipeline() {}
 
-    bool process(DataContext& ctx) override {
+    bool execute(DataContext& ctx) override {
         for (auto& valve : m_valves) {
-            if (!valve || !valve->isEnabled()) continue;
+            if (!valve) continue;
             if (!valve->process(ctx)) {
                 return false;  // 阀门处理失败
             }
@@ -83,10 +89,17 @@ public:
         return true;
     }
 
-    void addValve(IRxValve* valve) {
+    void addValve(IRxValve* valve) override {
         if (valve) {
             m_valves[m_valve_index++] = valve;
         }
+    }
+
+    void clearValves() override {
+    }
+
+    size_t getValveCount() const override {
+        return m_valve_index;
     }
 
 private:

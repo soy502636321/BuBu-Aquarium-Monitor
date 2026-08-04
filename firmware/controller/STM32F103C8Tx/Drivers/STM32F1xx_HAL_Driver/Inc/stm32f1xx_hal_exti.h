@@ -56,7 +56,7 @@ typedef enum
 typedef struct
 {
   uint32_t Line;                    /*!<  Exti line number */
-  void (* PendingCallback)(void);   /*!<  Exti pending callback */
+  void (* PendingCallback)(void);   /*!<  Exti pending m_callback */
 } EXTI_HandleTypeDef;
 
 /**

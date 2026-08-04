@@ -47,7 +47,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-        ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/InputValve.cpp
+        ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/ChannelManager.cpp
         ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/DataGateway.cpp
         ${CMAKE_SOURCE_DIR}/Components/DeviceDriver/DHT11/Src/dht11.c
 )
