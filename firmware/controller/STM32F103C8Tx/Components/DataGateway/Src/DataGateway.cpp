@@ -12,12 +12,18 @@ void DataGateway::init() {
     setupRxPipeline();
     setupTxPipeline();
     m_initialized = true;
+
+    __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+    HAL_UARTEx_ReceiveToIdle_DMA(
+        &huart1,
+        UartChannel::getInstance().getDmaRxBuffer(),
+        64
+    );
     printf("[DataGateway] initialized complete\n");
 }
 
 // -------- 设置 Rx Pipeline --------
 void DataGateway::setupRxPipeline() {
-    // m_rx_pipeline->clearValves();
     // 添加输入阀门
     InputValve inputValve;
     UartChannel& uart_channel = UartChannel::getInstance();
