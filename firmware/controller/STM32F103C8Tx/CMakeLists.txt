@@ -12,7 +12,6 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
-
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
@@ -36,6 +35,16 @@ add_executable(${CMAKE_PROJECT_NAME}
         Core/Src/app.cpp
 )
 
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
+        -Os
+        -g0
+        -ffunction-sections
+        -fdata-sections
+        -fno-rtti
+        -fno-exceptions
+        -fno-threadsafe-statics
+)
+
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
@@ -47,6 +56,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+        ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/ActionManager.cpp
         ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/ChannelManager.cpp
         ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/DataGateway.cpp
         ${CMAKE_SOURCE_DIR}/Components/DeviceDriver/DHT11/Src/dht11.c

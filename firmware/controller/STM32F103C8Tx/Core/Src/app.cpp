@@ -29,16 +29,15 @@ extern "C" {
             printf("[TEST] Task executed!\r\n");
             // 你的任务代码
             DeviceRecord record;
-            record.device_id = "sensor_01";
-            record.device_name = "水温传感器";
-
-            // 添加数据点
+            record.setDeviceId("sensor_01");
+            record.setDeviceName("水温传感器");
+            // // 添加数据点
             DataPoint point;
             point.setValue<float>(25.5);
             record.addDataPoint(point);
 
-            DataContext context;
-            // context.packet = nullptr;
+            DataContext context {};
+            context.packet.setData<DeviceRecord>(&record);
             DataGateway::DataGateway::getInstance().transmit(context);
         });
         timerScheduler.start();
@@ -48,6 +47,12 @@ extern "C" {
         }
     }
 
+    void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+        // 所有定时器的处理集中在这里
+        if (htim->Instance == TIM1) {
+            TimerScheduler::getInstance().onTick();
+        }
+    }
 #ifdef __cplusplus
 }
 #endif

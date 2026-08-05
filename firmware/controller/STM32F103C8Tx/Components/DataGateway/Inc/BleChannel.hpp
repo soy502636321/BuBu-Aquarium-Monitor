@@ -5,11 +5,11 @@
 #ifndef STM32F103C8TX_BLECHANNEL_HPP
 #define STM32F103C8TX_BLECHANNEL_HPP
 
-#include "DataChannel.hpp"
+#include "Channel.hpp"
 #include <cstdio>
 #include <functional>
 
-class BleChannel : public IDataChannel {
+class BleChannel : public IAction {
 private:
     std::function<void(const uint8_t*, uint16_t)> m_callback;
 

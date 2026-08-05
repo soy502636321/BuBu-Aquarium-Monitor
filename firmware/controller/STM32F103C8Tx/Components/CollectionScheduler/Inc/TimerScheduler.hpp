@@ -65,7 +65,7 @@ namespace Components {
         void checkTasks() {
             for (auto& task : tasks) {
                 if (!task.enabled) continue;
-                // ✅ 取模判断：当前 tick 能被 interval 整除时执行
+                // 取模判断：当前 tick 能被 interval 整除时执行
                 if (tick_seconds > 0 && tick_seconds % task.interval_seconds == 0) {
                     if (task.callback) {
                         task.callback();

@@ -12,12 +12,7 @@ void ChannelManager::init()
     if(m_initialized) {
         return;
     }
-    UartChannel& uart_channel = UartChannel::getInstance();
-    uart_channel.setCallback([this](DataContext& ctx) {
-            // 通道有数据到达！
-            this->onReceiveData(ctx);
-    });
-    addChannel(&uart_channel);
+    addChannel(&UartChannel::getInstance());
 
     static BleChannel ble;
     addChannel(&ble);
@@ -46,13 +41,26 @@ void ChannelManager::stop()
 }
 
 void ChannelManager::addChannel(
-        IDataChannel* channel)
+        IAction* channel)
 {
     if(channel) {
+        channel->setCallback([this](DataContext& ctx) {
+            // 通道有数据到达！
+            this->onReceive(ctx);
+        });
         m_channels[m_channel_count++] = channel;
     }
 }
 
-void ChannelManager::onReceiveData(DataContext &ctx) {
-    DataGateway::getInstance().getRxPipeline().execute(ctx);
+void ChannelManager::onReceive(DataContext &ctx) {
+    DataGateway::getInstance().onReceiveData(ctx);
+}
+
+void ChannelManager::onTransmit(DataContext &ctx) {
+    printf("Payload (%zu bytes): ", ctx.getPayload().size());
+    std::vector<uint8_t> payload = ctx.getPayload();
+    for (size_t i = 0; i < payload.size(); i++) {
+        printf("%02X ", payload[i]);
+    }
+    printf("\n");
 }

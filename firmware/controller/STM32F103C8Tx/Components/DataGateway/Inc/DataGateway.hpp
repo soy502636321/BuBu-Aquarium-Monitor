@@ -2,6 +2,7 @@
 #ifndef DATA_GATEWAY_HPP
 #define DATA_GATEWAY_HPP
 
+#include "ActionManager.hpp"
 #include "ChannelManager.hpp"
 #include "Pipeline.hpp"
 
@@ -25,7 +26,7 @@ public:
 
 	void transmit(DataContext &ctx);
 
-	void receive(DataContext &ctx);
+	void onReceiveData(DataContext &ctx);
 
 	void setupRxPipeline();
 
@@ -34,7 +35,7 @@ public:
 	}
 
     void transmit(DataContext &ctx) const;  // 发送
-	void receive(DataContext &ctx) const; // 接收
+	void onReceiveData(DataContext &ctx) const; // 接收
 
 private:
 	// -------- 单例核心 --------
@@ -48,6 +49,7 @@ private:
 private:
 	// ---
 	ChannelManager* m_channel_manager;
+	ActionManager* m_action_manager;
 	// -------- Pipeline --------
 	TxPipeline m_tx_pipeline {};
 	RxPipeline m_rx_pipeline {};

@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "DataChannel.hpp"
+#include "Channel.hpp"
 #include "DataContext.hpp"
 
 // ==================== Valve 基类 ====================

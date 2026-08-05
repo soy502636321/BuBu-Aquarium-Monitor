@@ -38,14 +38,15 @@ enum class DeviceStatus : uint8_t {
 
 // 命令类型枚举
 enum class CommandType : uint8_t {
-    READ = 0,           // 读取数据
-    WRITE = 1,          // 写入控制值
-    CALIBRATE = 2,      // 校准
-    RESET = 3,          // 复位/重启
-    ENABLE = 4,         // 启用设备
-    DISABLE = 5,        // 禁用设备
-    CONFIG = 6,         // 修改配置参数
-    QUERY = 7           // 查询状态
+	DATA = 0,		// 数据上报
+    READ,           // 读取数据
+    WRITE,          // 写入控制值
+    CALIBRATE,      // 校准
+    RESET,          // 复位/重启
+    ENABLE,         // 启用设备
+    DISABLE,        // 禁用设备
+    CONFIG,         // 修改配置参数
+    QUERY           // 查询状态
 };
 
 // 命令状态枚举
@@ -309,29 +310,68 @@ struct DataPoint {
     }
 };
 
-struct DeviceRecord {
-    // ---------- 标识字段 ----------
-    std::string device_id;          // 设备唯一标识，如 "sensor_01"
-    std::string device_name;        // 设备名称，如 "水温传感器"（冗余存储，便于离线分析）
-    DeviceType device_type;         // 设备类型：SENSOR/SWITCH/PWM
-    
-    // ---------- 时间字段 ----------
-    std::string timestamp;          // 采集时间 "2026-07-23 14:30:25"
-    
-	std::vector<DataPoint> points;       // ✅ 采集的数据点列表
-    
-    // ---------- 扩展字段 ----------
-    uint8_t data_quality = 0;         // 整条记录的数据质量：0=正常, 1=部分可疑, 2=全部无效
-    std::map<std::string, std::string> metadata;  // 元数据: {"calibration_date":"2026-07-01"}
-    std::string checksum;                         // 数据校验和 (MD5/SHA256)
+// ============================================================================
+// 宏定义
+// ============================================================================
 
+#define DECLARE_TYPE(ClassName, TypeId) \
+public: \
+static constexpr uint32_t TYPE_ID = TypeId; \
+static constexpr const char* CLASS_NAME = #ClassName; \
+uint32_t getTypeId() const override { return TYPE_ID; } \
+const char* getTypeName() const override { return CLASS_NAME; }
+
+class IDeviceData {
+public:
+
+	virtual uint32_t getTypeId() const = 0;
+	virtual const char* getTypeName() const = 0;
+
+	// ========== Getter（非虚，所有子类共用） ==========
+	std::string getDeviceId() const { return m_deviceId; }
+	std::string getDeviceName() const { return m_deviceName; }
+	uint32_t getTimestamp() const { return m_timestamp; }
+	DeviceType getDeviceType() const { return m_deviceType; }
+	const std::map<std::string, std::string>& getMetadata() const {
+		return m_metadata;
+	}
+
+	// ========== Setter（非虚，所有子类共用） ==========
+	void setDeviceId(const std::string& id) { m_deviceId = id; }
+	void setDeviceName(const std::string& name) { m_deviceName = name; }
+	void setTimestamp(uint32_t ts) { m_timestamp = ts; }
+	void setDeviceType(DeviceType type) { m_deviceType = type; }
+	void setMetadata(const std::string& key, const std::string& value) {
+		m_metadata[key] = value;
+	}
+	bool hasMetadata(const std::string& key) const {
+		return m_metadata.find(key) != m_metadata.end();
+	}
+
+	template<typename T>
+		bool isType() const {
+		return getTypeId() == T::TYPE_ID;
+	}
+
+private:
+	std::string m_deviceId; // 设备唯一标识，如 "sensor_01"
+	std::string m_deviceName; //设备名称
+	uint32_t m_timestamp; // 采集时间 "2026-07-23 14:30:25"
+	DeviceType m_deviceType;
+	std::map<std::string, std::string> m_metadata;  // 元数据
+};
+
+class DeviceRecord : public IDeviceData {
+	DECLARE_TYPE(DeviceRecord, 0x0001)
+public:
+	std::vector<DataPoint> points; // ✅ 采集的数据点列表
 	/**
 		 * @brief 添加数据点，并自动更新 data_quality
 		 * @param point 要添加的数据点
 		 * @param autoUpdateQuality 是否自动更新 data_quality（默认 true）
 		 * @return 添加成功返回 true，失败返回 false
 		 */
-	bool addDataPoint(const DataPoint& point, bool autoUpdateQuality = true) {
+	bool addDataPoint(const DataPoint &point, bool autoUpdateQuality = true) {
 		// 1. 基本的有效性检查
 		if (point.unit.empty()) {
 			// 对于非开关类型，建议有单位，但不强制
@@ -346,53 +386,60 @@ struct DeviceRecord {
 
 		return true;
 	}
+	template<typename Callback>
+	void forEachDataPoint(Callback&& callback) const {
+		for (size_t i = 0; i < points.size(); i++) {
+			callback(i, points[i]);
+		}
+	}
 };
 
-struct DeviceCommand {
+class  DeviceCommand : public IDeviceData {
+	DECLARE_TYPE(DeviceCommand, 0x0002)
     // ---------- 1. 标识字段 ----------
     std::string command_id;          // 命令唯一ID (UUID或自增序列号)
     std::string device_id;           // 目标设备ID
-    
+
     // ---------- 2. 命令内容 ----------
     CommandType type;                // 命令类型：READ/WRITE/CALIBRATE...
     CommandTarget target;            // 目标属性：STATE/DUTY_CYCLE...
     std::string value;               // 命令值 (字符串形式，灵活通用)
     std::map<std::string, std::string> params;  // 扩展参数
-    
+
     // ---------- 3. 执行控制 ----------
     uint32_t timeout_ms = 5000;      // 超时时间 (毫秒)
     uint8_t max_retry = 3;           // 最大重试次数
     uint8_t retry_count = 0;         // 当前已重试次数
     bool require_ack = true;         // 是否需要设备确认
-    
+
     // ---------- 4. 时间字段 ----------
     uint64_t created_at_ms;          // 命令创建时间 (毫秒时间戳)
     uint64_t executed_at_ms = 0;     // 命令执行时间
     uint64_t completed_at_ms = 0;    // 命令完成时间
-    
+
     // ---------- 5. 状态与结果 ----------
     CommandStatus status;            // 命令状态
     std::string result;              // 执行结果描述
     std::string error_code;          // 错误码 (便于分类处理)
-    
+
     // ---------- 6. 来源与优先级 ----------
     std::string source;              // 命令来源: "app", "mqtt", "schedule", "auto"
     uint8_t priority = 5;            // 优先级 (0-10, 0最高)
     uint32_t sequence = 0;           // 序列号 (用于排序)
-    
+
     // ===== 构造函数 =====
-    DeviceCommand() 
-        : type(CommandType::READ), 
+    DeviceCommand()
+        : type(CommandType::READ),
           target(CommandTarget::STATE),
-          timeout_ms(5000), 
-          max_retry(3), 
+          timeout_ms(5000),
+          max_retry(3),
           retry_count(0),
           require_ack(true),
           created_at_ms(getCurrentTimestampMs()),
           status(CommandStatus::PENDING),
           priority(5),
           sequence(0) {}
-    
+
     // 便捷构造：开关控制
     static DeviceCommand makeSwitch(const std::string& device_id, bool on) {
         DeviceCommand cmd;
@@ -403,7 +450,7 @@ struct DeviceCommand {
         cmd.value = on ? "ON" : "OFF";
         return cmd;
     }
-    
+
     // 便捷构造：PWM占空比控制
     static DeviceCommand makePWM(const std::string& device_id, uint8_t duty) {
         DeviceCommand cmd;
@@ -414,7 +461,7 @@ struct DeviceCommand {
         cmd.value = std::to_string(duty);
         return cmd;
     }
-    
+
     // 便捷构造：读取数据
     static DeviceCommand makeRead(const std::string& device_id) {
         DeviceCommand cmd;
@@ -423,9 +470,9 @@ struct DeviceCommand {
         cmd.type = CommandType::READ;
         return cmd;
     }
-    
+
     // 便捷构造：校准
-    static DeviceCommand makeCalibrate(const std::string& device_id, 
+    static DeviceCommand makeCalibrate(const std::string& device_id,
                                         const std::string& param = "") {
         DeviceCommand cmd;
         cmd.command_id = generateUUID();
@@ -436,48 +483,48 @@ struct DeviceCommand {
         }
         return cmd;
     }
-    
+
     // ===== 辅助方法 =====
-    
+
     // 检查命令是否已完成
     bool isCompleted() const {
-        return status == CommandStatus::SUCCESS || 
-               status == CommandStatus::FAILED || 
+        return status == CommandStatus::SUCCESS ||
+               status == CommandStatus::FAILED ||
                status == CommandStatus::TIMEOUT ||
                status == CommandStatus::CANCELLED;
     }
-    
+
     // 检查命令是否成功
     bool isSuccess() const {
         return status == CommandStatus::SUCCESS;
     }
-    
+
     // 检查命令是否可重试
     bool canRetry() const {
         return (status == CommandStatus::FAILED || status == CommandStatus::TIMEOUT) &&
                retry_count < max_retry;
     }
-    
+
     // 增加重试计数
     void incrementRetry() {
         retry_count++;
     }
-    
+
     // 获取数值 (将字符串转为整数)
     int getIntValue() const {
         return std::stoi(value);
     }
-    
+
     // 获取数值 (将字符串转为浮点数)
     float getFloatValue() const {
         return std::stof(value);
     }
-    
+
     // 获取布尔值 (ON/OFF, 1/0, true/false)
     bool getBoolValue() const {
         return value == "ON" || value == "1" || value == "true" || value == "TRUE";
     }
-    
+
     // 转JSON (用于网络传输)
     std::string toJSON() const {
         std::string json = "{";
@@ -491,7 +538,7 @@ struct DeviceCommand {
         json += "}";
         return json;
     }
-    
+
     // ===== 辅助函数 =====
 private:
     static std::string generateUUID() {
@@ -517,7 +564,7 @@ struct DeviceConfig {
     uint8_t retry_count = 3;              // 重试次数
     bool auto_report = true;              // 是否自动上报
     std::map<std::string, std::string> extra_params;  // 扩展参数
-    
+
     // 转JSON（用于存储和传输）
     std::string toJson() const;
     static DeviceConfig fromJson(const std::string& json);
@@ -527,28 +574,28 @@ class DeviceBase {
 public:
     DeviceBase(const std::string& id, const std::string& name, DeviceType type)
         : device_id(id), name(name), type(type), is_online(false) {}
-    
+
     virtual ~DeviceBase() = default;
-    
+
     // 纯虚函数：子类必须实现
     virtual bool executeCommand(const DeviceCommand& cmd) = 0;
     virtual DataPoint collectData() = 0;
-    
+
     // 公共方法
     std::string getDeviceId() const { return device_id; }
     std::string getName() const { return name; }
     DeviceType getType() const { return type; }
     bool isOnline() const { return is_online; }
-    
+
     // 设置/获取配置
     void setConfig(const DeviceConfig& config) { this->config = config; }
     const DeviceConfig& getConfig() const { return config; }
-    
+
     // 获取设备信息（用于注册和发现）
     virtual std::string getDeviceInfo() const {
         return "Device: " + name + " (" + device_id + ") Type: " + std::to_string((int)type);
     }
-    
+
 protected:
     std::string device_id;
     std::string name;

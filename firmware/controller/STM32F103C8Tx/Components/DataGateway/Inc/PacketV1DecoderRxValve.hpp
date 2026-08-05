@@ -10,23 +10,38 @@
 class PacketV1DecoderRxValve: public IRxValve {
 public:
     bool process(DataContext& ctx) override {
-        uint8_t* payload = ctx.packet.getRaw();
-        size_t payload_length = ctx.packet.getLength();
+        //
+        printf("test Decoder Rx Value\r\n");
+        std::vector<uint8_t> payload = ctx.packet.getPayload();
+        uint8_t data_type = payload[3];
 
-        uint8_t ver = payload[3];
-        uint8_t type = payload[4]; // 数据类型
-
-        switch (type) {
-            case 0x01: {
-                break;
+        switch (data_type) {
+            case static_cast<uint8_t>(CommandType::DATA): {
+                return decodeData(ctx);
             }
             case 0x02: {
                 break;
             }
+            default:
+                printf("NOT IMPLEMENTED YET\r\n");
+                return false;
         }
         // PWM控制
         // SWITCH控制
         // 设置配置
+
+        return true;
+    }
+
+private:
+    bool decodeData(DataContext& ctx) {
+        std::vector<uint8_t> payload = ctx.packet.getPayload();
+        size_t payload_length = ctx.packet.getLength();
+        uint8_t data_version = payload[2];
+        uint8_t data_type = payload[3];
+        uint8_t data_len = payload[4];
+
+        DeviceRecord record;
 
         return true;
     }

@@ -4,6 +4,7 @@
 
 #include "ChannelManager.hpp"
 #include "PacketV1DecoderRxValve.hpp"
+#include "PacketV1EncoderTxValve.hpp"
 #include "PacketValidatorRxValve.hpp"
 
 // -------- 初始化 --------
@@ -12,8 +13,9 @@ void DataGateway::init() {
         return;
     }
     m_channel_manager = &ChannelManager::getInstance();
+    m_action_manager = &ActionManager::getInstance();
     setupRxPipeline();
-    // setupTxPipeline();
+    setupTxPipeline();
     m_initialized = true;
 }
 
@@ -30,15 +32,29 @@ void DataGateway::setupRxPipeline() {
 // -------- 设置 Tx Pipeline --------
 void DataGateway::setupTxPipeline() {
     // m_tx_pipeline->clearValves();
-    // TODO: 添加阀门
-    // pipeline.addValve(new LogValve());
+    // 添加
+    static PacketV1EncoderTxValve packet_v1_encoder_tx_valve;
+    m_tx_pipeline.addValve(&packet_v1_encoder_tx_valve);
 }
 
 // -------- 传输 --------
 void DataGateway::transmit(DataContext &ctx) {
-    m_tx_pipeline.execute(ctx);
+    if (!m_tx_pipeline.execute(ctx)) {
+        // 没有通过管道
+        printf("DataGateway::transmit() failed\n");
+    };
+    // 通过频道发送
+    if (m_channel_manager) {
+        m_channel_manager->onTransmit(ctx);
+    }
 }
 
-void DataGateway::receive(DataContext &ctx) {
-    m_rx_pipeline.execute( ctx);
+void DataGateway::onReceiveData(DataContext &ctx) {
+    if (!m_rx_pipeline.execute( ctx)) {
+        printf("DataGateway::onReceiveData() failed\n");
+    }
+    // 分发动作
+    if (m_action_manager) {
+        m_action_manager->onDispatch(ctx);
+    }
 }

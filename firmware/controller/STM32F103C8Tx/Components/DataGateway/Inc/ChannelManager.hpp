@@ -9,7 +9,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "DataChannel.hpp"
+#include "Channel.hpp"
 
 #define MAX_CHANNEL_SIZE 8
 
@@ -42,7 +42,7 @@ public:
     /**
      * 添加Channel
      */
-    void addChannel(IDataChannel* channel);
+    void addChannel(IAction* channel);
 
     /**
      * 根据类型获取Channel
@@ -59,7 +59,9 @@ public:
         return nullptr;
     }
 
-    virtual void onReceiveData(DataContext &ctx);
+    virtual void onReceive(DataContext &ctx);
+
+    virtual void onTransmit(DataContext &ctx);
 
 private:
 
@@ -74,7 +76,7 @@ private:
     ChannelManager& operator=(const ChannelManager&) = delete;
 
 private:
-    IDataChannel* m_channels[MAX_CHANNEL_SIZE]{};
+    IAction* m_channels[MAX_CHANNEL_SIZE]{};
     uint8_t m_channel_count = 0;
     bool m_initialized = false;
 };

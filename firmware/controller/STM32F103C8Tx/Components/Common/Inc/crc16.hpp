@@ -41,7 +41,9 @@
 
 			return crc;
 		}
-
+		static inline bool verify(const std::vector<uint8_t> data,size_t length) {
+			return verify(data.data(), length);
+		}
 
 
 		static inline bool verify(const uint8_t* data,size_t length)

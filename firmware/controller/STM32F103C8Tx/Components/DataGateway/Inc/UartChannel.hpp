@@ -8,7 +8,7 @@ extern "C" {
     #include "stm32f1xx_hal.h"
 }
 
-#include "DataChannel.hpp"
+#include "Channel.hpp"
 #include <cstring>
 
 extern UART_HandleTypeDef huart1;
@@ -17,7 +17,7 @@ extern UART_HandleTypeDef huart1;
 #define TX_BUF_SIZE  128
 #define UART_HANDLE huart1
 
-class UartChannel : public IDataChannel {
+class UartChannel : public IAction {
 public:
 
     ChannelDirection getDirection() const override {
@@ -75,7 +75,8 @@ public:
                     printf("%02X ", m_rx_data_buf[i]);
                 }
                 printf("\r\n");
-                DataContext context {m_rx_data_buf, data_total_len};
+                std::vector<uint8_t> data(m_rx_data_buf, m_rx_data_buf + data_total_len);
+                DataContext context {(&data), data_total_len};
                 m_callback(context);
             }
         }
@@ -112,9 +113,6 @@ private:
         , m_tx_head(0)
         , m_tx_tail(0)
         , m_tx_count(0) {
-        // std::memset(m_rx_buf, 0, sizeof(m_rx_buf));
-        // std::memset(m_dma_tx_buf, 0, sizeof(m_dma_tx_buf));
-
         // 保险起见 休闲中断 开启首次DMA
         __HAL_UART_ENABLE_IT(&UART_HANDLE, UART_IT_IDLE);
         HAL_UARTEx_ReceiveToIdle_DMA(
