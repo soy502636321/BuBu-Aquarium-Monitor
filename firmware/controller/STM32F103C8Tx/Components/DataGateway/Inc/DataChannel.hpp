@@ -30,17 +30,17 @@ public:
 
     virtual ChannelDirection getDirection() const = 0;
 
-    void setCallback(std::function<void(uint8_t*, uint16_t)> cb){
+    void setCallback(std::function<void(DataContext& ctx)> cb){
         m_callback = cb;
     }
 
 protected:
-    std::function<void(uint8_t*, uint16_t)> m_callback;
+    std::function<void(DataContext& ctx)> m_callback;
 protected:
 
-    void onReceive(uint8_t* data, uint16_t len) {
+    void onReceive(DataContext& ctx) {
         if(m_callback) {
-            m_callback(data,len);
+            m_callback(ctx);
         }
     }
 };

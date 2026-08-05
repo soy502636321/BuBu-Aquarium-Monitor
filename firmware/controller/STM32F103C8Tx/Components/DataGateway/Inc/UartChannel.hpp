@@ -23,102 +23,22 @@ public:
     ChannelDirection getDirection() const override {
         return ChannelDirection::BIDIR;
     }
-    UartChannel()
-        : m_huart(&UART_HANDLE)
-        , m_connected(false)
-        , m_tx_busy(false)
-        , m_tx_head(0)
-        , m_tx_tail(0)
-        , m_tx_count(0) {
-        std::memset(m_rx_buf, 0, sizeof(m_rx_buf));
-        std::memset(m_dma_tx_buf, 0, sizeof(m_dma_tx_buf));
 
-        // 保险起见 休闲中断 开启首次DMA
-        __HAL_UART_ENABLE_IT(&UART_HANDLE, UART_IT_IDLE);
-        HAL_UARTEx_ReceiveToIdle_DMA(
-            &UART_HANDLE,
-            getDmaRxBuffer(),
-            RX_BUF_SIZE
-        );
+    static UartChannel& getInstance() {
+        static UartChannel instance;
+        return instance;
     }
 
-    ~UartChannel() = default;
 public:
     // 禁止拷贝和赋值
     UartChannel(const UartChannel&) = delete;
     UartChannel& operator=(const UartChannel&) = delete;
 
     // ==================== IDataChannel ====================
-    // ChannelType getType() const override {
-        // return ChannelType::UART;
-    // }
 
-    uint8_t* getDmaRxBuffer() {
+    uint8_t* getRxBuffer() {
         return m_rx_buf;
     }
-
-    // ==================== IOutputChannel ====================
-    // bool send(const uint8_t* data, uint16_t length) override {
-    //     if (!m_connected || data == nullptr || length == 0) {
-    //         return false;
-    //     }
-    //
-    //     if (m_tx_count + length > TX_BUF_SIZE) {
-    //         return false;
-    //     }
-    //
-    //     for (uint16_t i = 0; i < length; i++) {
-    //         m_dma_tx_buf[m_tx_tail] = data[i];
-    //         m_tx_tail = (m_tx_tail + 1) % TX_BUF_SIZE;
-    //         m_tx_count++;
-    //     }
-    //
-    //     if (!m_tx_busy) {
-    //         return sendNext();
-    //     }
-    //     return true;
-    // }
-    //
-    // bool send(const char* str) override {
-    //     if (str == nullptr) {
-    //         return false;
-    //     }
-    //     return send(reinterpret_cast<const uint8_t*>(str), std::strlen(str));
-    // }
-    //
-    // bool send(const DataContext& ctx) override {
-    //     // return send(ctx.data, ctx.length);
-    //     return false;
-    // }
-
-    // ==================== IInputChannel ====================
-    // uint16_t read(uint8_t* buffer, uint16_t max_len) {
-    //     if (buffer == nullptr || max_len == 0) {
-    //         return 0;
-    //     }
-    //
-    //     uint16_t read_count = 0;
-    //     while (read_count < max_len && m_rx_count > 0) {
-    //         buffer[read_count] = m_rx_buf[m_rx_tail];
-    //         m_rx_tail = (m_rx_tail + 1) % RX_BUF_SIZE;
-    //         m_rx_count--;
-    //         read_count++;
-    //     }
-    //     return read_count;
-    // }
-
-    // ==================== UART 特有 ====================
-    // void setHardware(void* huart) {
-    //     m_huart = huart;
-    // }
-    //
-    // void* getHardware() const {
-    //     return m_huart;
-    // }
-
-    // void setDataCallback(std::function<void(const uint8_t*, uint16_t)> m_callback) override {
-        // m_callback = m_callback;
-    // }
 
     void onDataReceived() {
         // 只要环形缓冲区有数据，就尝试解析
@@ -130,12 +50,12 @@ public:
                 return;
             };
             //3. 检查是否有足够的字节读取长度
-            if (m_rx_count - header_pos < 3) {  // AA 55 + 长度字段
+            if (m_rx_count - header_pos < 1 + 1 + 3) {  // AA 55 + 数据类型 + 协议版本 + 数据长度
                 return;  // 数据不够，等下次
             }
             //4. 读取长度字段（第3个字节，索引2）
-            uint8_t data_len = peekByte(header_pos + 2);
-            uint16_t data_total_len = 1 + 1 + 1 + data_len + 2;  // AA + 55 + Len + Data + CRC
+            uint8_t data_len = peekByte(header_pos + 1 + 1 + 2);
+            uint16_t data_total_len = 1 + 1 + 1 + 1 + 1 + data_len + 2;  // AA + 55 + Type + Ver + Len + Data + CRC
             //5. 检查完整帧是否已收到
             if (m_rx_count - header_pos < data_total_len) {
                 return;  // 数据不够，等下次
@@ -144,24 +64,27 @@ public:
             findRxData(header_pos, data_total_len);
             //7. 移除已提取的数据，继续接收新数据
             // removeDmaBuffer(data_total_len);
+
+            // ✅ 触发回调：通知有数据了！
+            if (m_callback) {
+                // 构建data context
+                // printf("Received Size %d bytes\n", size);  // %d 打印十进制
+                // printf("Received Rx_Len %d bytes\n", rx_len);  // %d 打印十进制
+                //
+                for (uint16_t i = 0; i < data_total_len; i++) {
+                    printf("%02X ", m_rx_data_buf[i]);
+                }
+                printf("\r\n");
+                DataContext context {m_rx_data_buf, data_total_len};
+                m_callback(context);
+            }
         }
 
-        // ✅ 触发回调：通知有数据了！
-        if (m_callback) {
-            m_callback(m_rx_data_buf, m_rx_count);
-        }
     }
 
     void onRxIdleDMA(uint16_t size) {
         // 计算实际接收长度
         uint16_t rx_len = RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(static_cast<UART_HandleTypeDef*>(&UART_HANDLE)->hdmarx);
-        printf("Received Size %d bytes\n", size);  // %d 打印十进制
-        printf("Received Rx_Len %d bytes\n", rx_len);  // %d 打印十进制
-
-        for (uint16_t i = 0; i < sizeof(m_rx_buf); i++) {
-            printf("%02X ", m_rx_buf[i]);
-        }
-        printf("\r\n");
         if (rx_len >= m_rx_tail) {
             m_rx_count = rx_len - m_rx_tail;
         } else {
@@ -181,6 +104,27 @@ public:
     }
 
 private:
+
+    UartChannel()
+        : m_huart(&UART_HANDLE)
+        , m_connected(false)
+        , m_tx_busy(false)
+        , m_tx_head(0)
+        , m_tx_tail(0)
+        , m_tx_count(0) {
+        // std::memset(m_rx_buf, 0, sizeof(m_rx_buf));
+        // std::memset(m_dma_tx_buf, 0, sizeof(m_dma_tx_buf));
+
+        // 保险起见 休闲中断 开启首次DMA
+        __HAL_UART_ENABLE_IT(&UART_HANDLE, UART_IT_IDLE);
+        HAL_UARTEx_ReceiveToIdle_DMA(
+            &UART_HANDLE,
+            getRxBuffer(),
+            RX_BUF_SIZE
+        );
+    }
+
+    ~UartChannel() = default;
 
     uint8_t peekByte(uint16_t offset) {
         if (offset >= m_rx_count) return 0;
@@ -259,4 +203,23 @@ private:
     uint16_t m_tx_tail;
     uint16_t m_tx_count;
 };
+
+extern "C" void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
+    // printf("HAL_UARTEx_RxEventCallback\r\n");
+    if (huart->Instance == USART1) {
+        // 通知 UartChannel
+        UartChannel::getInstance().onRxIdleDMA(Size);
+    }
+}
+// ★★★ 错误回调 ★★★
+extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+    // printf("HAL_UART_ErrorCallback\r\n");
+    if (huart->Instance == USART1) {
+        // 清除错误标志
+        __HAL_UART_CLEAR_OREFLAG(huart);
+        // 重新启动
+        HAL_UARTEx_ReceiveToIdle_DMA(&UART_HANDLE, UartChannel::getInstance().getRxBuffer(), RX_BUF_SIZE);
+    }
+}
+
 #endif // UART_CHANNEL_HPP

@@ -74,11 +74,15 @@ private:
 // ==================== Rx Pipeline 默认实现 ====================
 class RxPipeline : public IRxPipeline {
 public:
-    RxPipeline() {}
+    RxPipeline() : m_valves{} {
+    }
 
     bool execute(DataContext& ctx) override {
+        printf("RxPipeline::execute()\r\n");
         for (auto& valve : m_valves) {
-            if (!valve) continue;
+            if (!valve) {
+                continue;
+            }
             if (!valve->process(ctx)) {
                 return false;  // 阀门处理失败
             }
@@ -104,7 +108,7 @@ public:
 
 private:
     IRxValve* m_valves[4];
-    uint32_t m_valve_index = 0;
+    uint32_t    m_valve_index = 0;
 };
 
 #endif // PIPELINE_HPP

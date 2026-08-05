@@ -18,7 +18,20 @@ public:
 
 	// -------- Pipeline 配置 --------
 	void setupTxPipeline();
+
+	TxPipeline& getTxPipeline() {
+		return m_tx_pipeline;
+	}
+
+	void transmit(DataContext &ctx);
+
+	void receive(DataContext &ctx);
+
 	void setupRxPipeline();
+
+	RxPipeline& getRxPipeline() {
+		return m_rx_pipeline;
+	}
 
     void transmit(DataContext &ctx) const;  // 发送
 	void receive(DataContext &ctx) const; // 接收
@@ -36,8 +49,8 @@ private:
 	// ---
 	ChannelManager* m_channel_manager;
 	// -------- Pipeline --------
-	TxPipeline* m_tx_pipeline;
-	RxPipeline* m_rx_pipeline;
+	TxPipeline m_tx_pipeline {};
+	RxPipeline m_rx_pipeline {};
 	bool m_initialized = false;
 };
 

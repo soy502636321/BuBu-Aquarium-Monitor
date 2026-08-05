@@ -5,15 +5,21 @@
 
 #include "UartChannel.hpp"
 #include "BleChannel.hpp"
+#include "DataGateway.hpp"
 
 void ChannelManager::init()
 {
     if(m_initialized) {
         return;
     }
-    static UartChannel uart;
+    UartChannel& uart_channel = UartChannel::getInstance();
+    uart_channel.setCallback([this](DataContext& ctx) {
+            // 通道有数据到达！
+            this->onReceiveData(ctx);
+    });
+    addChannel(&uart_channel);
+
     static BleChannel ble;
-    addChannel(&uart);
     addChannel(&ble);
 
     for(auto channel:m_channels)
@@ -45,4 +51,8 @@ void ChannelManager::addChannel(
     if(channel) {
         m_channels[m_channel_count++] = channel;
     }
+}
+
+void ChannelManager::onReceiveData(DataContext &ctx) {
+    DataGateway::getInstance().getRxPipeline().execute(ctx);
 }
