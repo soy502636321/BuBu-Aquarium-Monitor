@@ -10,20 +10,35 @@
 class IAction {
 public:
     virtual ~IAction() = default;
-    virtual void execute(DataContext& ctx);
+    virtual bool execute(DataContext& ctx);
 };
 
 class SwitchAction : public IAction {
 public:
-    void execute(DataContext &ctx) override {
-
+    bool execute(DataContext &ctx) override {
+        return true;
     }
 };
 
 class PwmAction : public IAction {
     public:
-    void execute(DataContext &ctx) override {
+    bool execute(DataContext &ctx) override {
+        return true;
+    }
+};
 
+class SetupAction : public IAction {
+    public:
+    bool execute(DataContext &ctx) override {
+        return true;
+    }
+};
+
+// 立即采集动作
+class CollectionAction : public IAction {
+    public:
+    bool execute(DataContext &ctx) override {
+        return true;
     }
 };
 #endif //STM32F103C8TX_ACTION_HPP

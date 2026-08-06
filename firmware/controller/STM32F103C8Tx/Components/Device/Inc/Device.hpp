@@ -19,6 +19,8 @@
 #include <variant>
 #include <vector>
 
+#define MAX_SWITCH_SIZE 12
+
 enum class DeviceType
 {
     Unknown = 0,
@@ -39,6 +41,10 @@ enum class DeviceStatus : uint8_t {
 // 命令类型枚举
 enum class CommandType : uint8_t {
 	DATA = 0,		// 数据上报
+	SWITCH,			// 开关
+	PWM,			// PWM控制
+	SETUP,			// 配置、设置
+	COLLECTION,		// 立即采集
     READ,           // 读取数据
     WRITE,          // 写入控制值
     CALIBRATE,      // 校准
@@ -394,167 +400,67 @@ public:
 	}
 };
 
-class  DeviceCommand : public IDeviceData {
+class DeviceSwitch: public IDeviceData {
 	DECLARE_TYPE(DeviceCommand, 0x0002)
-    // ---------- 1. 标识字段 ----------
-    std::string command_id;          // 命令唯一ID (UUID或自增序列号)
-    std::string device_id;           // 目标设备ID
+public:
+	void addRelay(uint8_t channel, bool state) {
+		relays[m_relay_count].channel = channel;
+		relays[m_relay_count].state = state;
+		m_relay_count++;
+	}
 
-    // ---------- 2. 命令内容 ----------
-    CommandType type;                // 命令类型：READ/WRITE/CALIBRATE...
-    CommandTarget target;            // 目标属性：STATE/DUTY_CYCLE...
-    std::string value;               // 命令值 (字符串形式，灵活通用)
-    std::map<std::string, std::string> params;  // 扩展参数
-
-    // ---------- 3. 执行控制 ----------
-    uint32_t timeout_ms = 5000;      // 超时时间 (毫秒)
-    uint8_t max_retry = 3;           // 最大重试次数
-    uint8_t retry_count = 0;         // 当前已重试次数
-    bool require_ack = true;         // 是否需要设备确认
-
-    // ---------- 4. 时间字段 ----------
-    uint64_t created_at_ms;          // 命令创建时间 (毫秒时间戳)
-    uint64_t executed_at_ms = 0;     // 命令执行时间
-    uint64_t completed_at_ms = 0;    // 命令完成时间
-
-    // ---------- 5. 状态与结果 ----------
-    CommandStatus status;            // 命令状态
-    std::string result;              // 执行结果描述
-    std::string error_code;          // 错误码 (便于分类处理)
-
-    // ---------- 6. 来源与优先级 ----------
-    std::string source;              // 命令来源: "app", "mqtt", "schedule", "auto"
-    uint8_t priority = 5;            // 优先级 (0-10, 0最高)
-    uint32_t sequence = 0;           // 序列号 (用于排序)
-
-    // ===== 构造函数 =====
-    DeviceCommand()
-        : type(CommandType::READ),
-          target(CommandTarget::STATE),
-          timeout_ms(5000),
-          max_retry(3),
-          retry_count(0),
-          require_ack(true),
-          created_at_ms(getCurrentTimestampMs()),
-          status(CommandStatus::PENDING),
-          priority(5),
-          sequence(0) {}
-
-    // 便捷构造：开关控制
-    static DeviceCommand makeSwitch(const std::string& device_id, bool on) {
-        DeviceCommand cmd;
-        cmd.command_id = generateUUID();
-        cmd.device_id = device_id;
-        cmd.type = CommandType::WRITE;
-        cmd.target = CommandTarget::STATE;
-        cmd.value = on ? "ON" : "OFF";
-        return cmd;
-    }
-
-    // 便捷构造：PWM占空比控制
-    static DeviceCommand makePWM(const std::string& device_id, uint8_t duty) {
-        DeviceCommand cmd;
-        cmd.command_id = generateUUID();
-        cmd.device_id = device_id;
-        cmd.type = CommandType::WRITE;
-        cmd.target = CommandTarget::DUTY_CYCLE;
-        cmd.value = std::to_string(duty);
-        return cmd;
-    }
-
-    // 便捷构造：读取数据
-    static DeviceCommand makeRead(const std::string& device_id) {
-        DeviceCommand cmd;
-        cmd.command_id = generateUUID();
-        cmd.device_id = device_id;
-        cmd.type = CommandType::READ;
-        return cmd;
-    }
-
-    // 便捷构造：校准
-    static DeviceCommand makeCalibrate(const std::string& device_id,
-                                        const std::string& param = "") {
-        DeviceCommand cmd;
-        cmd.command_id = generateUUID();
-        cmd.device_id = device_id;
-        cmd.type = CommandType::CALIBRATE;
-        if (!param.empty()) {
-            cmd.params["param"] = param;
-        }
-        return cmd;
-    }
-
-    // ===== 辅助方法 =====
-
-    // 检查命令是否已完成
-    bool isCompleted() const {
-        return status == CommandStatus::SUCCESS ||
-               status == CommandStatus::FAILED ||
-               status == CommandStatus::TIMEOUT ||
-               status == CommandStatus::CANCELLED;
-    }
-
-    // 检查命令是否成功
-    bool isSuccess() const {
-        return status == CommandStatus::SUCCESS;
-    }
-
-    // 检查命令是否可重试
-    bool canRetry() const {
-        return (status == CommandStatus::FAILED || status == CommandStatus::TIMEOUT) &&
-               retry_count < max_retry;
-    }
-
-    // 增加重试计数
-    void incrementRetry() {
-        retry_count++;
-    }
-
-    // 获取数值 (将字符串转为整数)
-    int getIntValue() const {
-        return std::stoi(value);
-    }
-
-    // 获取数值 (将字符串转为浮点数)
-    float getFloatValue() const {
-        return std::stof(value);
-    }
-
-    // 获取布尔值 (ON/OFF, 1/0, true/false)
-    bool getBoolValue() const {
-        return value == "ON" || value == "1" || value == "true" || value == "TRUE";
-    }
-
-    // 转JSON (用于网络传输)
-    std::string toJSON() const {
-        std::string json = "{";
-        json += "\"command_id\":\"" + command_id + "\",";
-        json += "\"device_id\":\"" + device_id + "\",";
-        json += "\"type\":" + std::to_string((int)type) + ",";
-        json += "\"target\":" + std::to_string((int)target) + ",";
-        json += "\"value\":\"" + value + "\",";
-        json += "\"timeout\":" + std::to_string(timeout_ms) + ",";
-        json += "\"priority\":" + std::to_string(priority);
-        json += "}";
-        return json;
-    }
-
-    // ===== 辅助函数 =====
 private:
-    static std::string generateUUID() {
-    //     // 简化实现：使用时间戳+随机数
-    //     uint64_t ts = getCurrentTimestampMs();
-    //     uint32_t rand = esp_random();
-    //     char buf[32];
-    //     snprintf(buf, sizeof(buf), "cmd_%llx_%lx", (unsigned long long)ts, rand);
-    //     return std::string(buf);
-    }
+	// 通道号（0-8）
+	struct RelayEntry {
+		uint8_t channel;
+		bool state = false;
+	};
+	RelayEntry relays[MAX_SWITCH_SIZE] = {};
+	uint8_t m_relay_count = 0;
+};
 
-    static uint64_t getCurrentTimestampMs() {
-    //     struct timeval tv;
-    //     gettimeofday(&tv, nullptr);
-    //     return (uint64_t)tv.tv_sec * 1000 + tv.tv_usec / 1000;
-    }
+class DevicePwm : public IDeviceData {
+	DECLARE_TYPE(DeviceCommand, 0x0003)
+	// 通道号（0-15）
+	uint8_t channel;
+	// 占空比（0-10000，表示0.00%-100.00%）
+	uint16_t duty;
+	// 频率（Hz，0表示使用默认频率）
+	uint32_t frequency;
+	// 使能状态
+	bool enable;
+
+	// 构造函数
+	DevicePwm() : channel(0), duty(0), frequency(0), enable(false) {}
+
+	DevicePwm(uint8_t ch, uint16_t d, uint32_t freq = 0, bool en = true)
+		: channel(ch), duty(d), frequency(freq), enable(en) {}
+
+	// 校验函数
+	bool isValid() const {
+		return channel <= 15 && duty <= 10000;
+	}
+
+	// 占空比百分比（0-100%）
+	float getDutyPercent() const {
+		return duty / 100.0f;
+	}
+
+	// 设置百分比占空比
+	void setDutyPercent(float percent) {
+		if (percent < 0) percent = 0;
+		if (percent > 100) percent = 100;
+		duty = static_cast<uint16_t>(percent * 100);
+	}
+};
+
+class DeviceSetup : public IDeviceData {
+	DECLARE_TYPE(DeviceCommand, 0x0004)
+	uint32_t interval{};   // 采集间隔
+};
+
+class DeviceCollection : public IDeviceData {
+	DECLARE_TYPE(DeviceCommand, 0x0005)
 };
 
 // 设备配置结构
@@ -578,7 +484,7 @@ public:
     virtual ~DeviceBase() = default;
 
     // 纯虚函数：子类必须实现
-    virtual bool executeCommand(const DeviceCommand& cmd) = 0;
+    virtual bool executeCommand(const DevicePwm& cmd) = 0;
     virtual DataPoint collectData() = 0;
 
     // 公共方法

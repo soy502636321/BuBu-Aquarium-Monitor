@@ -42,7 +42,7 @@ public:
     /**
      * 添加Channel
      */
-    void addChannel(IAction* channel);
+    void addChannel(IChannel* channel);
 
     /**
      * 根据类型获取Channel
@@ -76,7 +76,7 @@ private:
     ChannelManager& operator=(const ChannelManager&) = delete;
 
 private:
-    IAction* m_channels[MAX_CHANNEL_SIZE]{};
+    IChannel* m_channels[MAX_CHANNEL_SIZE]{};
     uint8_t m_channel_count = 0;
     bool m_initialized = false;
 };

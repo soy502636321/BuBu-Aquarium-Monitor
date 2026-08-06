@@ -23,7 +23,7 @@ extern "C" {
         DataGateway::getInstance().init();
 
         auto& timerScheduler = Components::TimerScheduler::getInstance();
-
+        static bool b = false;
         // 注册临时任务，用于测试数据发送处理
         timerScheduler.addTask("TEST", 10, []() {
             printf("[TEST] Task executed!\r\n");
@@ -39,8 +39,16 @@ extern "C" {
             DataContext context {};
             context.packet.setData<DeviceRecord>(&record);
             DataGateway::DataGateway::getInstance().transmit(context);
+
+            if (b) {
+                HAL_GPIO_WritePin(SWITCH_1_PIN_GPIO_Port, SWITCH_1_PIN_Pin, GPIO_PIN_SET);
+            } else {
+                HAL_GPIO_WritePin(SWITCH_1_PIN_GPIO_Port, SWITCH_1_PIN_Pin, GPIO_PIN_RESET);
+            }
+            b = !b;
         });
         timerScheduler.start();
+
         // 启用数据网关，通一管理数据的接收和发送
         while (1) {
             HAL_Delay(5000);  // 加一点延时，让发送有足够时间完成

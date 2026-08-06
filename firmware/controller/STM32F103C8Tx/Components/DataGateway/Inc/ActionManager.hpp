@@ -19,7 +19,7 @@ public:
 
     virtual void init();
 
-    virtual void onDispatch(DataContext& ctx);
+    virtual bool onDispatch(DataContext &ctx);
 
     // 注册action
     void registerAction(uint32_t typeId, IAction* action) {
@@ -62,7 +62,7 @@ private:
         uint32_t typeId;
         IAction* action;
     };
-    ActionEntry m_actions[MAX_ACTION_SIZE] = {};  // 最多6个
+    ActionEntry m_actions[MAX_ACTION_SIZE] = {};  // 最多12个
     uint8_t m_action_count = 0; // 记录数量
 };
 #endif //STM32F103C8TX_ACTIONMANAGER_HPP

@@ -56,7 +56,10 @@
 			uint16_t recvCRC = data[length - 2] | (data[length - 1] << 8);
 			// 计算CRC(不包含最后两个CRC字节)
 			uint16_t calcCRC = CRC16::calc(data, length - 2);
-
+			printf("Recv CRC: 0x%04X, Calc CRC: 0x%04X, %s\n",
+				   recvCRC,
+				   calcCRC,
+				   (recvCRC == calcCRC) ? "YES" : "NO");
 			return recvCRC == calcCRC;
 		}
 

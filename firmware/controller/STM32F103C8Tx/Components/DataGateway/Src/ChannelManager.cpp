@@ -41,7 +41,7 @@ void ChannelManager::stop()
 }
 
 void ChannelManager::addChannel(
-        IAction* channel)
+        IChannel* channel)
 {
     if(channel) {
         channel->setCallback([this](DataContext& ctx) {

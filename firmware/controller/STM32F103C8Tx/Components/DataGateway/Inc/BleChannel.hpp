@@ -9,7 +9,7 @@
 #include <cstdio>
 #include <functional>
 
-class BleChannel : public IAction {
+class BleChannel : public IChannel {
 private:
     std::function<void(const uint8_t*, uint16_t)> m_callback;
 

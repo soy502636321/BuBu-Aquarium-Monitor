@@ -12,12 +12,13 @@ extern "C" {
 #include <cstring>
 
 extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart3;
 
 #define RX_BUF_SIZE  128
 #define TX_BUF_SIZE  128
-#define UART_HANDLE huart1
+#define UART_HANDLE huart3
 
-class UartChannel : public IAction {
+class UartChannel : public IChannel {
 public:
 
     ChannelDirection getDirection() const override {
@@ -41,16 +42,19 @@ public:
     }
 
     void onDataReceived() {
+        printf("get DATA %d \r\n", m_rx_count);
         // 只要环形缓冲区有数据，就尝试解析
         if  (m_rx_count > 0) {
             //1. 查找帧头 0xAA 0x55
             uint16_t header_pos = findRxHeader();
             //2. 没找到帧头，保留数据等下次
             if (header_pos == 0xFFFF) {
+                printf("NOT FOUND HEADER\r\n");
                 return;
             };
             //3. 检查是否有足够的字节读取长度
-            if (m_rx_count - header_pos < 1 + 1 + 3) {  // AA 55 + 数据类型 + 协议版本 + 数据长度
+            if (m_rx_count - header_pos < 1 + 1 + 3) {  // AA 55 + 协议版本 + 数据类型 + 数据长度
+                printf("NOT LENGTH\r\n");
                 return;  // 数据不够，等下次
             }
             //4. 读取长度字段（第3个字节，索引2）
@@ -58,19 +62,14 @@ public:
             uint16_t data_total_len = 1 + 1 + 1 + 1 + 1 + data_len + 2;  // AA + 55 + Type + Ver + Len + Data + CRC
             //5. 检查完整帧是否已收到
             if (m_rx_count - header_pos < data_total_len) {
+                printf("NOT COMPTED\r\n");
                 return;  // 数据不够，等下次
             }
             //6.读取完整数据
             findRxData(header_pos, data_total_len);
-            //7. 移除已提取的数据，继续接收新数据
-            // removeDmaBuffer(data_total_len);
 
             // ✅ 触发回调：通知有数据了！
             if (m_callback) {
-                // 构建data context
-                // printf("Received Size %d bytes\n", size);  // %d 打印十进制
-                // printf("Received Rx_Len %d bytes\n", rx_len);  // %d 打印十进制
-                //
                 for (uint16_t i = 0; i < data_total_len; i++) {
                     printf("%02X ", m_rx_data_buf[i]);
                 }
@@ -143,23 +142,19 @@ private:
     }
 
     void findRxData(uint16_t start_pos, uint16_t len) {
-        for (uint16_t i = 0; i < len; i++) {
-            // 从环形缓冲区读取，从 start_pos 开始
-            uint16_t index = (m_rx_tail + start_pos + i) % RX_BUF_SIZE;
-            m_rx_data_buf[i] = m_rx_buf[index];  // 存到帧缓冲区
+        if (len > 0) {
+            for (uint16_t i = 0; i < len; i++) {
+                // 从环形缓冲区读取，从 start_pos 开始
+                uint16_t index = (m_rx_tail + start_pos + i) % RX_BUF_SIZE;
+                m_rx_data_buf[i] = m_rx_buf[index];  // 存到帧缓冲区
+            }
+            m_rx_head = (m_rx_head + len) % RX_BUF_SIZE;
+            m_rx_count -= len;
+            m_rx_data_len = len;
         }
-        m_rx_tail = (m_rx_tail + len) % RX_BUF_SIZE;// tail 向后移动 len
-        m_rx_count -= len;
-        m_rx_data_len = len;
-    }
 
-    // void removeDmaBuffer(uint16_t count) {
-    //     if (count > m_rx_count) {
-    //         count = m_rx_count;  // 限制最大移除数量
-    //     }
-    //     m_rx_tail = (m_rx_tail + count) % RX_BUF_SIZE;
-    //     m_rx_count -= count;
-    // }
+
+    }
 
     bool sendNext() {
         if (m_tx_count == 0) {
@@ -203,8 +198,8 @@ private:
 };
 
 extern "C" void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
-    // printf("HAL_UARTEx_RxEventCallback\r\n");
-    if (huart->Instance == USART1) {
+    printf("HAL_UARTEx_RxEventCallback\r\n");
+    if (huart->Instance == USART3) {
         // 通知 UartChannel
         UartChannel::getInstance().onRxIdleDMA(Size);
     }
@@ -212,7 +207,7 @@ extern "C" void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t S
 // ★★★ 错误回调 ★★★
 extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     // printf("HAL_UART_ErrorCallback\r\n");
-    if (huart->Instance == USART1) {
+    if (huart->Instance == USART3) {
         // 清除错误标志
         __HAL_UART_CLEAR_OREFLAG(huart);
         // 重新启动

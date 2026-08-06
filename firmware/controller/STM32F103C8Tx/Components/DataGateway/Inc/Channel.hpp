@@ -24,9 +24,9 @@ enum class ChannelDirection : uint8_t {
 };
 
 // ==================== IDataChannel 基类（精简） ====================
-class IAction {
+class IChannel {
 public:
-    virtual ~IAction() = default;
+    virtual ~IChannel() = default;
 
     virtual ChannelDirection getDirection() const = 0;
 
