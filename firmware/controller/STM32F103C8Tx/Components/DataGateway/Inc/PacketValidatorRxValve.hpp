@@ -10,7 +10,7 @@
 class PacketValidatorRxValve: public IRxValve {
 public:
     bool process(DataContext& ctx) override {
-        std::vector<uint8_t> payload = ctx.packet.getPayload();
+        const uint8_t *payload = ctx.packet.getPayload();
         size_t payload_length = ctx.packet.getLength();
         bool verify = CRC16::verify(payload, payload_length); // 验证数据
         if (!verify) {

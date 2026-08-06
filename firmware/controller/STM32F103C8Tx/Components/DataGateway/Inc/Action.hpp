@@ -9,27 +9,29 @@
 // ==================== IDataChannel 基类（精简） ====================
 class IAction {
 public:
-    virtual ~IAction() = default;
-    virtual bool execute(DataContext& ctx);
+    bool execute(DataContext& ctx) {
+        return false;
+    }
 };
 
 class SwitchAction : public IAction {
 public:
-    bool execute(DataContext &ctx) override {
+    bool execute(DataContext &ctx) {
+        printf("SwitchAction::execute()\r\n");
         return true;
     }
 };
 
 class PwmAction : public IAction {
     public:
-    bool execute(DataContext &ctx) override {
+    bool execute(DataContext &ctx) {
         return true;
     }
 };
 
 class SetupAction : public IAction {
     public:
-    bool execute(DataContext &ctx) override {
+    bool execute(DataContext &ctx) {
         return true;
     }
 };
@@ -37,7 +39,7 @@ class SetupAction : public IAction {
 // 立即采集动作
 class CollectionAction : public IAction {
     public:
-    bool execute(DataContext &ctx) override {
+    bool execute(DataContext &ctx) {
         return true;
     }
 };

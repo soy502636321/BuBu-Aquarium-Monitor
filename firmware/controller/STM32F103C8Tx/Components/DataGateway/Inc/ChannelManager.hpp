@@ -59,9 +59,9 @@ public:
         return nullptr;
     }
 
-    virtual void onReceive(DataContext &ctx);
+    void onReceive(DataContext &ctx);
 
-    virtual void onTransmit(DataContext &ctx);
+    void onTransmit(DataContext &ctx);
 
 private:
 

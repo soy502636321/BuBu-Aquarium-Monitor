@@ -13,34 +13,34 @@
 // ==================== Tx Pipeline ====================
 class ITxPipeline {
 public:
-    virtual ~ITxPipeline() = default;
+     ~ITxPipeline() = default;
 
     // 处理发送数据包
-    virtual bool execute(DataContext& ctx) = 0;
+     bool execute(DataContext& ctx);
 
     // 阀门管理
-    virtual void addValve(ITxValve* valve) = 0;
-    virtual void clearValves() = 0;
-    virtual size_t getValveCount() const = 0;
+    void addValve(ITxValve* valve);
+     void clearValves();
+     size_t getValveCount() const;
 };
 
 // ==================== Rx Pipeline ====================
 class IRxPipeline {
 public:
-    virtual ~IRxPipeline() = default;
+     ~IRxPipeline() = default;
     // 处理接收数据包
-    virtual bool execute(DataContext& ctx) = 0;
+     bool execute(DataContext& ctx);
     // 阀门管理
-    virtual void addValve(IRxValve* valve) = 0;
-    virtual void clearValves() = 0;
-    virtual size_t getValveCount() const = 0;
+     void addValve(IRxValve* valve) ;
+     void clearValves();
+     size_t getValveCount() const ;
 };
 
 // ==================== Tx Pipeline 默认实现 ====================
 class TxPipeline : public ITxPipeline {
 public:
     TxPipeline() {}
-    bool execute(DataContext& ctx) override {
+    bool execute(DataContext& ctx) {
         for (auto& valve : m_valves) {
             if (!valve) continue;
             if (!valve->process(ctx)) {
@@ -53,16 +53,16 @@ public:
         return true;
     }
 
-    void addValve(ITxValve* valve) override {
+    void addValve(ITxValve* valve)  {
         if (valve) {
             m_valves[m_valve_index++] = valve;
         }
     }
 
-    void clearValves() override {
+    void clearValves() {
     }
 
-    size_t getValveCount() const override {
+    size_t getValveCount() const {
         return m_valve_index;
     }
 
@@ -77,7 +77,7 @@ public:
     RxPipeline() : m_valves{} {
     }
 
-    bool execute(DataContext& ctx) override {
+    bool execute(DataContext& ctx)  {
         printf("RxPipeline::execute()\r\n");
         for (auto& valve : m_valves) {
             if (!valve) {
@@ -93,16 +93,16 @@ public:
         return true;
     }
 
-    void addValve(IRxValve* valve) override {
+    void addValve(IRxValve* valve)  {
         if (valve) {
             m_valves[m_valve_index++] = valve;
         }
     }
 
-    void clearValves() override {
+    void clearValves()  {
     }
 
-    size_t getValveCount() const override {
+    size_t getValveCount() const  {
         return m_valve_index;
     }
 

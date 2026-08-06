@@ -50,6 +50,7 @@ void DataGateway::transmit(DataContext &ctx) {
 }
 
 void DataGateway::onReceiveData(DataContext &ctx) {
+    printf("DataGateway::onReceiveData\r\n");
     if (!m_rx_pipeline.execute( ctx)) {
         printf("DataGateway::onReceiveData() failed\n");
     }

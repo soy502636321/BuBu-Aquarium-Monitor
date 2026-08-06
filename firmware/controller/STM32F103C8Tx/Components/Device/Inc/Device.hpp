@@ -39,7 +39,7 @@ enum class DeviceStatus : uint8_t {
 };
 
 // 命令类型枚举
-enum class CommandType : uint8_t {
+enum class DeviceDataType : uint8_t {
 	DATA = 0,		// 数据上报
 	SWITCH,			// 开关
 	PWM,			// PWM控制
@@ -324,14 +324,14 @@ struct DataPoint {
 public: \
 static constexpr uint32_t TYPE_ID = TypeId; \
 static constexpr const char* CLASS_NAME = #ClassName; \
-uint32_t getTypeId() const override { return TYPE_ID; } \
-const char* getTypeName() const override { return CLASS_NAME; }
+uint32_t getTypeId() const { return TYPE_ID; } \
+const char* getTypeName() const { return CLASS_NAME; }
 
 class IDeviceData {
 public:
 
-	virtual uint32_t getTypeId() const = 0;
-	virtual const char* getTypeName() const = 0;
+	 uint32_t getTypeId() const {return 0;};
+	 const char* getTypeName() const {return "";};
 
 	// ========== Getter（非虚，所有子类共用） ==========
 	std::string getDeviceId() const { return m_deviceId; }
@@ -341,6 +341,7 @@ public:
 	const std::map<std::string, std::string>& getMetadata() const {
 		return m_metadata;
 	}
+	DeviceDataType getDataType() const { return m_data_type; }
 
 	// ========== Setter（非虚，所有子类共用） ==========
 	void setDeviceId(const std::string& id) { m_deviceId = id; }
@@ -353,9 +354,10 @@ public:
 	bool hasMetadata(const std::string& key) const {
 		return m_metadata.find(key) != m_metadata.end();
 	}
+	void setDataType(DeviceDataType dataType) { m_data_type = dataType; }
 
 	template<typename T>
-		bool isType() const {
+		bool isType() {
 		return getTypeId() == T::TYPE_ID;
 	}
 
@@ -364,6 +366,7 @@ private:
 	std::string m_deviceName; //设备名称
 	uint32_t m_timestamp; // 采集时间 "2026-07-23 14:30:25"
 	DeviceType m_deviceType;
+	DeviceDataType m_data_type;
 	std::map<std::string, std::string> m_metadata;  // 元数据
 };
 

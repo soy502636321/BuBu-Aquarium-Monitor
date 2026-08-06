@@ -3,6 +3,8 @@
 //
 #ifndef UART_CHANNEL_HPP
 #define UART_CHANNEL_HPP
+#include "ActionManager.hpp"
+#include "ObjectPool.h"
 
 extern "C" {
     #include "stm32f1xx_hal.h"
@@ -10,6 +12,7 @@ extern "C" {
 
 #include "Channel.hpp"
 #include <cstring>
+#include <malloc.h>
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
@@ -17,6 +20,17 @@ extern UART_HandleTypeDef huart3;
 #define RX_BUF_SIZE  128
 #define TX_BUF_SIZE  128
 #define UART_HANDLE huart3
+
+extern uint32_t _estack;  // 栈顶（在链接脚本中定义）
+uint32_t* stackTop = &_estack;
+
+extern char _heap_start;
+extern char _heap_end;
+
+static DataContext context;
+static bool context_valid = false;
+
+static ObjectPool<DataContext, 5> g_data_context_pool;
 
 class UartChannel : public IChannel {
 public:
@@ -74,9 +88,30 @@ public:
                     printf("%02X ", m_rx_data_buf[i]);
                 }
                 printf("\r\n");
-                std::vector<uint8_t> data(m_rx_data_buf, m_rx_data_buf + data_total_len);
-                DataContext context {(&data), data_total_len};
+                uint32_t sp;
+                __asm volatile("MOV %0, SP" : "=r"(sp));
+                uint32_t stackUsed = (uint32_t)&_estack - sp;
+                printf("Stack used: %u bytes\r\n", stackUsed);
+                if (stackUsed > 2000) {  // 如果栈使用超过2KB
+                    printf("!!! Stack overflow risk !!!\r\n");
+                }
+
+                struct mallinfo mi = mallinfo();
+                printf("Heap used: %u bytes\r\n", mi.uordblks);
+                printf("Heap free: %u bytes\r\n", mi.fordblks);
+                printf("Heap total: %u bytes\r\n", mi.arena);
+
+                // DataContext context(m_rx_data_buf, data_total_len);
+                // if (!context_valid) {
+                //     context.packet.setPayload(m_rx_data_buf, data_total_len);
+                //     context_valid = true;
+                // }
+                DataContext* ctx = g_data_context_pool.allocate();
+                ctx->packet.setPayload(m_rx_data_buf, data_total_len);
+
+                printf("new CONTEXT (stack)\r\n");
                 m_callback(context);
+                g_data_context_pool.release(ctx);
             }
         }
 
@@ -151,6 +186,16 @@ private:
             m_rx_head = (m_rx_head + len) % RX_BUF_SIZE;
             m_rx_count -= len;
             m_rx_data_len = len;
+// ========== 加入日志追踪 ==========
+printf("[Buffer] === State Update ===\n");
+printf("  len = %u\n", (unsigned int)len);
+printf("  m_rx_head = %u\n", (unsigned int)m_rx_head);
+printf("  m_rx_count = %u (was %u)\n",
+       (unsigned int)m_rx_count,
+       (unsigned int)(m_rx_count + len));  // 显示更新前的值
+printf("  m_rx_data_len = %u\n", (unsigned int)m_rx_data_len);
+printf("  m_rx_tail = %u\n", (unsigned int)m_rx_tail);
+fflush(stdout);
         }
 
 

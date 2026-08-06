@@ -17,9 +17,9 @@ public:
         return instance;
     }
 
-    virtual void init();
+    void init();
 
-    virtual bool onDispatch(DataContext &ctx);
+    bool onDispatch(DataContext &ctx);
 
     // 注册action
     void registerAction(uint32_t typeId, IAction* action) {
@@ -39,11 +39,19 @@ public:
 
     // ========== 查找Action ==========
     IAction* findAction(uint32_t typeId) const {
+        printf("findAction: typeId=%u, m_action_count=%u\n", typeId, m_action_count);
+        fflush(stdout);
         for (size_t i = 0; i < m_action_count; i++) {
+            printf("  [%u] typeId=%u, action=0x%p\n",
+                           i, m_actions[i].typeId, m_actions[i].action);
+            fflush(stdout);
             if (m_actions[i].typeId == typeId) {
+                printf("findAction: FOUND at index %u\n", i);
                 return m_actions[i].action;
             }
         }
+        __asm__("nop");
+        printf("findAction - 4 \r\n");
         return nullptr;
     }
 private:
@@ -57,7 +65,7 @@ private:
 
     ActionManager& operator=(const ActionManager&) = delete;
 
-private:
+public:
     struct ActionEntry {
         uint32_t typeId;
         IAction* action;

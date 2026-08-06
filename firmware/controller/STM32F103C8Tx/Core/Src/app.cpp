@@ -37,7 +37,7 @@ extern "C" {
             record.addDataPoint(point);
 
             DataContext context {};
-            context.packet.setData<DeviceRecord>(&record);
+            context.packet.setData<DeviceRecord>(record);
             DataGateway::DataGateway::getInstance().transmit(context);
 
             if (b) {
