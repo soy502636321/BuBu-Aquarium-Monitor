@@ -11,12 +11,14 @@
 
 #define MAX_PAYLOAD_SIZE 128
 
+using DataVariant = std::variant<std::monostate, DeviceRecord, DeviceSwitch, DevicePwm, DeviceSetup, DeviceCollection>;
+
 class DataPacket {
 private:
     uint8_t m_payload[MAX_PAYLOAD_SIZE];
     size_t m_length = 0;        // 记录数据长度
     uint16_t m_capacity = 0;      // 记录缓冲区容量（可选）
-    IDeviceData m_data;
+    DataVariant m_data;
     uint16_t m_version = 1;
 
 public:
@@ -35,7 +37,7 @@ public:
         m_capacity = 0;
         m_version = 1;
         // 如果需要重置 IDeviceData
-        m_data = IDeviceData();
+        m_data = std::monostate{};
         // 清空 payload（可选，安全起见）
         memset(m_payload, 0, MAX_PAYLOAD_SIZE);
     }
@@ -46,55 +48,65 @@ public:
 
 	template<typename T>
 	bool isType() const {
-        return m_data ? m_data.isType<T>() : false;
+        // 检查是否为空
+        if (std::holds_alternative<std::monostate>(m_data)) {
+            return false;
+        }
+        // 检查是否为 T 类型
+        return std::holds_alternative<T>(m_data);
 	}
 
-    uint32_t getTypeId() {
-        return m_data.getTypeId();
+    uint32_t getTypeId() const {
+        return std::visit([](auto& d) -> uint32_t {
+            using T = std::decay_t<decltype(d)>;
+            if constexpr (std::is_same_v<T, std::monostate>) {
+                return 0;  // ✅ 空状态返回 0
+            } else {
+                return d.getTypeId();
+            }
+        }, m_data);
     }
+
+    // template<typename T>
+    // T& as() {
+    //     return std::get_if<T>(&m_data);
+    // }
+
+    // void setData(IDeviceData ptr) {
+    //     static uint32_t call_count = 0;
+    //     call_count++;
+    //
+    //     printf("[setData #%u] === START ===\n", call_count);
+    //     printf("  ptr address = 0x%p\n", &ptr);
+    //     printf("  ptr.getTypeId() = %u\n", ptr.getTypeId());
+    //     printf("  m_data BEFORE address = 0x%p\n", &m_data);
+    //     fflush(stdout);
+    //
+    //     m_data = ptr;
+    //
+    //     printf("  m_data AFTER.getTypeId() = %u\n", m_data.getTypeId());
+    //     printf("[setData #%u] === END ===\n", call_count);
+    //     fflush(stdout);
+    // }
 
     template<typename T>
-    T& as() {
-        return static_cast<T&>(m_data);
-    }
-
-    void setData(IDeviceData ptr) {
-        static uint32_t call_count = 0;
-        call_count++;
-
-        printf("[setData #%u] === START ===\n", call_count);
-        printf("  ptr address = 0x%p\n", &ptr);
-        printf("  ptr.getTypeId() = %u\n", ptr.getTypeId());
-        printf("  m_data BEFORE address = 0x%p\n", &m_data);
-        fflush(stdout);
-
-        m_data = ptr;
-
-        printf("  m_data AFTER.getTypeId() = %u\n", m_data.getTypeId());
-        printf("[setData #%u] === END ===\n", call_count);
-        fflush(stdout);
-    }
-
-    template<typename T>
-    void setData(IDeviceData ptr) {
+    void setData(T ptr) {
         static uint32_t call_count_template = 0;
         call_count_template++;
-
-        printf("[setData<T> #%u] === START ===\n", call_count_template);
-        printf("  ptr address = 0x%p\n", &ptr);
-        printf("  ptr.getTypeId() = %u\n", ptr.getTypeId());
-        printf("  sizeof(T) = %u bytes\n", (unsigned int)sizeof(T));
-        fflush(stdout);
-
         m_data = ptr;
-
-        printf("  m_data.getTypeId() = %u\n", m_data.getTypeId());
-        printf("[setData<T> #%u] === END ===\n", call_count_template);
-        fflush(stdout);
     }
 
-    IDeviceData getData() {
-        return m_data;
+    template<typename T>
+    T* getData() {
+        // 检查是否为空
+        if (std::holds_alternative<std::monostate>(m_data)) {
+            return nullptr;
+        }
+        // 检查是否为 T 类型
+        if (!std::holds_alternative<T>(m_data)) {
+            return nullptr;
+        }
+        return std::get_if<T>(&m_data);
     }
 
     void setPayload(const uint8_t* data, size_t len) {
@@ -176,9 +188,12 @@ public:
         return m_version;
     }
     void setDataType(DeviceDataType data_type) {
-        // if (m_data) {
-            m_data.setDataType(data_type);
-        // }
+        std::visit([data_type](auto& d) {
+            using T = std::decay_t<decltype(d)>;
+            if constexpr (!std::is_same_v<T, std::monostate>) {
+                d.setDataType(data_type);
+            }
+        }, m_data);
     }
 
     bool isValid() const {
@@ -204,8 +219,9 @@ struct DataContext {
     }
 
     // ========== 获取数据 ==========
-    IDeviceData getData() {
-        return packet.getData();
+    template<typename T>
+    T* getData() {
+        return packet.getData<T>();
     }
 
     // ========== 类型判断 ==========
@@ -215,10 +231,10 @@ struct DataContext {
     }
 
     // ========== 类型转换（不安全，需先 isType 检查） ==========
-    template<typename T>
-    T& as() {
-        return packet.as<T&>();
-    }
+    // template<typename T>
+    // T& as() {
+    //     return packet.as<T&>();
+    // }
 
     const uint8_t* getPayload() const {
         return packet.getPayload();

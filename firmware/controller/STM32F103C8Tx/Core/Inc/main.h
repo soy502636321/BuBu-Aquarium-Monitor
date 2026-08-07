@@ -57,14 +57,14 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define SWITCH_1_PIN_Pin GPIO_PIN_1
-#define SWITCH_1_PIN_GPIO_Port GPIOB
-#define SWITCH_2_PIN_Pin GPIO_PIN_2
-#define SWITCH_2_PIN_GPIO_Port GPIOB
-#define SWITCH_3_PIN_Pin GPIO_PIN_3
-#define SWITCH_3_PIN_GPIO_Port GPIOB
-#define SWITCH_4_PIN_Pin GPIO_PIN_4
-#define SWITCH_4_PIN_GPIO_Port GPIOB
+#define SWITCH_1_Pin GPIO_PIN_3
+#define SWITCH_1_GPIO_Port GPIOB
+#define SWITCH_2_Pin GPIO_PIN_4
+#define SWITCH_2_GPIO_Port GPIOB
+#define SWITCH_3_Pin GPIO_PIN_5
+#define SWITCH_3_GPIO_Port GPIOB
+#define SWITCH_4_Pin GPIO_PIN_6
+#define SWITCH_4_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

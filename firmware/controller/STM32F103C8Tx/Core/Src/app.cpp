@@ -41,9 +41,9 @@ extern "C" {
             DataGateway::DataGateway::getInstance().transmit(context);
 
             if (b) {
-                HAL_GPIO_WritePin(SWITCH_1_PIN_GPIO_Port, SWITCH_1_PIN_Pin, GPIO_PIN_SET);
+                HAL_GPIO_WritePin(SWITCH_1_GPIO_Port, SWITCH_1_Pin, GPIO_PIN_SET);
             } else {
-                HAL_GPIO_WritePin(SWITCH_1_PIN_GPIO_Port, SWITCH_1_PIN_Pin, GPIO_PIN_RESET);
+                HAL_GPIO_WritePin(SWITCH_1_GPIO_Port, SWITCH_1_Pin, GPIO_PIN_RESET);
             }
             b = !b;
         });

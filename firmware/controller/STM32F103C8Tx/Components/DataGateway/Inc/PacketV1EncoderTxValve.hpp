@@ -21,7 +21,7 @@ public:
 
     // 处理设备监测数据
     bool processRecord(DataContext& ctx) {
-        DeviceRecord& record = ctx.as<DeviceRecord&>();
+        DeviceRecord* record = ctx.getData<DeviceRecord>();
         // const uint8_t* payload[MAX_PAYLOAD_SIZE];  //
         // payload[0] = 0xAA;
         // payload[1] = 0x55;

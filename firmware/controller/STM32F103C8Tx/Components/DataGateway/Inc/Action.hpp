@@ -9,15 +9,13 @@
 // ==================== IDataChannel 基类（精简） ====================
 class IAction {
 public:
-    bool execute(DataContext& ctx) {
-        return false;
-    }
+    virtual bool execute(DataContext& ctx);
 };
 
 class SwitchAction : public IAction {
 public:
     bool execute(DataContext &ctx) {
-        printf("SwitchAction::execute()\r\n");
+        DeviceSwitch* device_switch = ctx.getData<DeviceSwitch>();
         return true;
     }
 };
