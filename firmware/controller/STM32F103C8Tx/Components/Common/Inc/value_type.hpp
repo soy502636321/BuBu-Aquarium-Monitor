@@ -5,7 +5,10 @@
 #ifndef APP_TEMPLATE_VALUE_TYPE_HPP
 #define APP_TEMPLATE_VALUE_TYPE_HPP
 
+#include <stdint.h>
+#include <string>
 #include <variant>
+#include <vector>
 
 enum class DataValueType : uint8_t {
 	FLOAT = 0,

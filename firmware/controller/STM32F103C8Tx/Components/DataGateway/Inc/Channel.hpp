@@ -5,9 +5,7 @@
 #ifndef STM32F103C8TX_CHANNEL_HPP
 #define STM32F103C8TX_CHANNEL_HPP
 
-#include <cstdint>
-#include <functional>
-
+// #include <functional>
 #include "DataContext.hpp"
 
 // ==================== 通道类型 ====================
@@ -24,18 +22,21 @@ enum class ChannelDirection : uint8_t {
 };
 
 // ==================== IDataChannel 基类（精简） ====================
+
+using ChannelCallback = void (*)(DataContext&);
+
 class IChannel {
 public:
     virtual ~IChannel() = default;
 
     virtual ChannelDirection getDirection() const = 0;
 
-    void setCallback(std::function<void(DataContext& ctx)> cb){
+    void setCallback(ChannelCallback cb){
         m_callback = cb;
     }
 
 protected:
-    std::function<void(DataContext& ctx)> m_callback;
+    ChannelCallback m_callback;
 protected:
 
     void onReceive(DataContext& ctx) {

@@ -1,13 +1,8 @@
 #ifndef VALVE_CONTEXT_HPP
 #define VALVE_CONTEXT_HPP
 
-#include <cstdint>
-#include <vector>
-#include <cstdio>
-#include <cstring>
-#include <memory>
-
 #include "Device.hpp"
+#include <string.h>
 
 #define MAX_PAYLOAD_SIZE 128
 

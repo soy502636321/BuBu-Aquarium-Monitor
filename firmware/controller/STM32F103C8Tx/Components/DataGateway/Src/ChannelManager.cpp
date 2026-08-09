@@ -3,6 +3,7 @@
 //
 #include "ChannelManager.hpp"
 
+#include "Logger.hpp"
 #include "UartChannel.hpp"
 #include "BleChannel.hpp"
 #include "DataGateway.hpp"
@@ -13,14 +14,8 @@ void ChannelManager::init()
         return;
     }
     addChannel(&UartChannel::getInstance());
-
-    static BleChannel ble;
-    addChannel(&ble);
-
-    for(auto channel:m_channels)
-    {
-        // channel->init();
-    }
+    // static BleChannel ble;
+    // addChannel(&ble);
     m_initialized = true;
 }
 
@@ -44,37 +39,14 @@ void ChannelManager::addChannel(
         IChannel* channel)
 {
     if(channel) {
-        channel->setCallback([this](DataContext& ctx) {
-            // 通道有数据到达！
-                printf("ChannelManager::addChannel setCallback\r\n");
-
-                printf("[LAMBDA] 1: entered\n");
-                fflush(stdout);
-
-                // 检查 this 指针
-                printf("[LAMBDA] 2: this = 0x%p\n", this);
-                fflush(stdout);
-
-                // 检查 this 指向的内存是否可读
-                volatile uint8_t* test_ptr = reinterpret_cast<volatile uint8_t*>(this);
-                uint8_t test_byte = *test_ptr;  // 如果这里卡死，说明内存被破坏
-                printf("[LAMBDA] 3: this->first byte = 0x%02X\n", test_byte);
-                fflush(stdout);
-
-                printf("ChannelManager::addChannel setCallback\r\n");
-                fflush(stdout);
-
-                printf("[LAMBDA] 4: before onReceive\n");
-                fflush(stdout);
-            this->onReceive(ctx);
-        });
+        channel->setCallback(onReceive);
         m_channels[m_channel_count++] = channel;
     }
 }
 
 void ChannelManager::onReceive(DataContext &ctx) {
-    printf("ChannelManager::onReceive\r\n");
-    DataGateway::getInstance().onReceiveData(ctx);
+    LOG_INFO("ChannelManager::onReceive\r\n");
+    DataGateway::getInstance().onReceiveFromISR(&ctx);
 }
 
 void ChannelManager::onTransmit(DataContext &ctx) {
@@ -85,3 +57,4 @@ void ChannelManager::onTransmit(DataContext &ctx) {
     }
     printf("\n");
 }
+

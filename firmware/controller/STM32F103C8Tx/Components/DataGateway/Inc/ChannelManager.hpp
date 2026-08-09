@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <cstdint>
-#include <vector>
 #include "Channel.hpp"
 
 #define MAX_CHANNEL_SIZE 8
@@ -59,8 +57,6 @@ public:
         return nullptr;
     }
 
-    void onReceive(DataContext &ctx);
-
     void onTransmit(DataContext &ctx);
 
 private:
@@ -74,6 +70,8 @@ private:
     ChannelManager(const ChannelManager&) = delete;
 
     ChannelManager& operator=(const ChannelManager&) = delete;
+
+    static void onReceive(DataContext &ctx);
 
 private:
     IChannel* m_channels[MAX_CHANNEL_SIZE]{};

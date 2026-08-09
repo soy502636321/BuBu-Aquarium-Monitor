@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "string.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -50,6 +51,8 @@ UART_HandleTypeDef huart2;
 UART_HandleTypeDef huart3;
 DMA_HandleTypeDef hdma_usart1_tx;
 DMA_HandleTypeDef hdma_usart1_rx;
+DMA_HandleTypeDef hdma_usart3_rx;
+DMA_HandleTypeDef hdma_usart3_tx;
 
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -79,11 +82,101 @@ void StartDefaultTask(void *argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern void app_main_entry(void);  // ✅ 声明外部函数
+extern void main_bridge(void);
 
 int _write(int file, char *ptr, int len)
 {
   HAL_UART_Transmit(&huart3, (uint8_t *)ptr, len, HAL_MAX_DELAY);
   return len;
+}
+
+// ============================================
+// 内存监控任务 - 持续打印内存使用情况
+// ============================================
+void MemoryMonitorTask(void *argument) {
+    // 不需要 __heap_base 和 __heap_limit
+    // 直接使用 FreeRTOS 的堆管理函数
+
+    uint32_t maxUsed = 0;
+    uint32_t minFree = 0xFFFFFFFF;
+    uint32_t printCount = 0;
+
+    // 获取初始空闲堆大小作为参考
+    size_t initialFree = xPortGetFreeHeapSize();
+
+    printf("\r\n========================================\r\n");
+    printf("Memory Monitor Task Started\r\n");
+    printf("Initial Free Heap: %lu bytes (%.2f KB)\r\n",
+           initialFree, (float)initialFree / 1024.0);
+    printf("========================================\r\n");
+
+    while(1) {
+        // 1. 获取当前内存信息（不需要外部符号）
+        size_t freeHeap = xPortGetFreeHeapSize();
+        size_t minFreeHeap = xPortGetMinimumEverFreeHeapSize();
+
+        // 2. 计算使用量（相对于初始值）
+        size_t usedHeap = initialFree - freeHeap;
+        size_t maxUsedHeap = initialFree - minFreeHeap;
+
+        // 3. 更新统计
+        if(usedHeap > maxUsed) {
+            maxUsed = usedHeap;
+        }
+        if(freeHeap < minFree) {
+            minFree = freeHeap;
+        }
+
+        // 4. 获取系统信息
+        uint32_t tick = osKernelGetTickCount();
+        uint32_t threadCount = osThreadGetCount();
+        osThreadId_t currentId = osThreadGetId();
+        const char* currentName = osThreadGetName(currentId);
+
+        // 5. 计算百分比（基于初始空闲堆）
+        uint32_t usedPercent = (usedHeap * 100) / initialFree;
+        uint32_t freePercent = 100 - usedPercent;
+
+        // 6. 打印内存信息
+        printf("\r\n========== Memory Status [%lu] ==========\r\n", printCount++);
+        printf("Initial Free:  %8lu bytes (%.2f KB)\r\n",
+               initialFree, (float)initialFree / 1024.0);
+        printf("Current Free:  %8lu bytes (%.2f KB) [%lu%%]\r\n",
+               freeHeap, (float)freeHeap / 1024.0, freePercent);
+        printf("Current Used:  %8lu bytes (%.2f KB) [%lu%%]\r\n",
+               usedHeap, (float)usedHeap / 1024.0, usedPercent);
+        printf("Min Free Ever: %8lu bytes (%.2f KB)\r\n",
+               minFreeHeap, (float)minFreeHeap / 1024.0);
+        printf("Max Used Ever: %8lu bytes (%.2f KB)\r\n",
+               maxUsed, (float)maxUsed / 1024.0);
+        printf("Active Threads: %lu\r\n", threadCount);
+        printf("Current Thread: %s\r\n", currentName ? currentName : "Unknown");
+        printf("System Tick:    %lu\r\n", tick);
+
+        // 7. 内存警告
+        if(freeHeap < 1024) {
+            printf("*** CRITICAL: Very low memory! (< 1KB) ***\r\n");
+        } else if(freeHeap < 2048) {
+            printf("*** WARNING: Low memory! (< 2KB) ***\r\n");
+        }
+
+        printf("========================================\r\n");
+
+        // 8. 延迟
+        vTaskDelay(pdMS_TO_TICKS(5000));;  // 每5秒打印一次
+    }
+}
+
+// 创建内存监控任务
+void CreateMemoryMonitorTask(void) {
+  osThreadAttr_t taskAttr = {
+    .name = "MemMonitor",
+    .priority = osPriorityLow,
+    .stack_size = 512,  // 栈大小
+};
+
+  osThreadNew(MemoryMonitorTask, NULL, &taskAttr);
+  printf("Memory monitor task created\r\n");
 }
 
 /* USER CODE END 0 */
@@ -124,8 +217,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-
-  app_main_entry(); //使用自己的逻辑，可以方便结合c和c++
+  // app_main_entry(); //使用自己的逻辑，可以方便结合c和c++
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -153,6 +245,12 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
+  // 创建内存监控任务
+  CreateMemoryMonitorTask();
+
+  // 5. ★ 初始化 ChannelManager（注册所有通道）★
+  printf("Starting RTOS Kernel...\r\n");
+  main_bridge();
   /* USER CODE END RTOS_THREADS */
 
   /* USER CODE BEGIN RTOS_EVENTS */
@@ -168,7 +266,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-
     // if (rx_done) {
     //   rx_done = 0;
     //
@@ -428,6 +525,12 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA1_CLK_ENABLE();
 
   /* DMA interrupt init */
+  /* DMA1_Channel2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+  /* DMA1_Channel3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
   /* DMA1_Channel4_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
@@ -499,10 +602,10 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  __disable_irq();
-  while (1)
-  {
-  }
+  printf("!!! HAL Error_Handler called !!!\n");
+  // while (1)
+  // {
+  // }
   /* USER CODE END Error_Handler_Debug */
 }
 #ifdef USE_FULL_ASSERT

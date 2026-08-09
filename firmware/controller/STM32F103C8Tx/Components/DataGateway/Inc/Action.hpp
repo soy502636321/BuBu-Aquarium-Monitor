@@ -5,6 +5,7 @@
 #ifndef STM32F103C8TX_ACTION_HPP
 #define STM32F103C8TX_ACTION_HPP
 #include "DataContext.hpp"
+#include "Logger.hpp"
 
 // ==================== IDataChannel 基类（精简） ====================
 class IAction {
@@ -15,7 +16,7 @@ public:
 class SwitchAction : public IAction {
 public:
     bool execute(DataContext &ctx) {
-        DeviceSwitch* device_switch = ctx.getData<DeviceSwitch>();
+        LOG_INFO("关闭继电器\r\n");
         return true;
     }
 };

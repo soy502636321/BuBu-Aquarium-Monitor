@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "Logger.hpp"
 
 	class CRC16
 	{
@@ -48,15 +49,19 @@
 
 		static inline bool verify(const uint8_t* data,size_t length)
 		{
+			printf("%d bytes received\r\n", length);
 			if(length < 3)
 			{
 				return false;
 			}
+			printf("OK 1 \r\n");
 			// 接收到的CRC
 			uint16_t recvCRC = data[length - 2] | (data[length - 1] << 8);
+			printf("OK 2 \r\n");
 			// 计算CRC(不包含最后两个CRC字节)
 			uint16_t calcCRC = CRC16::calc(data, length - 2);
-			printf("Recv CRC: 0x%04X, Calc CRC: 0x%04X, %s\n",
+			printf("OK 3 \r\n");
+			printf("Recv CRC: 0x%04X, Calc CRC: 0x%04X, %s\r\n",
 				   recvCRC,
 				   calcCRC,
 				   (recvCRC == calcCRC) ? "YES" : "NO");

@@ -5,6 +5,7 @@
 #ifndef STM32F103C8TX_OBJECTPOOL_H
 #define STM32F103C8TX_OBJECTPOOL_H
 #include "stm32f1xx_hal.h"
+#include "Logger.hpp"
 
 template<typename T, int N>
 class ObjectPool {
@@ -24,24 +25,23 @@ public:
                     m_inUse[i] = true;
                     // ✅ 重置对象到初始状态
                     resetObject(i);
-                    printf("[Pool] Allocated slot %d, address 0x%p\n",
-                           i, &m_pool[i]);
+                    LOG_WARN("[Pool] Allocated slot %d, address 0x%p\n",i, &m_pool[i]);
                     return &m_pool[i];
                 }
             }
 
             // ===== 没有空闲对象，等待 =====
-            printf("[Pool] No free slot! Waiting...\n");
+            LOG_WARN("[Pool] No free slot! Waiting...\n");
             m_waitingCount++;
-
             // 等待 10ms 后重试
-            HAL_Delay(200);
+            vTaskDelay(pdMS_TO_TICKS(100));
         }
     }
 
     // ===== 分配对象（带超时） =====
     T* allocate(uint32_t timeout_ms) {
-        uint32_t start = HAL_GetTick();
+        TickType_t start = xTaskGetTickCount();
+        TickType_t timeout_ticks = pdMS_TO_TICKS(timeout_ms);
 
         while (true) {
             for (int i = 0; i < N; i++) {
@@ -53,12 +53,14 @@ public:
                 }
             }
 
-            if (HAL_GetTick() - start >= timeout_ms) {
-                printf("[Pool] Timeout! No free slot\n");
-                return nullptr;
+            // 检查超时
+            if (timeout_ms != portMAX_DELAY) {
+                if ((xTaskGetTickCount() - start) >= timeout_ticks) {
+                    return nullptr;
+                }
             }
 
-            HAL_Delay(10);
+            vTaskDelay(pdMS_TO_TICKS(100));
         }
     }
 
