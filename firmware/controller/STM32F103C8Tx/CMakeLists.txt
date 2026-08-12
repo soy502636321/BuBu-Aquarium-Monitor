@@ -12,6 +12,7 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
@@ -32,6 +33,7 @@ enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
+        Core/Src/memory_monitor.cpp
         Core/Src/app.cpp
 )
 
@@ -59,7 +61,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
         ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/ActionExecutor.cpp
         ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/ChannelManager.cpp
         ${CMAKE_SOURCE_DIR}/Components/DataGateway/Src/DataGateway.cpp
-        ${CMAKE_SOURCE_DIR}/Components/CollectionScheduler/Src/TimerScheduler.cpp
+        ${CMAKE_SOURCE_DIR}/Components/SensorManager/Src/SensorManager.cpp
         ${CMAKE_SOURCE_DIR}/Components/DeviceDriver/DHT11/Src/dht11.c
 )
 
@@ -67,9 +69,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
     ${CMAKE_SOURCE_DIR}/Components/Common/Inc
-    ${CMAKE_SOURCE_DIR}/Components/CollectionScheduler/Inc
     ${CMAKE_SOURCE_DIR}/Components/Device/Inc
     ${CMAKE_SOURCE_DIR}/Components/DataGateway/Inc
+    ${CMAKE_SOURCE_DIR}/Components/SensorManager/Inc
     ${CMAKE_SOURCE_DIR}/Components/DeviceDriver/DHT11/Inc
 )
 

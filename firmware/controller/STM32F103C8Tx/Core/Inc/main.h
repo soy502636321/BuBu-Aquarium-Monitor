@@ -57,6 +57,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define DHT11_Pin GPIO_PIN_4
+#define DHT11_GPIO_Port GPIOA
 #define SWITCH_1_Pin GPIO_PIN_3
 #define SWITCH_1_GPIO_Port GPIOB
 #define SWITCH_2_Pin GPIO_PIN_4

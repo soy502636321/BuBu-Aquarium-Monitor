@@ -1,28 +1,20 @@
-//
-// Created by Hu on 2026/8/9.
-//
+// SensorManager.hpp
+#ifndef SENSOR_MANAGER_HPP
+#define SENSOR_MANAGER_HPP
 
-#ifndef STM32F103C8TX_SENSORMANAGER_HPP
-#define STM32F103C8TX_SENSORMANAGER_HPP
-
-#include "ISensor.hpp"
-#include "SensorData.hpp"
+#include "GpioDetector.hpp"
+#include "SensorDevice.hpp"
+#include "DataGateway.hpp"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include <cstdint>
 #include <cstring>
+#include "SensorConfig.hpp"
 
-#define MAX_SENSORS          8
-#define SENSOR_DATA_QUEUE_LEN  16
-
-// ★ 传感器配置（可被上位机修改）★
-struct SensorConfig {
-    char name[16];
-    uint32_t interval_ms;        // 采集周期（毫秒）
-    bool enabled;                // 是否启用
-    uint32_t last_run_tick;      // 上次执行时间
-};
+#define MAX_SENSORS             4
+#define MONITOR_INTERVAL_MS     (5 * 1000)
+#define COLLECT_CHECK_INTERVAL_MS   500
 
 class SensorManager {
 public:
@@ -31,30 +23,21 @@ public:
     // -------- 初始化 --------
     void init();
 
-    // -------- 注册传感器（使用默认周期） --------
-    bool registerSensor(ISensor* sensor, uint32_t default_interval_ms);
+    void loadDefaultConfig();
 
-    // -------- 启动采集任务 --------
-    void start();
+    // -------- 注册传感器 --------
+    bool registerSensor(SensorDevice* sensor,
+                        GPIO_TypeDef* detectPort = nullptr,
+                        uint16_t detectPin = 0,
+                        bool activeHigh = true);
 
-    // -------- 获取数据队列 --------
-    QueueHandle_t getDataQueue() const { return m_dataQueue; }
+    // -------- ★ 上位机主动采集 ★ --------
+    bool manualCollect(const char* name);
 
-    // ============================================================
-    // ★ 上位机可调用的 API ★
-    // ============================================================
-
-    // 设置传感器采集周期
+    // -------- 上位机配置 --------
     bool setInterval(const char* name, uint32_t interval_ms);
-
-    // 启用/禁用传感器
     bool setEnabled(const char* name, bool enabled);
-
-    // 获取传感器配置（用于上报上位机）
-    bool getConfig(const char* name, SensorConfig& outConfig);
-
-    // 获取所有传感器配置（用于上报上位机）
-    void getAllConfigs(SensorConfig* outConfigs, uint8_t* count);
+    SensorDevice* getSensor(const char* name) const;
 
 private:
     SensorManager() = default;
@@ -62,28 +45,73 @@ private:
     SensorManager(const SensorManager&) = delete;
     SensorManager& operator=(const SensorManager&) = delete;
 
-    // -------- 采集任务 --------
-    static void collectionTaskEntry(void* pvParameters);
-    void collectionTaskLoop();
-
-    // -------- 采集单个传感器 --------
-    void readSensor(uint8_t index);
-
-    // -------- 查找传感器 --------
+    // -------- 内部函数 --------
     int findSensor(const char* name) const;
 
+    // ★ 监控任务 ★
+    static void monitorTaskEntry(void* pvParameters);
+    void monitorTaskLoop();
+
+    // ★ 定时自动采集任务 ★
+    static void collectTaskEntry(void* pvParameters);
+    void collectTaskLoop();
+
+    // ★ 手动采集任务 ★
+    static void collectWorkerEntry(void* pvParameters);
+    void collectWorkerLoop();
+
+    bool isPinInserted(GPIO_TypeDef* port, uint16_t pin, bool activeHigh);
+
+    // ★ GPIO 检测 ★
+    void checkAllGpio();
+
+    // ★ 自动采集检查 ★
+    void checkAutoCollect();
+
+    void createSensor(uint8_t pinIndex);
+    SensorDevice* createSensorByType(SensorType type, const char* name, GPIO_TypeDef* port, uint16_t pin);
+
+    // ★ ★ 执行采集 ★ ★
+    void doCollect(uint8_t index, bool isManual);
+
+    // ★ ★ 采集完成回调（由传感器调用）★ ★
+    static void onSensorDataReady(void* arg, const DeviceRecord* data);
+    void handleSensorData(const DeviceRecord* data);
+
+
 private:
-    // 传感器实例指针
-    ISensor* m_sensors[MAX_SENSORS];
+    struct SensorEntry {
+        SensorDevice* sensor;
+        GpioDetector* detector;
+        uint32_t lastCollectTick;
+        bool lastOnlineState;
+        bool isCollecting;
+    };
+
+    // ★ ★ 采集请求 ★ ★
+    struct CollectRequest {
+        uint8_t sensorIndex;
+        bool isManual;
+    };
+
+    // ★ 配置表 ★
+    SensorPinConfig m_currentConfig[MAX_SENSORS];
+    uint8_t m_configCount = 0;
+
+    // ★ 传感器列表 ★
+    SensorEntry m_entries[MAX_SENSORS];
     uint8_t m_sensorCount = 0;
 
-    // ★ 传感器配置（独立于传感器实例）★
-    SensorConfig m_configs[MAX_SENSORS];
+    // ★ ★ 采集队列 ★ ★
+    QueueHandle_t m_collectQueue = nullptr;
 
-    // 数据队列
-    QueueHandle_t m_dataQueue = nullptr;
-    TaskHandle_t m_taskHandle = nullptr;
+    // 定时检查GPIO插入任务句柄
+    TaskHandle_t m_monitorTask = nullptr;
+    // 定时传感器采集任务句柄
+    TaskHandle_t m_collectTask = nullptr;
+    // 主动采集传感器任务句柄
+    TaskHandle_t m_workerTask = nullptr;
     bool m_initialized = false;
 };
 
-#endif //STM32F103C8TX_SENSORMANAGER_HPP
+#endif

@@ -7,6 +7,7 @@
 
 #include "ActionExecutor.hpp"
 #include "ChannelManager.hpp"
+#include "ObjectPool.hpp"
 #include "Pipeline.hpp"
 
 class DataGateway
@@ -27,9 +28,9 @@ public:
 		return m_tx_pipeline;
 	}
 
-	void transmit(DataContext &ctx);
+	void transmitFromISR(DataContext* ctx);
 
-	void processRxData(DataContext &ctx);
+	// void processRxData(DataContext &ctx);
 	void onReceiveFromISR(DataContext* ctx);
 
 	void setupRxPipeline();
@@ -38,8 +39,7 @@ public:
 		return m_rx_pipeline;
 	}
 
-    void transmit(DataContext &ctx) const;  // 发送
-	void onReceiveData(DataContext &ctx) const; // 接收
+	// void onReceiveData(DataContext &ctx) const; // 接收
 
 private:
 	// 内部任务入口

@@ -2,8 +2,9 @@
 #include "DataGateway.hpp"
 #include <cstdio>
 
+#include "Config.h"
 #include "ChannelManager.hpp"
-#include "ObjectPool.h"
+#include "ObjectPool.hpp"
 #include "PacketV1DecoderRxValve.hpp"
 #include "PacketV1EncoderTxValve.hpp"
 #include "PacketValidatorRxValve.hpp"
@@ -23,7 +24,7 @@ void DataGateway::init() {
     configASSERT(m_tx_pipeline_queue != nullptr);
     BaseType_t ret;
 
-    ret = xTaskCreate(rxTaskEntry, "GatewayRx", 256, this, 3, &m_rx_task_handle);
+    ret = xTaskCreate(rxTaskEntry, "GatewayRx", CONFIG_STACK_GATEWAY_RX, this, 3, &m_rx_task_handle);
     if (ret != pdPASS) {
         LOG_ERROR("GatewayRx task creation FAILED! err: %d", ret);
         // ★ 如果这里失败，说明栈太大或堆内存不足 ★
@@ -32,7 +33,7 @@ void DataGateway::init() {
         LOG_INFO("GatewayRx task created, handle: 0x%p", m_rx_task_handle);
     }
 
-    ret = xTaskCreate(txTaskEntry, "GatewayTx", 256, this, 2, &m_tx_task_handle);
+    ret = xTaskCreate(txTaskEntry, "GatewayTx", CONFIG_STACK_GATEWAY_TX, this, 2, &m_tx_task_handle);
     if (ret != pdPASS) {
         LOG_ERROR("GatewayTx task creation FAILED! err: %d", ret);
         while (1);
@@ -64,27 +65,38 @@ void DataGateway::setupTxPipeline() {
 }
 
 // -------- 传输 --------
-void DataGateway::transmit(DataContext &ctx) {
-    if (!m_tx_pipeline.execute(ctx)) {
-        // 没有通过管道
-        printf("DataGateway::transmit() failed\n");
-    };
-    // 通过频道发送
-    if (m_channel_manager) {
-        m_channel_manager->onTransmit(ctx);
+void DataGateway::transmitFromISR(DataContext *ctx) {
+    if (m_tx_pipeline_queue == nullptr) {
+        if (ctx != nullptr) {
+            g_tx_data_context_pool.release(ctx);
+        }
+        return;
     }
+
+    if (ctx == nullptr) {
+        return;
+    }
+
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    BaseType_t ret = xQueueSendFromISR(m_tx_pipeline_queue, &ctx, &xHigherPriorityTaskWoken);
+
+    if (ret != pdPASS) {
+        LOG_WARN("TX queue full in ISR! Dropping data");
+        g_tx_data_context_pool.release(ctx);
+    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-void DataGateway::processRxData(DataContext &ctx) {
-    printf("DataGateway::onReceiveData\r\n");
-    if (!m_rx_pipeline.execute( ctx)) {
-        printf("DataGateway::onReceiveData() failed\n");
-    }
-    // 分发动作
-    // if (m_action_manager) {
-    //     m_action_manager->onDispatch(&ctx);
-    // }
-}
+// void DataGateway::processRxData(DataContext* ctx) {
+//     printf("DataGateway::onReceiveData\r\n");
+//     if (!m_rx_pipeline.execute( ctx)) {
+//         printf("DataGateway::onReceiveData() failed\n");
+//     }
+//     // 分发动作
+//     // if (m_action_manager) {
+//     //     m_action_manager->onDispatch(&ctx);
+//     // }
+// }
 // UART 中断调用：只负责数据入队
 void DataGateway::onReceiveFromISR(DataContext *ctx) {
     if (m_rx_pipeline_queue == nullptr) {
@@ -127,6 +139,9 @@ void DataGateway::rxProcessLoop() {
         }
         // 分发动作
         ActionExecutor::getInstance().onDispatch(ctx);
+        // g_rx_data_context_pool.release(ctx);
+        // ★ ★ 在这里释放 ★ ★
+        LOG_DEBUG("DataContext released in Gateway");
     }
 }
 
@@ -137,7 +152,21 @@ void DataGateway::txProcessLoop() {
         if (xQueueReceive(m_tx_pipeline_queue, &ctx, portMAX_DELAY) != pdTRUE) {
             continue;
         }
-        // ... 处理发送数据 ...
+        g_tx_data_context_pool.release(ctx);
+        printf("DataGateway::发送数据\r\n");
+        if (ctx == nullptr) {
+            continue;
+        }
+        // ★ 通过 Pipeline 打包
+        if (!m_tx_pipeline.execute(*ctx)) {
+            LOG_WARN("TX Pipeline failed!");
+            g_tx_data_context_pool.release(ctx);
+            continue;
+        }
+
+        // ★ 通过 UART 发送
+        // UartChannel::getInstance().send(ctx);
+        // 注意：UartChannel 发送完成后会释放 ctx
     }
 }
 

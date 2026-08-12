@@ -26,6 +26,9 @@
 /* USER CODE BEGIN Includes */
 #include "core_cm3.h"
 #include "stdio.h"
+#include "FreeRTOS.h"
+#include "FreeRTOSConfig.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -59,7 +62,6 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-extern TIM_HandleTypeDef htim1;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
@@ -94,12 +96,18 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-printf("\r\n========================================\r\n");
+    printf("\r\n");
+    printf("========================================\r\n");
     printf("[错误] HardFault_Handler 触发！\r\n");
-    // ✅ 使用内联汇编读取 LR
+    printf("========================================\r\n");
+    fflush(stdout);
+
+    // ============================================================
+    // ★ 1. 获取栈信息 ★
+    // ============================================================
     uint32_t lr_value;
     __asm volatile("MOV %0, LR" : "=r"(lr_value));
-    // 获取栈指针
+
     uint32_t sp;
     if (lr_value & 0x4) {
         sp = __get_PSP();
@@ -110,10 +118,14 @@ printf("\r\n========================================\r\n");
     }
     printf("SP: 0x%08X\r\n", sp);
     printf("LR: 0x%08X\r\n", lr_value);
+    fflush(stdout);
 
-    // 读取栈内容
-    if (sp >= 0x20000000 && sp < 0x20010000) {
+    // ============================================================
+    // ★ 2. 读取栈内容 ★
+    // ============================================================
+    if (sp >= 0x20000000 && sp < 0x20005000) {
         uint32_t* stack = (uint32_t*)sp;
+        printf("\r\n--- 寄存器 ---\r\n");
         printf("R0:  0x%08X\r\n", stack[0]);
         printf("R1:  0x%08X\r\n", stack[1]);
         printf("R2:  0x%08X\r\n", stack[2]);
@@ -122,33 +134,141 @@ printf("\r\n========================================\r\n");
         printf("LR:  0x%08X\r\n", stack[5]);
         printf("PC:  0x%08X  <-- 崩溃地址\r\n", stack[6]);
         printf("PSR: 0x%08X\r\n", stack[7]);
+        fflush(stdout);
     } else {
         printf("[警告] 栈指针无效: 0x%08X\r\n", sp);
     }
-    // 读取故障状态寄存器
+
+    // ============================================================
+    // ★ 3. 读取故障状态寄存器 ★
+    // ============================================================
     uint32_t cfsr = SCB->CFSR;
     uint32_t hfsr = SCB->HFSR;
     uint32_t bfar = SCB->BFAR;
     uint32_t mmar = SCB->MMFAR;
 
+    printf("\r\n--- 故障寄存器 ---\r\n");
     printf("CFSR:  0x%08X\r\n", cfsr);
     printf("HFSR:  0x%08X\r\n", hfsr);
     printf("BFAR:  0x%08X\r\n", bfar);
     printf("MMFAR: 0x%08X\r\n", mmar);
+    fflush(stdout);
 
-    // 错误诊断
+    // ============================================================
+    // ★ 4. 错误诊断 ★
+    // ============================================================
     printf("\r\n--- 错误诊断 ---\r\n");
     if (cfsr & (1 << 0))  printf("  ✗ IACCVIOL: 指令访问违规\r\n");
     if (cfsr & (1 << 1))  printf("  ✗ DACCVIOL: 数据访问违规\r\n");
     if (cfsr & (1 << 3))  printf("  ✗ MSTKERR: 入栈时总线错误\r\n");
     if (cfsr & (1 << 8))  printf("  ✗ IBUSERR: 指令总线错误\r\n");
     if (cfsr & (1 << 9))  printf("  ✗ PRECISERR: 精确数据总线错误\r\n");
+    if (cfsr & (1 << 10)) printf("  ✗ IMPRECISERR: 非精确数据总线错误\r\n");
     if (cfsr & (1 << 16)) printf("  ✗ UNDEFINSTR: 未定义指令\r\n");
     if (cfsr & (1 << 17)) printf("  ✗ INVSTATE: 无效状态\r\n");
     if (cfsr & (1 << 24)) printf("  ✗ UNALIGNED: 未对齐访问\r\n");
     if (cfsr & (1 << 25)) printf("  ✗ DIVBYZERO: 除以零\r\n");
     if (hfsr & (1 << 30)) printf("  ✗ FORCED: 由其他故障引发\r\n");
     if (hfsr & (1 << 31)) printf("  ✗ VECTBL: 向量表读取错误\r\n");
+    fflush(stdout);
+
+    // ============================================================
+    // ★ 5. 内存状态 ★
+    // ============================================================
+    printf("\r\n--- 内存状态 ---\r\n");
+
+    // 链接脚本符号
+    extern uint32_t _estack;
+    extern uint32_t _sdata;
+    extern uint32_t _edata;
+    extern uint32_t _sbss;
+    extern uint32_t _ebss;
+    extern uint32_t _end;
+
+    uint32_t ram_start = 0x20000000;
+    uint32_t ram_end = (uint32_t)&_estack;
+    uint32_t total_ram = ram_end - ram_start;
+    uint32_t data_size = (uint32_t)&_edata - (uint32_t)&_sdata;
+    uint32_t bss_size = (uint32_t)&_ebss - (uint32_t)&_sbss;
+    uint32_t heap_start = (uint32_t)&_end;
+    uint32_t heap_size = ram_end - heap_start;
+
+    // FreeRTOS 堆
+    extern uint8_t ucHeap[];
+    size_t freeHeap = xPortGetFreeHeapSize();
+    size_t minFree = xPortGetMinimumEverFreeHeapSize();
+    size_t totalHeap = configTOTAL_HEAP_SIZE;
+
+    printf("RAM:       %lu / %lu bytes (%.2f KB)\r\n",
+           total_ram, total_ram, (float)total_ram / 1024.0f);
+    printf("  .data:   %lu bytes (%.2f KB)\r\n",
+           data_size, (float)data_size / 1024.0f);
+    printf("  .bss:    %lu bytes (%.2f KB)\r\n",
+           bss_size, (float)bss_size / 1024.0f);
+    printf("  .heap:   %lu bytes (%.2f KB)\r\n",
+           heap_size, (float)heap_size / 1024.0f);
+    printf("FreeRTOS Heap: %lu / %lu bytes (%.2f KB)\r\n",
+           freeHeap, totalHeap, (float)freeHeap / 1024.0f);
+    printf("Min Free:  %lu bytes (%.2f KB)\r\n",
+           minFree, (float)minFree / 1024.0f);
+
+    // ★ 内存使用率 ★
+    uint32_t totalUsed = data_size + bss_size + (totalHeap - freeHeap);
+    uint32_t usedPercent = (totalUsed * 100) / total_ram;
+    printf("Total Used: %lu / %lu bytes (%.2f KB) [%lu%%]\r\n",
+           totalUsed, total_ram, (float)totalUsed / 1024.0f, usedPercent);
+    fflush(stdout);
+
+    // ============================================================
+    // ★ 6. 内存警告 ★
+    // ============================================================
+    printf("\r\n--- 内存警告 ---\r\n");
+    if (freeHeap < 512) {
+        printf("  ✗ CRITICAL: FreeRTOS heap < 512 bytes!\r\n");
+    } else if (freeHeap < 1024) {
+        printf("  ⚠ WARNING: FreeRTOS heap < 1KB!\r\n");
+    } else if (freeHeap < 2048) {
+        printf("  ⚠ WARNING: FreeRTOS heap < 2KB!\r\n");
+    } else {
+        printf("  ✓ FreeRTOS heap OK\r\n");
+    }
+
+    if (usedPercent > 95) {
+        printf("  ✗ CRITICAL: Overall RAM > 95%% used!\r\n");
+    } else if (usedPercent > 85) {
+        printf("  ⚠ WARNING: Overall RAM > 85%% used!\r\n");
+    } else {
+        printf("  ✓ Overall RAM OK\r\n");
+    }
+
+    if (bss_size > 15000) {
+        printf("  ⚠ WARNING: .bss > 15KB, check global variables!\r\n");
+    }
+
+    if (sp > ram_end - 256) {
+        printf("  ✗ STACK OVERFLOW: SP near RAM end!\r\n");
+    }
+    fflush(stdout);
+
+    // ============================================================
+    // ★ 7. 当前任务信息 ★
+    // ============================================================
+    printf("\r\n--- 任务信息 ---\r\n");
+    TaskHandle_t currentTask = xTaskGetCurrentTaskHandle();
+    if (currentTask != NULL) {
+        const char* taskName = pcTaskGetName(currentTask);
+        printf("  Current Task: %s\r\n", taskName ? taskName : "Unknown");
+        UBaseType_t highWaterMark = uxTaskGetStackHighWaterMark(currentTask);
+        printf("  Stack Free: %u words (%u bytes)\r\n",
+               highWaterMark, highWaterMark * 4);
+        if (highWaterMark < 50) {
+            printf("  ✗ Task stack nearly overflow!\r\n");
+        }
+    }
+
+    UBaseType_t taskCount = uxTaskGetNumberOfTasks();
+    printf("  Active Tasks: %lu\r\n", taskCount);
+    fflush(stdout);
 
     printf("========================================\r\n");
     fflush(stdout);
@@ -305,20 +425,6 @@ void DMA1_Channel5_IRQHandler(void)
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
 
   /* USER CODE END DMA1_Channel5_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM1 update interrupt.
-  */
-void TIM1_UP_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM1_UP_IRQn 0 */
-
-  /* USER CODE END TIM1_UP_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim1);
-  /* USER CODE BEGIN TIM1_UP_IRQn 1 */
-
-  /* USER CODE END TIM1_UP_IRQn 1 */
 }
 
 /**

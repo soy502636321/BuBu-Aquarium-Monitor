@@ -12,6 +12,7 @@
 
 #include "value_type.hpp"
 #include <cstdint>
+#include <cstring>
 #include <ctime>
 #include <map>
 #include <string>
@@ -20,14 +21,34 @@
 #include <vector>
 
 #define MAX_SWITCH_SIZE 12
+#define MAX_DEVICE_NAME_LENGTH 24
+#define MAX_DEVICE_ID_LENGTH 8
 
-enum class DeviceType
+enum class DeviceType: uint8_t
 {
     Unknown = 0,
 
     Sensor, 	// 传感器
     Switch, 	// 开关
     PWM   		// PWM调光/调速
+};
+
+// ============================================================
+enum class SensorType : uint8_t {
+	NONE = 0,
+	DHT11,      // 温度
+	HUMIDITY,         // 湿度
+	LIGHT,            // 光照
+	PH,               // PH值
+	TDS,              // TDS
+	WATER_LEVEL,      // 水位
+	PRESSURE,         // 压力
+	VOLTAGE,          // 电压
+	CURRENT,          // 电流
+	AIR_QUALITY,      // 空气质量
+	DISTANCE,         // 距离
+	SPEED,            // 速度
+	// ... 扩展更多类型
 };
 
 // 设备状态枚举
@@ -140,17 +161,31 @@ enum class DataPointType : uint8_t {
     LIGHT_RUNTIME = 74,   // 灯光运行时长
     UPTIME = 75,          // 系统运行时间
 
-    COUNT = 76            // 总数量（必须放最后）
+	NONE,					//weizh
+
+    COUNT           // 总数量（必须放最后）
 };
 
 struct DataPoint {
     DataPointType type;			// 数据类型："temperature", "humidity", "state", "duty_cycle"
 	DataValue value;			// 属性值
-    std::string unit;           // 单位："°C", "%", "pH", "mg/L", "" (开关无单位)
     uint8_t quality = 0;		// 0=有效, 1=可疑, 2=无效
 
-	// ---------- setValue 方法（核心） ----------
+	// 构造函数
+	// ★ 默认构造函数 ★
+	DataPoint() : type(DataPointType::NONE), value(0.0f), quality(0) {}
+	// ★ 构造函数：float ★
+	DataPoint(DataPointType t, float v, uint8_t q = 0): type(t), value(v), quality(q) {}
+	// ★ 构造函数：bool ★
+	DataPoint(DataPointType t, bool v, uint8_t q = 0): type(t), value(v), quality(q) {}
+	// ★ 构造函数：uint8_t ★
+	DataPoint(DataPointType t, uint8_t v, uint8_t q = 0): type(t), value(v), quality(q) {}
+	// ★ 构造函数：int ★
+	DataPoint(DataPointType t, int32_t v, uint8_t q = 0): type(t), value(v), quality(q) {}
+	// ★ 构造函数：string ★
+	DataPoint(DataPointType t, const std::string& v, uint8_t q = 0): type(t), value(v), quality(q) {}
 
+	// ---------- setValue 方法（核心） ----------
 	void setValue(DataValue v) {
 		value = v;
 	}
@@ -334,18 +369,19 @@ public:
 	 const char* getTypeName() const {return "";};
 
 	// ========== Getter（非虚，所有子类共用） ==========
-	std::string getDeviceId() const { return m_deviceId; }
-	std::string getDeviceName() const { return m_deviceName; }
+	const char* getDeviceId() const { return m_deviceId; }
+	const char* getDeviceName() const { return m_deviceName; }
 	uint32_t getTimestamp() const { return m_timestamp; }
 	DeviceType getDeviceType() const { return m_deviceType; }
 	const std::map<std::string, std::string>& getMetadata() const {
 		return m_metadata;
 	}
 	DeviceDataType getDataType() const { return m_data_type; }
+	bool isValid() const { return m_valid; }
 
 	// ========== Setter（非虚，所有子类共用） ==========
-	void setDeviceId(const std::string& id) { m_deviceId = id; }
-	void setDeviceName(const std::string& name) { m_deviceName = name; }
+	void setDeviceId(const char* id) { snprintf(m_deviceId, sizeof(m_deviceId), "%s", id); }
+	void setDeviceName(const char* name) { snprintf(m_deviceName, sizeof(m_deviceName), "%s", name);}
 	void setTimestamp(uint32_t ts) { m_timestamp = ts; }
 	void setDeviceType(DeviceType type) { m_deviceType = type; }
 	void setMetadata(const std::string& key, const std::string& value) {
@@ -355,6 +391,7 @@ public:
 		return m_metadata.find(key) != m_metadata.end();
 	}
 	void setDataType(DeviceDataType dataType) { m_data_type = dataType; }
+	void setValid(bool v) { m_valid = v; }
 
 	template<typename T>
 		bool isType() {
@@ -362,11 +399,12 @@ public:
 	}
 
 private:
-	std::string m_deviceId; // 设备唯一标识，如 "sensor_01"
-	std::string m_deviceName; //设备名称
+	char m_deviceId[MAX_DEVICE_ID_LENGTH]; // 设备唯一标识，如 "sensor_01"
+	char m_deviceName[MAX_DEVICE_NAME_LENGTH]; //设备名称
 	uint32_t m_timestamp; // 采集时间 "2026-07-23 14:30:25"
 	DeviceType m_deviceType;
 	DeviceDataType m_data_type;
+	bool m_valid = false; // 是否有效
 	std::map<std::string, std::string> m_metadata;  // 元数据
 };
 
@@ -382,17 +420,16 @@ public:
 		 */
 	bool addDataPoint(const DataPoint &point, bool autoUpdateQuality = true) {
 		// 1. 基本的有效性检查
-		if (point.unit.empty()) {
-			// 对于非开关类型，建议有单位，但不强制
-			// 可以记录警告日志，这里仅做示例
-		}
+		// if (point.unit.empty()) {
+		// 	// 对于非开关类型，建议有单位，但不强制
+		// 	// 可以记录警告日志，这里仅做示例
+		// }
 		// 2. 添加数据点到列表
 		points.push_back(point);
 		// 3. 自动更新数据质量
 		// if (autoUpdateQuality) {
 		// 	updateDataQuality();
 		// }
-
 		return true;
 	}
 	template<typename Callback>
@@ -481,39 +518,64 @@ struct DeviceConfig {
 
 class DeviceBase {
 public:
-    DeviceBase(const std::string& id, const std::string& name, DeviceType type)
-        : device_id(id), name(name), type(type), is_online(false) {}
+    DeviceBase(const char* id, const char* name, DeviceType type)
+		: m_type(type)
+		, m_status(DeviceStatus::OFFLINE) {
+    	strncpy(m_deviceId, id, sizeof(m_deviceId) - 1);
+    	m_deviceId[sizeof(m_deviceId) - 1] = '\0';
+    	strncpy(m_DeviceName, name, sizeof(m_DeviceName) - 1);
+    	m_DeviceName[sizeof(m_DeviceName) - 1] = '\0';
+    }
 
     virtual ~DeviceBase() = default;
 
+	virtual bool init() {
+		return true;
+	}
+
     // 纯虚函数：子类必须实现
-    virtual bool executeCommand(const DevicePwm& cmd) = 0;
-    virtual DataPoint collectData() = 0;
+    // virtual bool executeCommand(const DevicePwm& cmd) = 0;
+    // virtual DataPoint collectData() = 0;
 
     // 公共方法
-    std::string getDeviceId() const { return device_id; }
-    std::string getName() const { return name; }
-    DeviceType getType() const { return type; }
-    bool isOnline() const { return is_online; }
+	const char* getDeviceId() const { return m_deviceId; }
+	const char* getName() const { return m_DeviceName; }
+    DeviceType getType() const { return m_type; }
+
+	void setName(const char* name) {
+		strncpy(m_DeviceName, name, MAX_DEVICE_NAME_LENGTH - 1);
+		m_DeviceName[MAX_DEVICE_NAME_LENGTH - 1] = '\0';
+	}
+
+	void setDeviceId(const char* id) {
+		strncpy(m_deviceId, id, MAX_DEVICE_ID_LENGTH - 1);
+		m_deviceId[MAX_DEVICE_ID_LENGTH - 1] = '\0';
+	}
 
     // 设置/获取配置
     void setConfig(const DeviceConfig& config) { this->config = config; }
     const DeviceConfig& getConfig() const { return config; }
 
     // 获取设备信息（用于注册和发现）
-    virtual std::string getDeviceInfo() const {
-        return "Device: " + name + " (" + device_id + ") Type: " + std::to_string((int)type);
+    virtual const char* getDeviceInfo() const {
+		static char buffer[64];
+		snprintf(buffer, sizeof(buffer), "Device: %s (%s) Type: %d", m_DeviceName, m_deviceId, (int)m_type);
+		return buffer;
     }
 
+	void setEnabled(bool enabled) { m_enabled = enabled; }
+	bool isEnabled() const { return m_enabled; }
+
 protected:
-    std::string device_id;
-    std::string name;
-    DeviceType type;
-    DeviceStatus status = DeviceStatus::OFFLINE;
-    bool is_online = false;
+    char m_deviceId[MAX_DEVICE_ID_LENGTH];
+    char m_DeviceName[MAX_DEVICE_NAME_LENGTH];
+    DeviceType m_type;
+    DeviceStatus m_status = DeviceStatus::OFFLINE;
+	bool m_enabled = true;
     DeviceConfig config;
     uint64_t last_heartbeat = 0;
-    std::string location;  // 安装位置
+    // std::string location;  // 安装位置
+	bool m_initialized;
 };
 
 

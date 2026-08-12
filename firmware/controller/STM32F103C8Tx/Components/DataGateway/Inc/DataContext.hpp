@@ -4,7 +4,7 @@
 #include "Device.hpp"
 #include <string.h>
 
-#define MAX_PAYLOAD_SIZE 128
+#define MAX_PAYLOAD_SIZE 64
 
 using DataVariant = std::variant<std::monostate, DeviceRecord, DeviceSwitch, DevicePwm, DeviceSetup, DeviceCollection>;
 
@@ -62,32 +62,8 @@ public:
         }, m_data);
     }
 
-    // template<typename T>
-    // T& as() {
-    //     return std::get_if<T>(&m_data);
-    // }
-
-    // void setData(IDeviceData ptr) {
-    //     static uint32_t call_count = 0;
-    //     call_count++;
-    //
-    //     printf("[setData #%u] === START ===\n", call_count);
-    //     printf("  ptr address = 0x%p\n", &ptr);
-    //     printf("  ptr.getTypeId() = %u\n", ptr.getTypeId());
-    //     printf("  m_data BEFORE address = 0x%p\n", &m_data);
-    //     fflush(stdout);
-    //
-    //     m_data = ptr;
-    //
-    //     printf("  m_data AFTER.getTypeId() = %u\n", m_data.getTypeId());
-    //     printf("[setData #%u] === END ===\n", call_count);
-    //     fflush(stdout);
-    // }
-
     template<typename T>
-    void setData(T ptr) {
-        static uint32_t call_count_template = 0;
-        call_count_template++;
+    void setData(const T& ptr) {
         m_data = ptr;
     }
 
@@ -239,9 +215,15 @@ struct DataContext {
         packet.setPayload(&payload, length);
     }
 
+    template<typename T>
+    void setData(T ptr) {
+        packet.setData(ptr);
+    }
+
     void reset() {
         packet.clear();      // 清空 payload
         aborted = false;
     }
+
 };
 #endif // VALVE_CONTEXT_HPP

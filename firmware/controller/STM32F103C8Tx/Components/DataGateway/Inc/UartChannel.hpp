@@ -4,7 +4,7 @@
 #ifndef UART_CHANNEL_HPP
 #define UART_CHANNEL_HPP
 #include "ActionExecutor.hpp"
-#include "ObjectPool.h"
+#include "ObjectPool.hpp"
 #include "Logger.hpp"
 
 extern "C" {
@@ -17,8 +17,8 @@ extern "C" {
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart3;
 
-#define RX_BUF_SIZE  128
-#define TX_BUF_SIZE  128
+#define RX_BUF_SIZE  64
+#define TX_BUF_SIZE  64
 #define UART_HANDLE huart3
 
 extern uint32_t _estack;  // 栈顶（在链接脚本中定义）
@@ -29,8 +29,6 @@ extern char _heap_end;
 
 static DataContext context;
 static bool context_valid = false;
-
-static ObjectPool<DataContext, 8> g_data_context_pool;
 
 class UartChannel : public IChannel {
 public:
@@ -56,8 +54,6 @@ public:
     }
 
     void onDataReceived() {
-        LOG_INFO("TEST -DATA \r\n");
-        // printf("get DATA %d \r\n", m_rx_count);
         // 只要环形缓冲区有数据，就尝试解析
         if  (m_rx_count > 0) {
             //1. 查找帧头 0xAA 0x55
@@ -83,43 +79,10 @@ public:
             //6.读取完整数据
             findRxData(header_pos, data_total_len);
 
-            DataContext* ctx = g_data_context_pool.allocate();
+            DataContext* ctx = g_rx_data_context_pool.allocate();
             ctx->packet.setPayload(m_rx_data_buf, data_total_len);
             ctx->packet.setLength(data_total_len);
-            // 3. ★ 交给 DataGateway 入队（不再做任何解析） ★
-            // DataGateway::getInstance().onReceiveFromISR(ctx);
-
-            // ✅ 触发回调：通知有数据了！
-            // if (m_callback) {
-            //     for (uint16_t i = 0; i < data_total_len; i++) {
-            //         printf("%02X ", m_rx_data_buf[i]);
-            //     }
-            //     printf("\r\n");
-            //     uint32_t sp;
-            //     __asm volatile("MOV %0, SP" : "=r"(sp));
-            //     uint32_t stackUsed = (uint32_t)&_estack - sp;
-            //     printf("Stack used: %u bytes\r\n", stackUsed);
-            //     if (stackUsed > 2000) {  // 如果栈使用超过2KB
-            //         printf("!!! Stack overflow risk !!!\r\n");
-            //     }
-            //
-            //     struct mallinfo mi = mallinfo();
-            //     printf("Heap used: %u bytes\r\n", mi.uordblks);
-            //     printf("Heap free: %u bytes\r\n", mi.fordblks);
-            //     printf("Heap total: %u bytes\r\n", mi.arena);
-            //
-            //     // DataContext context(m_rx_data_buf, data_total_len);
-            //     // if (!context_valid) {
-            //     //     context.packet.setPayload(m_rx_data_buf, data_total_len);
-            //     //     context_valid = true;
-            //     // }
-            //     DataContext* ctx = g_data_context_pool.allocate();
-            //     ctx->packet.setPayload(m_rx_data_buf, data_total_len);
-            //
-            //     printf("new CONTEXT (stack)\r\n");
             m_callback(*ctx);
-            g_data_context_pool.release(ctx);
-            // }
         }
 
     }
@@ -134,8 +97,8 @@ public:
             m_rx_count = (RX_BUF_SIZE - m_rx_tail) + rx_len;
         }
         onDataReceived();
-        // ★★★ 关键：重新启动 DMA 空闲接收 ★★★
-        HAL_UARTEx_ReceiveToIdle_DMA(&UART_HANDLE, m_rx_buf, RX_BUF_SIZE);
+        // // ★★★ 关键：重新启动 DMA 空闲接收 ★★★
+        // HAL_UARTEx_ReceiveToIdle_DMA(&UART_HANDLE, m_rx_buf, RX_BUF_SIZE);
     }
 
     void onTxComplete() {
@@ -155,8 +118,12 @@ private:
         , m_tx_tail(0)
         , m_tx_count(0) {
         // 保险起见 休闲中断 开启首次DMA
-        __HAL_UART_ENABLE_IT(&UART_HANDLE, UART_IT_IDLE);
-        HAL_UARTEx_ReceiveToIdle_DMA(&UART_HANDLE,getRxBuffer(),RX_BUF_SIZE);
+        // 1. 终止之前可能残留的DMA接收过程（防止重复启动导致硬件错误）
+        HAL_UART_AbortReceive(&UART_HANDLE);
+        // 2. 清空接收缓冲区（可选，根据需求决定是否清空历史数据）
+        memset(getRxBuffer(), 0, RX_BUF_SIZE);
+        // 3. 启动IDLE中断下的DMA循环接收
+        HAL_UARTEx_ReceiveToIdle_DMA(&UART_HANDLE, getRxBuffer(), RX_BUF_SIZE);
     }
 
     ~UartChannel() = default;
@@ -189,16 +156,6 @@ private:
             m_rx_head = (m_rx_head + len) % RX_BUF_SIZE;
             m_rx_count -= len;
             m_rx_data_len = len;
-// ========== 加入日志追踪 ==========
-// printf("[Buffer] === State Update ===\n");
-// printf("  len = %u\n", (unsigned int)len);
-// printf("  m_rx_head = %u\n", (unsigned int)m_rx_head);
-// printf("  m_rx_count = %u (was %u)\n",
-       // (unsigned int)m_rx_count,
-       // (unsigned int)(m_rx_count + len));  // 显示更新前的值
-// printf("  m_rx_data_len = %u\n", (unsigned int)m_rx_data_len);
-// printf("  m_rx_tail = %u\n", (unsigned int)m_rx_tail);
-// fflush(stdout);
         }
 
 
@@ -246,14 +203,17 @@ private:
 };
 
 extern "C" void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size) {
-    // printf("HAL_UARTEx_RxEventCallback\r\n");
+    LOG_INFO("HAL_UARTEx_RxEventCallback UART RX: %d bytes\n", Size);
+    fflush(stdout);
     if (huart->Instance == USART3) {
+        printf("HAL_UARTEx_RxEventCallback : USART3\r\n");
         // 通知 UartChannel
         UartChannel::getInstance().onRxIdleDMA(Size);
     }
 }
 // ★★★ 错误回调 ★★★
 extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
+    LOG_INFO("HAL_UART_ErrorCallback\r\n");
     if (huart->Instance == USART3) {
         // 清除错误标志
         __HAL_UART_CLEAR_OREFLAG(huart);

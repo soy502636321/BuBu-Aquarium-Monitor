@@ -24,6 +24,8 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "string.h"
+#include "memory_monitor.h"
+#include "semphr.h"
 
 /* USER CODE END Includes */
 
@@ -34,7 +36,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -43,8 +44,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
@@ -68,11 +69,11 @@ const osThreadAttr_t defaultTask_attributes = {
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
-static void MX_USART1_UART_Init(void);
-static void MX_TIM1_Init(void);
 static void MX_TIM2_Init(void);
+static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_USART3_UART_Init(void);
+static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
@@ -81,104 +82,14 @@ void StartDefaultTask(void *argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-extern void app_main_entry(void);  // ✅ 声明外部函数
 extern void main_bridge(void);
 
-int _write(int file, char *ptr, int len)
-{
+int _write(int file, char *ptr, int len) {
   HAL_UART_Transmit(&huart3, (uint8_t *)ptr, len, HAL_MAX_DELAY);
   return len;
 }
 
-// ============================================
-// 内存监控任务 - 持续打印内存使用情况
-// ============================================
-void MemoryMonitorTask(void *argument) {
-    // 不需要 __heap_base 和 __heap_limit
-    // 直接使用 FreeRTOS 的堆管理函数
-
-    uint32_t maxUsed = 0;
-    uint32_t minFree = 0xFFFFFFFF;
-    uint32_t printCount = 0;
-
-    // 获取初始空闲堆大小作为参考
-    size_t initialFree = xPortGetFreeHeapSize();
-
-    printf("\r\n========================================\r\n");
-    printf("Memory Monitor Task Started\r\n");
-    printf("Initial Free Heap: %lu bytes (%.2f KB)\r\n",
-           initialFree, (float)initialFree / 1024.0);
-    printf("========================================\r\n");
-
-    while(1) {
-        // 1. 获取当前内存信息（不需要外部符号）
-        size_t freeHeap = xPortGetFreeHeapSize();
-        size_t minFreeHeap = xPortGetMinimumEverFreeHeapSize();
-
-        // 2. 计算使用量（相对于初始值）
-        size_t usedHeap = initialFree - freeHeap;
-        size_t maxUsedHeap = initialFree - minFreeHeap;
-
-        // 3. 更新统计
-        if(usedHeap > maxUsed) {
-            maxUsed = usedHeap;
-        }
-        if(freeHeap < minFree) {
-            minFree = freeHeap;
-        }
-
-        // 4. 获取系统信息
-        uint32_t tick = osKernelGetTickCount();
-        uint32_t threadCount = osThreadGetCount();
-        osThreadId_t currentId = osThreadGetId();
-        const char* currentName = osThreadGetName(currentId);
-
-        // 5. 计算百分比（基于初始空闲堆）
-        uint32_t usedPercent = (usedHeap * 100) / initialFree;
-        uint32_t freePercent = 100 - usedPercent;
-
-        // 6. 打印内存信息
-        printf("\r\n========== Memory Status [%lu] ==========\r\n", printCount++);
-        printf("Initial Free:  %8lu bytes (%.2f KB)\r\n",
-               initialFree, (float)initialFree / 1024.0);
-        printf("Current Free:  %8lu bytes (%.2f KB) [%lu%%]\r\n",
-               freeHeap, (float)freeHeap / 1024.0, freePercent);
-        printf("Current Used:  %8lu bytes (%.2f KB) [%lu%%]\r\n",
-               usedHeap, (float)usedHeap / 1024.0, usedPercent);
-        printf("Min Free Ever: %8lu bytes (%.2f KB)\r\n",
-               minFreeHeap, (float)minFreeHeap / 1024.0);
-        printf("Max Used Ever: %8lu bytes (%.2f KB)\r\n",
-               maxUsed, (float)maxUsed / 1024.0);
-        printf("Active Threads: %lu\r\n", threadCount);
-        printf("Current Thread: %s\r\n", currentName ? currentName : "Unknown");
-        printf("System Tick:    %lu\r\n", tick);
-
-        // 7. 内存警告
-        if(freeHeap < 1024) {
-            printf("*** CRITICAL: Very low memory! (< 1KB) ***\r\n");
-        } else if(freeHeap < 2048) {
-            printf("*** WARNING: Low memory! (< 2KB) ***\r\n");
-        }
-
-        printf("========================================\r\n");
-
-        // 8. 延迟
-        vTaskDelay(pdMS_TO_TICKS(5000));;  // 每5秒打印一次
-    }
-}
-
-// 创建内存监控任务
-void CreateMemoryMonitorTask(void) {
-  osThreadAttr_t taskAttr = {
-    .name = "MemMonitor",
-    .priority = osPriorityLow,
-    .stack_size = 512,  // 栈大小
-};
-
-  osThreadNew(MemoryMonitorTask, NULL, &taskAttr);
-  printf("Memory monitor task created\r\n");
-}
-
+xSemaphoreHandle g_printMutex = NULL;
 /* USER CODE END 0 */
 
 /**
@@ -211,13 +122,24 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
-  MX_TIM1_Init();
   MX_TIM2_Init();
+  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_USART3_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  // app_main_entry(); //使用自己的逻辑，可以方便结合c和c++
+  setbuf(stdout, NULL);
+  printf("printf test \r\n");
+  printf("UART Baudrate: %lu\n", huart3.Init.BaudRate);
+  while (1) {
+    uint8_t test_byte;
+    printf("PRI -1 \r\n");
+    if (HAL_UART_Receive(&huart3, &test_byte, 1, 1000) == HAL_OK) {
+      printf("PRI -2 \r\n");
+      printf("RX: 0x%02X\r\n", test_byte);
+    }
+    HAL_Delay(100);
+  }
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -245,11 +167,10 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  // 创建内存监控任务
-  CreateMemoryMonitorTask();
-
   // 5. ★ 初始化 ChannelManager（注册所有通道）★
   printf("Starting RTOS Kernel...\r\n");
+  // 创建内存监控任务
+  CreateMemoryMonitorTask();
   main_bridge();
   /* USER CODE END RTOS_THREADS */
 
@@ -326,52 +247,6 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief TIM1 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM1_Init(void)
-{
-
-  /* USER CODE BEGIN TIM1_Init 0 */
-
-  /* USER CODE END TIM1_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-  /* USER CODE BEGIN TIM1_Init 1 */
-
-  /* USER CODE END TIM1_Init 1 */
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 7200-1;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 10000 - 1;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM1_Init 2 */
-
-  /* USER CODE END TIM1_Init 2 */
-
-}
-
-/**
   * @brief TIM2 Initialization Function
   * @param None
   * @retval None
@@ -413,6 +288,51 @@ static void MX_TIM2_Init(void)
   /* USER CODE BEGIN TIM2_Init 2 */
 
   /* USER CODE END TIM2_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 0;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 65535;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
 
 }
 
@@ -559,6 +479,12 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SWITCH_1_Pin|SWITCH_2_Pin|SWITCH_3_Pin|SWITCH_4_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : DHT11_Pin */
+  GPIO_InitStruct.Pin = DHT11_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(DHT11_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SWITCH_1_Pin SWITCH_2_Pin SWITCH_3_Pin SWITCH_4_Pin */
   GPIO_InitStruct.Pin = SWITCH_1_Pin|SWITCH_2_Pin|SWITCH_3_Pin|SWITCH_4_Pin;

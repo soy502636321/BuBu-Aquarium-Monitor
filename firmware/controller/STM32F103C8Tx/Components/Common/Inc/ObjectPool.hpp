@@ -46,8 +46,8 @@ public:
         while (true) {
             for (int i = 0; i < N; i++) {
                 if (!m_inUse[i]) {
-                    m_inUse[i] = true;
                     resetObject(i);
+                    m_inUse[i] = true;
                     printf("[Pool] Allocated slot %d (waited %u ms)\n", i, HAL_GetTick() - start);
                     return &m_pool[i];
                 }
@@ -91,7 +91,7 @@ public:
         // m_pool[index].~T();
         // new (&m_pool[index]) T();
 
-        m_inUse[index] = true;
+        m_inUse[index] = false;
     }
 
     // ===== 获取状态 =====
@@ -107,4 +107,8 @@ public:
         return available() == 0;
     }
 };
+
+inline ObjectPool<DataContext, 8> g_rx_data_context_pool;
+inline ObjectPool<DataContext, 8> g_tx_data_context_pool;
+
 #endif //STM32F103C8TX_OBJECTPOOL_H

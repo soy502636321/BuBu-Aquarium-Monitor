@@ -3,6 +3,8 @@
 //
 
 #include "ActionExecutor.hpp"
+#include "ObjectPool.hpp"
+#include "Config.h"
 
 // ============================================================
 // ★ 初始化 ★
@@ -20,7 +22,7 @@ void ActionExecutor::init() {
     BaseType_t ret = xTaskCreate(
         actionTaskEntry,
         "ActionExec",
-        256,
+        512,
         this,
         2,
         &m_task_handle
@@ -62,6 +64,7 @@ void ActionExecutor::actionProcessLoop() {
 
     while (1) {
         // ★ 阻塞等待 DataContext* ★
+        LOG_WARN("Action type not found!");
         if (xQueueReceive(m_action_queue, &ctx, portMAX_DELAY) == pdTRUE) {
             if (ctx == nullptr) {
                 continue;
@@ -78,10 +81,7 @@ void ActionExecutor::actionProcessLoop() {
             } else {
                 LOG_WARN("Action type %d not found!", typeId);
             }
-
-            // ★ 释放 DataContext（由谁分配，谁释放） ★
-            // 注意：如果 DataContext 是从对象池分配的，这里释放
-            // g_data_context_pool.release(ctx);
+            g_rx_data_context_pool.release(ctx);
         }
     }
 }
@@ -95,7 +95,7 @@ bool ActionExecutor::onDispatch(DataContext* ctx) {
     }
 
     // ★ 直接入队 DataContext*（零拷贝） ★
-    BaseType_t ret = xQueueSend(m_action_queue, &ctx, pdMS_TO_TICKS(100));
+    BaseType_t ret = xQueueSend(m_action_queue, &ctx, portMAX_DELAY);
     if (ret != pdPASS) {
         LOG_WARN("Action queue full!");
         return false;
